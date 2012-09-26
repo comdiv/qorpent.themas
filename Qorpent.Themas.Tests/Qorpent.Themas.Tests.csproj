@@ -8,6 +8,6 @@
     <RootNamespace>Qorpent.Themas.Tests</RootNamespace>
     <AssemblyName>Qorpent.Themas.Tests</AssemblyName><AssemblyNameBase>Qorpent.Themas</AssemblyNameBase>
   </PropertyGroup>
-  <Import Project="..\commons\build.targets" />
+  <Import Project="..\..\qorpent.sys\commons\build.targets" />
   <Import Project="*.import" />
 <ItemGroup><None Include="*.import" /><None Include="*.export" /></ItemGroup></Project>
