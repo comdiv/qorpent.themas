@@ -1,0 +1,124 @@
+﻿#####################################################################################
+###################                  Группы АССОИ                   #################
+#####################################################################################
+thema assoigrp , "Группа для АССОИ",  abst :
+	layout='assoititle'
+	import group
+assoigrp fin_grp,  "Финансы" :
+	needresponsibility = true
+assoigrp nalog_grp,  "Налоги"
+assoigrp eco_grp, "Экономика" :
+	needresponsibility = true
+assoigrp cost_grp, "Контроллинг" :
+	needresponsibility = true
+assoigrp trud_grp,  "Персонал" :
+	needresponsibility = true
+assoigrp soc_grp,  "Соцсфера" :
+	needresponsibility = true
+assoigrp proiz_grp,  Производство :
+	needresponsibility = true
+assoigrp control_grp,  Контроль
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

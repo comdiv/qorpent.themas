@@ -1,0 +1,475 @@
+﻿paramset default_svod :
+	import svod_basis
+	ask olap : false
+	ask zoneToRow : false
+#	ask cond_otch_periods
+#	ask usemes
+#	ask usesng
+#	ask usepredmes
+#	ask usepredsng
+	ask cond_org_groups
+	ask cond_otrasl
+	ask cond_reg
+	ask cond_div
+	ask cond_og
+	ask zdf_data
+#	ask zdf_block
+	ask useotkl
+	import svod_ext
+	
+objset default_svod :
+	object 1, 'УГМК ВСЕГО', type = alldb, code = h1:
+		condition = "(УГМК  and not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not CUSTOMOBJSET) or (ТОЛЬКОВСЕГО)"
+		
+	object 4, 'Пром. предприятия всего', type = og, code = og4:
+		condition = "ПРОМ and ВСЕГОПРОМ  and not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"
+		
+	generator _ГЕНЕРАТОР_ОБЪЕКТОВ_ОТРАСЛЕЙ	 :
+		include : "ЦМ;УП;ЧМ;КАБ;ОЦМ;ЦМО;МАШ;СМ;"
+		condition "ПРОМ or $SELF "
+		filter "not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"
+		
+	object 5, 'Непроизводственные организации всего', type = og, code = og5:
+		condition = 'НЕПРОМ and ВСЕГОНЕПРОМ  and not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО'
+		
+	generator _ГЕНЕРАТОР_ОБЪЕКТОВ_ОТРАСЛЕЙ	 :
+		include : "СТР;ТР;Наука;СХ;Э;"
+		condition  "НЕПРОМ or $SELF"
+		filter " not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"
+		
+	
+	object 6, 'Сектор услуг всего', type = og, code = og6:
+		condition = 'УСЛУГИ and ВСЕГОУСЛУГИ  and not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО'
+	
+	generator _ГЕНЕРАТОР_ОБЪЕКТОВ_ОТРАСЛЕЙ	 :
+		include : "Ф;Связь;МЕД;СМИ"
+		condition  "УСЛУГИ or $SELF"
+		filter " not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"
+
+	object 7, 'Прочие организации всего', type = og, code = og7:
+		condition = 'ПРОЧ and ВСЕГОПРОЧ  and not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО'
+	
+		
+	generator _ГЕНЕРАТОР_ОБЪЕКТОВ_ОТРАСЛЕЙ	 :
+		include : "УСЛ"
+		condition "ПРОЧ or $SELF"
+		filter "not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"
+		
+	generator _ГЕНЕРАТОР_ОБЪЕКТОВ_ДИВИЗИОНОВ :
+		filter  "not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"
+	generator _ГЕНЕРАТОР_ОБЪЕКТОВ_РЕГИОНОВ :
+		filter  "not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"
+		
+	generator _ГЕНЕРАТОР_ОБЪЕКТОВ_ГРУПП :
+		filter  "not ТЕКУЩЕЕПРЕДПРИЯТИЕ and not ВСЕМОИПРЕДПРИЯТИЯ and not ТОЛЬКОВСЕГО"	
+	
+	object type="org", id="$currentObject", code="main_org" , condition="ТЕКУЩЕЕПРЕДПРИЯТИЕ"
+	object type="myorgs", id="myorgs_1", name="$totalobjectname", code="myorgs_sum" , condition="ВСЕМОИПРЕДПРИЯТИЯ"
+	object type="myorgs", id="myorgs_2", code="myorgs_sum_split" , formula=orgs, condition="ВСЕМОИПРЕДПРИЯТИЯ and ВСЕМОИПРЕДПРИЯТИЯРАЗБИВКА"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

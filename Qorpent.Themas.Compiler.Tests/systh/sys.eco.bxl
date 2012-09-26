@@ -1,0 +1,143 @@
+﻿thema ecosubset , "Шаблонный поднабор из двух отчетов и формы", abst :
+	out.template=empty
+	input.template=empty
+	usequickupdate. = true
+	active. = true
+	ra_visible. = @active.
+	rb_visible. = @active.
+	f_visible. = @active.
+	fl_visible. = @f_visible.
+	name. = @name
+	defaultstate.  = "0ISOPEN"
+	forperiods. = ""
+	biztran. = ""
+	periodredirect. = ""
+	schedule. = "Comdiv.Zeta.Web.InputTemplates.EndtimeScheduleChecker, Comdiv.Zeta.Web"  
+	scheduledelta. = 25
+	favoriterowsonly. = false
+	detailfavorite. = false
+	lock. = "${code}${@}"
+	autofill. = ""
+	fordetail. = false
+	form_colset. = ""
+	ignoreperiodstate. = ""
+	row. = ""
+	fixrows. = ""
+	advdocs. = """
+		1=4,112,3,19,2,16,13;
+		2=4,112,3,19,16,1,13;
+		3=4,112,19,2,16,1,13;
+		4=112,3,19,2,16,1,13;
+		13=4,112,3,19,2,16,1;
+		16=4,112,3,19,2,1,13;
+		19=4,112,3,2,16,1,13;
+	"""
+
+	needfilesperiods. = "13,1,16,2,19,3,112,4"	
+	bindedform. = "${id}${@}"
+	comment. = ""
+	sqloptimization. = ""
+	needfiles. = ""
+
+	useformmatrix. = false
+	matrixexrows. = ""
+	ra_useformmatrix. = @useformmatrix.
+	ra_matrixexrows. = @matrixexrows.
+	rb_useformmatrix. = @useformmatrix.
+	rb_matrixexrows. = @matrixexrows.
+
+	#сводный отчет
+	report_a_paramset. = ""
+	report_a_rowset. = "default_row${@}"
+	report_a_colset. = "${id}a${@}"
+	report_a_objset. = ""
+	report_a_role. = _ANALYTIC
+	raname. = "${name.} (свод)"
+	ra_number. = ""
+	ra_lib. = ""
+	rarole. = "${roleprefix}${report_a_role.}"
+	out "a.", @raname. , type=configure, role=@rarole.,  useformmatrix = @ra_useformmatrix., active=@active. :
+		uselib @ra_lib.
+		uselib @ra_lib2.
+		var number,"Номер формы" , defaultvalue = @ra_number.
+		var biztran,"Код формы транзакции" , defaultvalue = @biztran.
+		useset @report_a_rowset.
+		useset @report_a_paramset.
+		useset @report_a_colset.
+		useset @report_a_objset.
+		
+	#частный отчет
+	report_b_paramset. = ""
+	report_b_rowset. = "default_row${@}"
+	report_b_colset. = "${id}${@}b"
+	report_b_objset. = ""
+	report_b_role. = @report_a_role.
+	rbname. = "${name.} (отчет)"
+	rb_number. = @ra_number.
+	rbrole. = "${roleprefix}${report_b_role.}"
+
+	out "b.", @rbname. , role=@rbrole., useformmatrix = @rb_useformmatrix.,  forperiods=@forperiods. ,periodredirect=@periodredirect., active=@active.:
+		uselib @rb_lib.
+		uselib @rb_lib2.
+		param bindedform, "Связаная форма", defaultvalue = @bindedform.
+		param number,"Номер формы", defaultvalue = @rb_number.
+		var biztran,"Код формы транзакции" , defaultvalue = @biztran.
+		useset @report_b_rowset.
+		useset @report_b_paramset.
+		useset @report_b_colset.
+		useset @report_b_objset.
+	
+	#ФОРМА ВВОДА ДАННЫХ
+	form_role. = _OPERATOR
+	form_lockrole. =_UNDERWRITER
+	tableview. = default
+	fixedobj. = ""
+	factive. : @active.
+	frole. : "${roleprefix}${form_role.}"
+	form "_.", @formname., active=@factive.
+		uselib @f_lib.
+		advdocs = @advdocs.
+		useformmatrix = @useformmatrix.
+		ignoreperiodstate = @ignoreperiodstate.
+		matrixexrows = @matrixexrows.
+		needfilesperiods = @needfilesperiods.
+		fixrows = @fixrows.
+		defaultstate = @defaultstate.
+		biztran = @biztran.
+		needfiles = @needfiles.
+		scheduleclass = @schedule.
+		detailfavorite = @detailfavorite.
+		usequickupdate = @usequickupdate.
+		scheduledelta = @scheduledelta.
+		favoriterowsonly = @favoriterowsonly.
+		sqloptimization = @sqloptimization.
+		lock = @lock.
+		role = @frole.
+		forperiods = @forperiods.
+		autofill = @autofill.
+		underwriterole="${roleprefix}${form_lockrole.}"
+		periodredirect = @periodredirect.	
+		inputfordetail = @fordetail.
+		showmeasurecolumn = @showmeasurecolumn.
+		tableView = @tableview.
+		fixedobj = @fixedobj.
+		row @row.
+		
+		
+ecosubset subecoA, "Поднабор A", index=A, active=false, generic
+ecosubset subecoB, "Поднабор B", index=B, active=false, generic
+ecosubset subecoC, "Поднабор C", index=C, active=false, generic
+
+
+subset default_rowA :
+	row "${rowA}", "${nameA}"
+subset default_rowB :
+	row "${rowB}", "${nameB}"
+subset default_rowC :
+	row "${rowC}", "${nameC}"
+	
+subset default_row :
+	row "${rootrow}", "${name}"
+	
+subset current_obj :
+	object type="org", id="$currentObject", code="main_org"

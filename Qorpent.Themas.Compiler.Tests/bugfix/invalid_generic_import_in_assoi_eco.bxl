@@ -1,0 +1,10 @@
+﻿thema SUBPARTBASE :
+	p1. = x
+	p2. = @p1.
+	p3. = "${p1.}"
+
+SUBPARTBASE SUBPART, "Проверка", index=A, generic
+
+
+thema REALBASIS :
+	import SUBPART

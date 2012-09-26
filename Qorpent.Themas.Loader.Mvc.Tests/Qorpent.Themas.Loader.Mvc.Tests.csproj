@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<IsTest>True</IsTest>
+    <Configuration>Debug</Configuration>
+    <ProjectGuid>{9F37669F-6CD4-496D-AA93-C42896D32B9C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Qorpent.Themas.Loader.Mvc.Tests</RootNamespace>
+    <AssemblyName>Qorpent.Themas.Loader.Mvc.Tests</AssemblyName><AssemblyNameBase>Qorpent.Themas.Loader.Mvc</AssemblyNameBase>
+  </PropertyGroup>
+  <Import Project="..\commons\build.targets" />
+  <Import Project="*.import" />
+<ItemGroup><None Include="*.import" /><None Include="*.export" /></ItemGroup></Project>

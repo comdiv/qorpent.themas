@@ -1,0 +1,247 @@
+﻿####################################################################################
+###################          Темы по кредитам  и займам            #################
+#####################################################################################
+
+#====================================================================================
+#Кредиты и займы
+#------------------------------------------------------------------------------------
+assoieco krzaim, "Кредиты и займы", group="fin_grp", roleprefix="BANK", rootrow="m440" :
+#	import month_for_kvart
+	import kvart
+	import forprdtest
+	activeC = false
+	usequickupdateA = false
+	usequickupdateB = false
+	layout = "/credit/themalayout"
+	configview = "/credit/themaconfig"
+	tableviewA = "krzaim"
+	tableviewB = "krzaim"
+	showmeasurecolumnA = true 
+	formset A:
+		useset cs_krzaim2011
+	reportset Aa:
+		ask showroots : true
+		useset cs_krzaim_report2011
+		ask use_kredit
+		ask use_zaim
+		ask use_dolg
+		ask use_krat
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		use viewname : "krzaim/default"
+		use generatorname : "krzaim/default"
+	reportset Ab:
+		ask showroots : true
+		ask dropzeroes : true
+		ask use_kredit
+		ask use_zaim
+		ask use_dolg
+		ask use_krat
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		use viewname : "krzaim/default"
+		use generatorname : "krzaim/default"
+		useset cs_krzaim_report2011
+
+#====================================================================================
+#Долгосрочные заемные средства
+#------------------------------------------------------------------------------------
+assoieco dolg_krzaim, "Приложение 12. Долгосрочные кредиты и займы", idx=120, roleprefix=BANK, group=analysisg, parent=sfr :
+	import kvart
+	import singlereport 
+	usequickupdateA = false
+	usequickupdateB = false
+	layout = "/credit/themalayout"
+	configview = "/credit/themaconfig"
+	tableviewA = "krzaim"
+	tableviewB = "krzaim"
+	showmeasurecolumnA = true 
+	reportset Aa:
+		ask showroots : true
+		useset cs_krzaim_report2011
+		ask use_kredit
+		ask use_zaim
+		use use_dolg : true
+		use use_krat : false
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		use viewname : "krzaim/default"
+		use generatorname : "krzaim/default"
+	reportset Ab:
+		ask showroots : true
+		ask dropzeroes : true
+		ask use_kredit
+		ask use_zaim
+		use use_dolg : true
+		use use_krat : false
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		use viewname : "krzaim/default"
+		use generatorname : "krzaim/default"
+		useset cs_krzaim_report2011
+
+#====================================================================================
+#Краткосрочные заемные средства
+#------------------------------------------------------------------------------------
+assoieco krat_krzaim, "Приложение 13. Краткосрочные кредиты и займы", idx=130, roleprefix=BANK, group=analysisg, parent=sfr :
+	import kvart
+	import singlereport 
+	usequickupdateA = false
+	usequickupdateB = false
+	layout = "/credit/themalayout"
+	configview = "/credit/themaconfig"
+	tableviewA = "krzaim"
+	tableviewB = "krzaim"
+	showmeasurecolumnA = true 
+	reportset Aa:
+		ask showroots : true
+		useset cs_krzaim_report2011
+		ask use_kredit
+		ask use_zaim
+		use use_dolg : false
+		use use_krat : true
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		use viewname : "krzaim/default"
+		use generatorname : "krzaim/default"
+	reportset Ab:
+		ask showroots : true
+		ask dropzeroes : true
+		ask use_kredit
+		ask use_zaim
+		use use_dolg : false
+		use use_krat : true
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		use viewname : "krzaim/default"
+		use generatorname : "krzaim/default"
+		useset cs_krzaim_report2011
+
+
+
+#====================================================================================
+#Реестр кредитных договоров
+#------------------------------------------------------------------------------------
+assoireport kreditreestr , "Реестр кредитных договоров", roleprefix="BANK", group=fin_grp, parent=krzaim :
+	parts =  'views/report/krzaim/parts.bxl'
+	out Aa, "Паспорт договора", type=configure
+		ask year
+		ask period
+		ask currentObject
+		ask dogovorid
+		ask settype
+		ask reporttype
+		ask use_kredit
+		ask use_zaim
+		ask use_dolg
+		ask use_krat
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		ask use_comments
+		var partselector, customview='/report/partselector_param', group=_ГП_ЧАСТИ
+		var overlayselector, customview='/report/overlayselector_param', group=_ГП_СЛОИ
+		var allstuff, "Все включено", type=bool, defaultvalue=true
+		use viewname : "krzaim/default_parts"
+		use generatorname : "krzaim/default_parts"
+		useext zetadosie
+
+#====================================================================================
+#Кредиты и займы (форма)
+#------------------------------------------------------------------------------------
+subset cs_krzaim2011, "Кредиты и займы (форма)" :
+	col ZOn, "На начало {2} {0}", forperiods="4", year=-1, fixed
+	col ZPd, "Привлечено {2} {0}", forperiods="4", year=-1, fixed
+	col ZRd, "Погашено {2} {0}", forperiods="4", year=-1, fixed
+	col ZOk, "На конец {2} {0}", forperiods="4", year=-1, fixed
+
+	col ZOn, "На начало {2} {0} (BUDGET)", forperiods="4", year=-1, forrole=BUDGET
+	col ZPd, "Привлечено {2} {0} (BUDGET)", forperiods="4", year=-1, forrole=BUDGET
+	col ZRd, "Погашено {2} {0} (BUDGET)", forperiods="4", year=-1, forrole=BUDGET
+	col ZOk, "На конец {2} {0} (BUDGET)", forperiods="4", year=-1, forrole=BUDGET
+
+	col ZOn, "На начало {2} {0}", forperiods="4"
+	col ZPd, "Привлечено {2} {0}", forperiods="4"
+	col ZRd, "Погашено {2} {0}", forperiods="4"
+	col ZOk, "На конец {2} {0}", forperiods="4"
+
+
+#====================================================================================
+#редиты и займы (форма)
+#------------------------------------------------------------------------------------
+subset cs_krzaim, "Кредиты и займы (форма)" :
+	col ZOk, "На конец {2} {0}", period="-101", fixed, forperiods="11"
+
+	col ZOn, "На начало {2} {0}", forperiods="_ЯНВ"
+	col ZOn, "На начало {2} {0}", forperiods="_НЕ_ЯНВ", fixed, auto
+	col ZPd, "Привлечено {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col ZRd, "Погашено {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col ZOk, "На конец {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col ZOn1, "На начало {2} {0}", period=-503, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", formula=" @ZOn.P11? "
+	col ZPd, "Привлечено {2} {0}", period=-501, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", fixed
+	col ZRd, "Погашено {2} {0}", period=-501, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", fixed
+	col ZOk1, "На конец {2} {0}", period=-205, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", formula=" @ZOn.P11?  + @ZPd.P-501? - @ZRd.P-501? "
+
+#	col ZONCONTR, "[Контроль долга] = 0", forperiods="_НЕ_ЯНВ,_МЕС_СНГ", formula=" @ZOn.P11? + @ZPd.P-501? - @ZRd.P-501? - @ZOn? - @ZPd? + @ZRd? " :
+#		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+
+	#col ZPOn, "На начало % {2} {0}", forperiods="_ЯНВ"
+	#col ZPOn, "На начало % {2} {0}", forperiods="_НЕ_ЯНВ", fixed, auto
+	#col ZPOn1, "На начало % {2} {0}", forperiods="_МЕС_СНГ", formula=" @ZPOn.P11? "
+	#col ZPPd, "Начислено % {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	#col ZPPd, "Начислено % {2} {0}", period=-501, forperiods="_МЕС_СНГ", fixed
+	#col ZPRd, "Уплачено % {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	#col ZPRd, "Уплачено % {2} {0}", period=-501, forperiods="_МЕС_СНГ", fixed
+	#col ZPOk, "На конец % {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	#col ZPOk1, "На конец % {2} {0}", forperiods="_МЕС_СНГ", formula=" @ZPOk.P11? "
+
+	#col ZSOn, "На начало (всего) {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	#col ZSPd, "Привлечено (всего) {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	#col ZSRd, "Погашено (всего) {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	#col ZSOk, "На конец (всего) {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	#col ZPONCONTR, "[Контроль процентов] = 0", forperiods="_НЕ_ЯНВ,_МЕС_СНГ", formula=" @ZPOn.P11? + @ZPPd.P-501? - @ZPRd.P-501? - @ZPOn? - @ZPPd? + @ZPRd? " :
+	#	checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+
+#====================================================================================
+#редиты и займы (отчет)
+#------------------------------------------------------------------------------------
+subset cs_krzaim_report, "Кредиты и займы (отчет)" :
+	col ZOk, "На конец {2} {0}", period="-101"
+	col ZOn, "На начало {2}"
+	col ZPd, "Привлечено {2}"
+	col ZRd, "Погашено {2}"
+	col ZOk, "На конец {2}"
+
+	col ZSOn, "На начало (всего) {2}"
+	col ZSPd, "Привлечено (всего) {2}"
+	col ZSRd, "Погашено (всего) {2}"
+	col ZSOk, "На конец (всего) {2}"
+
+#====================================================================================
+#редиты и займы (отчет)
+#------------------------------------------------------------------------------------
+subset cs_krzaim_report2011, "Кредиты и займы (отчет)" :
+	col ZOn, "На начало {2} {0}", forperiods="4", year=-1
+	col ZPd, "Привлечено {2} {0}", forperiods="4", year=-1
+	col ZRd, "Погашено {2} {0}", forperiods="4", year=-1
+	col ZOk, "На конец {2} {0}", forperiods="4", year=-1
+
+	col ZOn, "На начало {2} {0}", forperiods="4"
+	col ZPd, "Привлечено {2} {0}", forperiods="4"
+	col ZRd, "Погашено {2} {0}", forperiods="4"
+	col ZOk, "На конец {2} {0}", forperiods="4"

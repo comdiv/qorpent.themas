@@ -1,0 +1,2111 @@
+﻿#####################################################################################
+##################                  Справочники                    ##################
+#####################################################################################
+
+#====================================================================================
+#Группа справочников
+#------------------------------------------------------------------------------------
+thema spravgroup, "Справочники", group=sys, role=ADMIN
+
+
+#====================================================================================
+#Контрагенты - справочник
+#------------------------------------------------------------------------------------
+assoieco  contragents, "Контрагенты", group="sys", parent=spravgroup, role=ADMIN  :
+	activeA = false
+	activeB = false
+	activeC = false
+	useonobjstates = false
+	configview = "/contragent/themaconfig"
+	out :
+		isvalid
+	form setup , "Форма привязки контрагентов к предприятию" :
+		tableview="/contragent/casetupform"
+		col STUB
+
+#====================================================================================
+#Абстрактный справочник
+#------------------------------------------------------------------------------------
+thema sprav,  "Абстрактный справочник", group="sys", parent=spravgroup, role=ADMIN, abst:
+	import assoieco
+	activeA = false
+	activeB = false
+	activeC = false
+
+		
+#====================================================================================
+#Продукция (работы, услуги) - справочник
+#------------------------------------------------------------------------------------
+sprav sppru,  "Продукция (работы, услуги)", rootrow=m150
+
+
+#====================================================================================
+#Статьи затрат - справочник
+#------------------------------------------------------------------------------------
+sprav spsz,  "Статьи затрат", rootrow=sz
+
+#====================================================================================
+#Бухгалтерские счета - справочник
+#------------------------------------------------------------------------------------
+sprav spconto,  "Бухгалтерские счета", rootrow=DIR_CONTO
+
+#====================================================================================
+#Формы ввода - справочник
+#------------------------------------------------------------------------------------
+sprav spform,  "Формы ввода", rootrow=DIR_FORM
+
+#====================================================================================
+#Роли организации - справочник
+#------------------------------------------------------------------------------------
+sprav sporgrole,  "Роли организации", rootrow=DIR_ORG_ROLE
+
+#====================================================================================
+#Статьи калькуляции - справочник
+#------------------------------------------------------------------------------------
+sprav spcalc,  "Статьи калькуляции", rootrow=z100
+
+#====================================================================================
+#Налоги по КБК - справочник
+#------------------------------------------------------------------------------------
+sprav spnal,  "Налоги по КБК", rootrow=NAL
+
+#####################################################################################
+##################                 Абстрактные темы                ##################
+#####################################################################################
+
+#====================================================================================
+#Инвестиции в строительство 
+#------------------------------------------------------------------------------------
+singlereport invest, "Инвестиции в строительство", visible=false
+
+#====================================================================================
+#Групповая тема для объединения форм по стандартну финансовой отчености
+#------------------------------------------------------------------------------------
+thema sfr, "Стандарт финансовой отчетности", group=analysisg, role="SFOGROUP"
+
+#====================================================================================
+#Групповая тема для объединения форм по корпоративной отчетности
+#------------------------------------------------------------------------------------
+thema corpreportgroup, "Корпоративная отчетность", group=analysisg, roleprefix=DR, role="CORPGROUP"
+
+#====================================================================================
+#Групповая тема для объединения форм по отчетности для банков
+#------------------------------------------------------------------------------------
+thema bankreportgroup, "Отчетность для банков", group=analysisg, roleprefix=DR, role="BUDGET"
+
+#====================================================================================
+#Групповая тема для отчетности по ФАС
+#------------------------------------------------------------------------------------
+thema fasreportgroup, "Отчетность для ФАС", group=analysisg, roleprefix=DR, role="FAS"
+
+#====================================================================================
+#Групповая тема для объединения форм по отчетности по консолидации
+#------------------------------------------------------------------------------------
+thema consreportgroup, "Консолидированная отчетность", group=fin_grp, role="CONSGROUP"
+
+#====================================================================================
+#Групповая тема для объединения форм по денежным средствам
+#------------------------------------------------------------------------------------
+thema momeygroup, "Денежные средства", group=fin_grp, roleprefix=FIN
+
+#====================================================================================
+#Ковенанты
+#------------------------------------------------------------------------------------
+thema kovenant, "Ковенанты",  role=BUDGET, group=cost_grp, roleprefix="DR", role=BUDGET
+
+#====================================================================================
+#Калькуляции
+#------------------------------------------------------------------------------------
+thema calcgroup, "Калькуляции", group="cost_grp", role="COSTGROUP"
+
+#====================================================================================
+#Сырье
+#------------------------------------------------------------------------------------
+thema resource_balans, "Сырье", group="cost_grp", role="MTCGROUP", forgroup=PRD_SIR
+
+#====================================================================================
+#Производство
+#------------------------------------------------------------------------------------
+thema resource_prod, "Производство", group="cost_grp", role="COSTGROUP", forgroup=PRD_COST
+
+#====================================================================================
+#Услуги
+#-----------------------------------------------------------------------------------
+thema resource_uslugi, "Услуги", group="cost_grp", role="COSTGROUP", forgroup=PRD_COST
+
+#====================================================================================
+#Продажи
+#-----------------------------------------------------------------------------------
+thema resource_sale, "Продажи", group="cost_grp", role="SALEGROUP", forgroup=PRD_SALE
+
+#====================================================================================
+#Отключение форм ввода и блокировки 
+#------------------------------------------------------------------------------------
+thema blockform, "Отключение форм ввода и блокировки" :
+	f_visibleA = false
+	f_visibleB = false
+	f_visibleC = false
+	fl_visibleA = false
+	fl_visibleB = false
+	fl_visibleC = false
+
+#====================================================================================
+#Настройка форм корпоратиной отчетности отчетности 
+#------------------------------------------------------------------------------------
+thema corpreport, "Шаблон корпоративной отчетности", parent=corpreportgroup, group=analysisg, abst :
+	import assoifin
+	needresponsibility = false
+	activeC = false
+	f_visibleA = false
+	f_visibleB = false
+	factiveA =false
+	factiveB =false
+	fl_visibleA = false
+	fl_visibleB = false
+	rb_visibleA =false
+	rb_visibleB =false
+	reportsetex Ab :
+		ask offline_data : true
+	reportsetex Aa :
+		ask offline_data : true	
+
+#====================================================================================
+#Исторические формы 
+#------------------------------------------------------------------------------------
+thema historyform, "Исторические формы", roleprefix=DR, abst :
+	import assoifin
+	import fordesign
+	needresponsibility = false
+	activeC = false
+	factiveA =false
+	factiveB =false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	rb_visibleA =false
+	rb_visibleB =false
+	reportsetex Ab :
+		ask offline_data : true
+	reportsetex Aa :
+		ask offline_data : true	
+
+#====================================================================================
+#Перекрытие доступа к отчетам для управления бюджетирования
+#------------------------------------------------------------------------------------
+thema budget, "Перекрытие доступа к отчетам для управления бюджетирования", roleprefix="BUDGET", abst :
+	report_a_roleA = ""
+	report_a_roleB = ""
+	report_a_roleC = ""
+	report_b_roleA = ""
+	report_b_roleB = ""
+	report_b_roleC = ""
+
+#====================================================================================
+#Групповая тема для объединения olap-отчетов
+#------------------------------------------------------------------------------------
+thema olapreport, "OLAP-отчеты", group=analysisg, role=BUDGET
+
+#====================================================================================
+#Отчеты с визами холдинга
+#------------------------------------------------------------------------------------
+thema holdundreport, "Отчеты с визами холдинга", group=analysisg, role=BUDGET :
+	needresponsibility = false
+
+#====================================================================================
+#Одиночный отчет или пара
+#------------------------------------------------------------------------------------
+thema singlereport , "Одиночный отчет или пара", active=false :
+	activeB = false
+	activeC = false
+	f_visibleA = false
+	factiveA = false
+	needresponsibility=false
+	scheduleA=""
+
+#====================================================================================
+#Финансовые темы
+#------------------------------------------------------------------------------------
+thema assoifin, "Финансовые темы", group="fin_grp", roleprefix="FIN", abst :
+	import assoieco
+
+#====================================================================================
+#Просто финансовый отчет без формы
+#------------------------------------------------------------------------------------
+thema finreport, "Просто финансовый отчет без формы", abst :
+	import assoifin
+	import singlereport
+
+#====================================================================================
+#Основная библиотека
+#------------------------------------------------------------------------------------
+thema ecolib, "Основная библиотека" , visible=false :
+	out MFACTSVOD :
+		useset cs_mes_report
+		ask numberformat : _INT
+		ask planfact
+		ask usemes
+		ask usepredmes
+		ask kolmes
+		ask summayear
+		ask kolgod6
+		ask usesng
+		ask usepredsng
+		ask useotkl
+		ask usekorrtpfp
+		ask useizmtpfp
+		ask dropzeroes
+		ask useformmatrix : true
+		ask usealias
+	out MFACTORG :
+		useset cs_mes_report
+		ask numberformat : _INT
+		ask und_buh
+		ask und_plan
+		ask planfact
+		ask offline_data
+		ask usemes
+		ask usepredmes : true
+		ask usesng
+		ask usepredsng
+		ask useotkl
+		ask usekorrtpfp
+		ask useizmtpfp
+		ask useformmatrix : true
+	out KFACTSVOD :
+		useset cs_kvart_report
+		ask numberformat : _INT
+		ask planfact
+		ask usesng
+		ask summayear
+		ask usepredsng
+		ask kolgod6
+		ask useotkl
+		ask usekorrtpfp
+		ask useizmtpfp
+		ask dropzeroes
+		ask useformmatrix : true
+		ask usealias
+	out KFACTORG :
+		useset cs_kvart_report
+		ask numberformat : _INT
+		ask und_buh
+		ask und_plan
+		ask planfact
+		ask usemes
+		ask usepredmes
+		ask kolmes
+		ask usesng
+		ask usepredsng
+		ask useotkl
+		ask usekorrtpfp
+		ask useizmtpfp
+		ask useformmatrix : true
+	form MFACT :
+		useset cs_month_form
+#		useset cs_calc_month_form
+	form KFACT :
+		param conditions : "CONS"
+		useset cs_kvart_form
+	form MSNGFACT :
+		useset cs_sng_form
+	out OLAP :
+		ask olap : true
+		ask zoneToRow : true
+#		ask ext_css :  "_STYLE_OLAP"
+		param otklon : false
+		param rowtype : false
+		param needemptysubtables : false
+		param showroots : false
+		param level_0_style : false
+		param level_1_style : false
+		param level_2_style : false
+		param level_3_style : false
+		param level_4_style : false
+		param und_dir : false
+		param und_soc_dir : false
+		param und_kom_dir : false
+		param und_inv_dir : false
+		param und_gdir : false
+		param und_buh : false
+		param und_plan : false
+		param und_ing : false
+		param und_soc : false
+		param und_trud : false
+		ask ext_css : """[objtype=otr] td, [objtype=h] td, [objtype=og] td, [objtype=alldb] td{background-color:gray; color:white; font-size:10pt; font-weight:bold; }"""
+		use maxlevel: -1
+		useset cs_olap_default
+	out CROSS:
+		ask olap : true
+		ask zoneToRow : true
+#		ask ext_css :  "_STYLE_OLAP"
+		param useotkl : false
+		param rowtype : false
+		param needemptysubtables : false
+		param showroots : false
+		param column_width : 80
+		param name_width : 450
+		var olapsubrow, "Показывать строку с периодами", type=bool , group=_ГП_ОЛАП : false
+		param main_font : "Calibri"
+		param level_0_style : false
+		param level_1_style : false
+		param level_2_style : false
+		param level_3_style : false
+		param level_4_style : false
+		param und_dir : false
+		param und_soc_dir : false
+		param und_kom_dir : false
+		param und_inv_dir : false
+		param und_gdir : false
+		param und_buh : false
+		param und_plan : false
+		param und_ing : false
+		param und_soc : false
+		param und_trud : false
+		ask ext_css : """[objtype=otr] td, [objtype=h] td, [objtype=og] td, [objtype=alldb] td{background-color:gray; color:white; font-size:10pt; font-weight:bold; }"""
+		use maxlevel: -1
+		useset cs_cross_default
+
+#====================================================================================
+#Месячные формы ввода и отчетности
+#------------------------------------------------------------------------------------
+thema monthform, "Месячные формы ввода и отчетности", abst :
+	import assoifin
+	useformmatrixA = true
+	useformmatrixB = true
+	useformmatrixC = true
+	ra_lib2A = "ecolibMFACTSVOD"
+	rb_lib2A = "ecolibMFACTORG"
+	f_libA = "ecolibMFACT"
+		
+
+
+#====================================================================================
+#Квартальные формы ввода и отчетности отчеты
+#------------------------------------------------------------------------------------
+thema kvartform, "Квартальные формы ввода и отчетности отчеты", abst:
+	import assoifin
+	import kvart
+	useformmatrixA = true
+	useformmatrixB = true
+	useformmatrixC = true
+	ra_lib2A = "ecolibKFACTSVOD"
+	rb_lib2A = "ecolibKFACTORG"
+	f_libA = "ecolibKFACT"
+	activecondition = false
+
+
+
+#====================================================================================
+#Месячная форма ввода и отчетности с заначением данных нарастающим итогом с начала года
+#------------------------------------------------------------------------------------
+thema monthsngform, "Месячная форма ввода нарастающим итогом", abst: 
+	import monthform
+	useformmatrixA = true
+	useformmatrixB = true
+	useformmatrixC = true
+	f_libA = "ecolibMSNGFACT"
+	
+
+#====================================================================================
+#шаблон тем для производственных предприятий
+#------------------------------------------------------------------------------------
+thema proizv, "Тема для производственных предприятий", abst:
+	import assoieco
+	forgroup=PROIZV
+	group="proiz_grp"
+	
+#====================================================================================
+#Показывать единицы измерения
+#------------------------------------------------------------------------------------
+thema measure, "Показывать единицы измерения", abst :
+	showmeasurecolumnA = true
+	showmeasurecolumnB = true
+	showmeasurecolumnC = true
+
+
+#====================================================================================
+#Консолидированная отчетность
+#------------------------------------------------------------------------------------
+thema cons_report, "Консолидированная отчетность", parent=consreportgroup, roleprefix=FIN, abst :
+	import assoifin
+	import kvart
+	activeB = false
+	activeC = false
+	lockA = "s${code}"
+	lockB = "s${code}p"
+
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_conto
+		ask useformmatrix : true
+		col Б1, _FACT, , forperiods="1,2,3,4"
+		col Б1УГМК, "_FACT группа УГМК"
+		col Б1КОНС, "_FACT третьи  лица"
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_conto
+		ask useformmatrix : true
+		col Б1, _FACT, forperiods="1,2,3,4"
+		col Б1УГМК, "_FACT группа УГМК"
+		col Б1КОНС, "_FACT третьи лица"
+	formset _ФОРМА_ПО_ФАКТУ:
+		col Б1, _FACT, fixed
+		col Б1УГМК, "_FACT группа УГМК"
+		col Б1КОНС, "_FACT третьи лица"
+
+
+#====================================================================================
+#Приложение по внеоборотным активам
+#------------------------------------------------------------------------------------
+thema pril_voa, "Приложение по внеоборотным активам", group=analysisg, parent=sfr, abst :
+	import finreport
+	needresponsibility = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		ask usepredsng
+		ask cond_voa
+		ask useformmatrix : true
+		useset cs_os_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		ask usepredsng
+		ask cond_voa
+		ask useformmatrix : true
+		useset cs_os_report
+
+#====================================================================================
+#Расшифровка бухгалтерского счета (месячная)
+#------------------------------------------------------------------------------------
+thema ras_conto, "Расшифровка бухгалтерского счета (месячная)", abst :
+	import assoifin
+	activeB = false
+	activeC = false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_conto
+		ask cond_conto_vnob
+		ask useformmatrix : true
+		useset cs_buh_conto_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_conto
+		ask cond_conto_vnob
+		ask useformmatrix : true
+		useset cs_buh_conto_report
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_buh_conto
+
+#====================================================================================
+#Расшифровка бухгалтерского счета (квартальная)
+#------------------------------------------------------------------------------------
+thema ras_conto_kvart, "Расшифровка бухгалтерского счета (квартальная)", abst :
+	import assoifin
+	import kvart
+	activeB = false
+	activeC = false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_conto
+		ask cond_conto_vnob
+		ask useformmatrix : true
+		useset cs_buh_conto_sng_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_conto
+		ask cond_conto_vnob
+		ask useformmatrix : true
+		useset cs_buh_conto_sng_report
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_buh_conto_kvart
+
+#====================================================================================
+#Приложение по расшифровкам статей баланса
+#------------------------------------------------------------------------------------
+thema pril_buh_conto, "Приложение по расшифровкам статей баланса", group=analysisg, parent=sfr, roleprefix=FIN, abst :
+	import kvart
+	import finreport
+	needresponsibility = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_conto
+		ask cond_conto_vnob
+		useset cs_buh_conto_sng_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes : false
+		ask usesng
+		ask numberformat : _INT
+		ask usepredsng
+		ask cond_conto
+		ask cond_conto_vnob
+		useset cs_buh_conto_sng_report
+
+
+#====================================================================================
+#Приложение финансовой отчтености
+#------------------------------------------------------------------------------------
+thema pril_finot, "Приложение финансовой отчетности", roleprefix=DR, group=analysisg, parent=sfr, abst :
+	import finreport
+	needresponsibility = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		use und_buh
+		useset cs_finot_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		useset cs_finot_report
+
+#====================================================================================
+#Приложение по налогам
+#------------------------------------------------------------------------------------
+thema pril_nalog, "Приложение по налогам", roleprefix="NAL", abst :
+	import finreport
+	needresponsibility = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_buh
+		ask cond_nalog
+		ask userazvsaldo
+		ask usemes
+		ask usesng
+		ask usepredsng : false
+		ask usekorrnalog
+		ask usepredmes : false
+		ask kolmes
+		ask usekvartras
+		ask useotkl : false
+		ask numberformat : _INT
+		useset cs_nalog_otkl_on
+		useset cs_nalog_report
+		useset cs_nalog_otkl_ok
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask cond_nalog
+		ask userazvsaldo
+		ask usemes
+		ask usesng
+		ask usepredsng : false
+		ask usekorrnalog
+		ask usepredmes : false
+		ask kolmes
+		ask usekvartras
+		ask kolgod6
+		ask useotkl : false
+		ask numberformat : _INT
+		useset cs_nalog_otkl_on
+		useset cs_nalog_report
+		useset cs_nalog_otkl_ok
+
+#====================================================================================
+#Абстрактный OLAP отчет
+#------------------------------------------------------------------------------------
+thema olap_report, "Абстрактный OLAP отчет" , group=analysisg, parent=olapreport,roleprefix=DR, abst :
+	import assoieco
+	import singlereport
+	needresponsibility = false
+	rb_visibleA = false
+	report_visible_Ab = false
+	ra_lib2A = "ecolibOLAP"
+	
+#====================================================================================
+#Абстрактный отчет-шахматка
+#------------------------------------------------------------------------------------
+thema cross_report, "Абстрактный отчет-шахматка" , group=analysisg, roleprefix=DR, abst :
+	import assoieco
+	import singlereport
+	needresponsibility = false
+	rb_visibleA = false
+	report_visible_Ab = false
+	ra_lib2A = "ecolibCROSS"
+
+#====================================================================================
+#Темы по социалке
+#------------------------------------------------------------------------------------
+thema assoisoc, "Темы по социалке", group=soc_grp, roleprefix="SOC", abst :
+	import assoieco
+	group=soc_grp
+	socroot=""
+	rootrow="${socroot}000000000"
+	forperiodsA="1,2,3,4"
+	periodredirectA="11=1,12=1,13=1,14=2,15=2,16=2,17=3,18=3,19=3,110=4,111=4,112=4"
+	lockA="ss${socroot}"
+	lockB="ss${socroot}t"
+	formset A :
+		col "0KP", ТПФП,  fixed, period=_ПЛАНГОД
+		col "0KP", План
+		col "0KF", Факт
+		col "0KF-0KP", Откл, fixed,  formula="@0KF? - @0KP?"
+	formset B :
+		col "0KP", "{2} {0}", fixed, period=_ПЛАНГОД,   year=-1
+		col "0KF", "{2} {0}", fixed, period=_М9, year=-1 
+		col "0KF", "{2} {0}", fixed, period=_М12,  year=-1
+		col "0KP", "{2} {0}", period=_ПЛАНГОД	
+
+#====================================================================================
+#Отчеты предприятия с подписью руководства холдинга
+#------------------------------------------------------------------------------------
+thema holdunderwrite, "Отчеты предприятия с подписью руководства холдинга", abst=1 :
+	form_roleA = "ZZZZZ"
+	form_roleB = "ZZZZZ"
+	activeC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	needresponsibility = false
+
+#====================================================================================
+#Переопределение плановых наборов по умолчанию
+#------------------------------------------------------------------------------------
+thema overrideplan, "Переопределение плановых колонок по умолчанию", abst :
+	f_libB = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libC = ""
+	ra_lib2C = ""
+	rb_lib2C = ""
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

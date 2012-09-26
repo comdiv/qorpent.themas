@@ -1,0 +1,14 @@
+﻿
+assoireport demochart , "Пример отчета с графиками", role = DESIGNER, group=sys :
+	parts =  'views/report/mm/demo_chart_parts.bxl'
+	out Aa, "Паспорт темы", type=configure
+		var themacode, "Код темы"
+		use viewname : "doc/default"
+		use generatorname : "doc/default"
+		var partselector, customview='/report/partselector_param', group=_ГП_ЧАСТИ
+		var overlayselector, customview='/report/overlayselector_param', group=_ГП_СЛОИ
+		var allstuff, "Все включено", type=bool, defaultvalue=true
+		var allparts, "Все части", type=bool, defaultvalue=true
+		var alloverlays, "Все слои", type=bool, defaultvalue=true
+		useext wiki
+		useext zetadosie

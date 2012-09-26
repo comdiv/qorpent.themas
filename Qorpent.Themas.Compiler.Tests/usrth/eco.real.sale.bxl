@@ -1,0 +1,578 @@
+﻿####################################################################################
+##################              Продажи                            #################
+####################################################################################
+
+#====================================================================================
+#Базовая форма по движению ценностей 
+#------------------------------------------------------------------------------------
+thema resource_sale_base, "Базовая форма по продажам ресурсов", group="cost_grp", parent = "resource_balans", rootrow = 'm150', roleprefix=MTR, abst :
+	import assoieco
+	import forprdtest
+	usequickupdateA = false
+	usequickupdateB = false
+	usequickupdateC = false
+	activeC = false
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	lockA = "${code}A"
+	lockB = "${code}B"
+	mbtype = ""
+	selfform = "false"
+	tableviewA = "biztranform"
+	tableviewB = "biztranform"
+	sql_extensions = 'metal,'
+	biztran=""
+	reportset Aa :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+		ask main_metal : 'cu'
+		ask sql_use_metal_filter
+		ask sql_metal_filter_au 		
+		ask sql_metal_filter_ag 		
+		ask sql_metal_filter_cu 		
+		ask sql_metal_filter_zn 		
+		ask sql_metal_filter_pb 
+		ask sql_metal_filter_smt
+		ask sql_metal_filter_sod
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+	reportset Ab :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+	reportset Ba :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usesng : true
+		ask planfact : "PLAN"
+		ask sql_use_metal_filter
+		ask sql_metal_filter_au 		
+		ask sql_metal_filter_ag 		
+		ask sql_metal_filter_cu 		
+		ask sql_metal_filter_zn 		
+		ask sql_metal_filter_pb 	
+		ask sql_metal_filter_smt
+		ask sql_metal_filter_sod
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true		
+		hide useotkl
+	reportset Bb :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usesng : true
+		ask planfact : "PLAN"
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+
+#====================================================================================
+#Продажи
+#------------------------------------------------------------------------------------
+resource_sale_base sale, "Продажи (BUDGET)",  group="cost_grp", roleprefix=SALE, parent = "resource_sale", role="BUDGET" :
+#	forgroup=PRD_SALE
+	biztran = SALE90
+	formset A :
+		useset cs_sale
+	formset B : 
+		useset cs_sale_plan
+	reportsetex Aa :
+		hide cond_sale_pokaz
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_zatr
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz : "!ED,VSEGO"
+		useset cs_sale_report
+	reportsetex Ab :
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_zatr
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz : "!ED,VSEGO"
+		useset cs_sale_report
+	reportsetex Ba :
+		hide cond_sale_pokaz
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_zatr
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz : "!ED,VSEGO"
+		useset cs_sale_plan_report
+	reportsetex Bb :
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_zatr
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz : "!ED,VSEGO"
+		useset cs_sale_plan_report
+
+#====================================================================================
+#Удельная себестоимость продаж
+#------------------------------------------------------------------------------------
+resource_sale_base sale_cost, "Удельная себестоимость продаж (BUDGET)",  group="cost_grp", roleprefix=SALE, parent = "resource_sale", role="BUDGET" :
+#	forgroup=PRD_SALE
+	biztran = SALE90
+	sql_objonly = 1
+	formset A :
+		useset cs_sale_cost
+	formset B :
+		useset cs_sale_cost_plan
+	reportsetex Aa :
+		hide cond_sale_pokaz
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz
+		useset cs_sale_cost_report
+	reportsetex Ab :
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz
+		useset cs_sale_cost_report
+	reportsetex Ba :
+		hide cond_sale_pokaz
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz
+		useset cs_sale_cost_plan_report
+	reportsetex Bb :
+		ask cond_sale_pokaz_kol
+		ask cond_sale_pokaz_cena
+		ask cond_sale_pokaz_ss
+		ask cond_sale_pokaz_ur
+		ask cond_sale_pokaz_kr
+		ask cond_sale_pokaz_proc
+		ask cond_sale_pokaz_prib
+		ask cond_vid_pokaz
+		useset cs_sale_cost_plan_report
+
+
+#====================================================================================
+#Продажи(форма)
+#------------------------------------------------------------------------------------
+subset cs_sale, "Продажи(форма)" :
+	col SLSSED, hide, matrixid="SLSSEDM", useobj, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLURED, hide, matrixid="SLUREDM", useobj, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLKRED, hide, matrixid="SLKREDM", useobj, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLPROCED, hide, matrixid="SLPROCEDM", useobj, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col SLSSED, hide, matrixid="SLSSEDS", forperiods="_МЕС_СНГ"
+	col SLURED, hide, matrixid="SLUREDS", forperiods="_МЕС_СНГ"
+	col SLKRED, hide, matrixid="SLKREDS", forperiods="_МЕС_СНГ"
+	col SLPROCED, hide, matrixid="SLPROCEDS", forperiods="_МЕС_СНГ"
+
+	col SLKOL, "Кол-во {2} {0}", matrixid="SLKOLM", format=_DEC1, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLREV, "Выручка {2} {0}, т.р.", matrixid="SSREVM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", validation="validate-int-cell-number"
+	col SLSSSQL, "Цех. с-сть {2} {0}, т.р.", matrixid="SLSSM", useobj,  format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula=" @SLKOLM * @SLSSEDM / 1000 ", matrixformulatype="sql", editable = false
+	col SLURSQL, "Упр. р-ды {2} {0}, т.р.", matrixid="SLURM",useobj,  format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula=" @SLKOLM * @SLUREDM / 1000 ", matrixformulatype="sql", editable = false
+	col SLKRSQL, "Ком. р-ды {2} {0}, т.р.", matrixid="SLKRM",useobj,  format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula=" @SLKOLM * @SLKREDM / 1000 ", matrixformulatype="sql", editable = false
+	col SLPROCSQL, "Проценты {2} {0}, т.р.",matrixid="SLPROCM",useobj,   format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula=" @SLKOLM * @SLPROCEDM / 1000 ", matrixformulatype="sql", editable = false
+	col SLPRIBSQL, "Прибыль {2} {0}, т.р.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="@SSREVM-@SLSSM-@SLURM-@SLURM-@SLPROCM", matrixformulatype="sql", editable = false
+
+	#с начала года
+	col SLKOL, "Кол-во {2} {0}", format=_DEC1, period=-501, forperiods="_МЕС_СНГ", fixed
+	col SLREV, "Выручка {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+	col SLSS, "Цех. с-сть {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+	col SLUR, "Упр. р-ды {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+	col SLKR, "Ком. р-ды {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+	col SLPROC, "Проценты {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+	col SLPRIBSQL, "Прибыль {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", matrixformula="COL1-COL2-COL3-COL4-COL5;-5,-4-3,-2,-1", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Продажи(отчет)
+#------------------------------------------------------------------------------------
+subset cs_sale_report, "Продажи(отчет)" :
+	col SLKOL, "Кол-во {2} {0}", format=_DEC1, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and KOL"
+	col SLREV, "Выручка {2} {0}, т.р.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and VSEGO and CENA"
+	col SLSS, "Цех. с-сть {2} {0}, т.р.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and VSEGO and SS"
+	col SLUR, "Упр. р-ды {2} {0}, т.р.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and VSEGO and UR"
+	col SLKR, "Ком. р-ды {2} {0}, т.р.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and VSEGO and KR"
+	col SLPROC, "Проценты {2} {0}, т.р.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and VSEGO and PROC"
+	col SLPRIBSQL, "Прибыль {2} {0}, т.р.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and VSEGO and PRIB", matrixformula="COL1-COL2-COL3-COL4-COL5;-5,-4-3,-2,-1", matrixformulatype="sql", editable = false
+
+	#с начала года
+	col SLKOL, "Кол-во {2} {0}", format=_DEC1, period=-501, forperiods="_МЕС_СНГ", condition="FACT and СНГ and KOL"
+	col SLREV, "Выручка {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and СНГ and VSEGO and CENA"
+	col SLSS, "Цех. с-сть {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and СНГ and VSEGO and SS"
+	col SLUR, "Упр. р-ды {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and СНГ and VSEGO and UR"
+	col SLKR, "Ком. р-ды {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and СНГ and VSEGO and KR"
+	col SLPROC, "Проценты {2} {0}, т.р.", format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and СНГ and VSEGO and PROC"
+	col SLPRIBSQL, "Прибыль {2} {0}, т.р.", format=_INT, period=-501, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and СНГ and VSEGO and PRIB", matrixformula="COL1-COL2-COL3-COL4-COL5;-5,-4-3,-2,-1", matrixformulatype="sql", editable = false
+
+
+#====================================================================================
+#Удельная себестоимость продаж (форма)
+#------------------------------------------------------------------------------------
+subset cs_sale_cost, "Удельная себестоимость продаж (форма)" :
+	
+	col SLREV, hide, matrixid="SLREVM", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLREV, hide, matrixid="SLREVS", period=-501, forperiods="_МЕС_СНГ"
+
+	col SLKOL, "Кол-во {2} {0}", matrixid="SLKOLM", format=_DEC1, forperiods="_ЯНВ,_НЕ_ЯНВ", fixed
+	col SLREVEDSQL, "Выручка {2} {0}, руб./ед.", matrixid="SLREVEDM", format=_INT, wavg=SLKOLM, forperiods="_ЯНВ,_НЕ_ЯНВ",  matrixformula="CASE WHEN ISNULL(@SLKOLM,0)=0 THEN NULL ELSE @SLREVM / @SLKOLM * 1000 END", matrixformulatype="sql", editable = false
+	col SLSSED, "Цех. с-сть {2} {0}, руб./ед.", matrixid="SLSSEDM", useobj, format=_INT, wavg=SLKOLM, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLURED, "Упр. р-ды {2} {0}, руб./ед.", matrixid="SLUREDM", useobj, format=_INT, wavg=SLKOLM, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLKRED, "Ком. р-ды {2} {0}, руб./ед.", matrixid="SLKREDM", useobj, format=_INT, wavg=SLKOLM, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLPROCED, "Проценты {2} {0}, руб./ед.", matrixid="SLPROCEDM", useobj, format=_INT,wavg=SLKOLM, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLPRIBEDSQL, "Прибыль {2} {0}, руб./ед.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", wavg=SLKOLM, matrixformula="@SLREVEDM-@SLSSEDM-@SLUREDM-@SLKREDM-@SLPROCEDM", matrixformulatype="sql", editable = false
+
+	#с начала года 
+	col SLKOL, "Кол-во {2} {0}", format=_DEC1, matrixid="SLKOLS", period=-501, forperiods="_МЕС_СНГ", fixed
+	col SLREVEDSQL, "Выручка {2} {0}, руб./ед.", matrixid="SLREVEDS", format=_INT, period=_СУММЕСЯЦ,wavg=SLKOLM, forperiods="_МЕС_СНГ", matrixformula="CASE WHEN ISNULL(@SLKOLS,0)=0 THEN NULL ELSE @SLREVS / @SLKOLS * 1000 END", matrixformulatype="sql", editable = false
+	col SLSSEDSNG, "Цех. с-сть {2} {0}, руб./ед.", matrixid="SLSSEDS", useobj, format=_INT, period=_СУММЕСЯЦ,wavg=SLKOLM, matrixformula="zeta.calculate_sql_column(SLKOL,SLKOLED)", matrixformulatype="sqlp", forperiods="_МЕС_СНГ", fixed
+	col SLUREDSNG, "Упр. р-ды {2} {0}, руб./ед.", matrixid="SLUREDS", useobj, format=_INT, period=_СУММЕСЯЦ,wavg=SLKOLM, forperiods="_МЕС_СНГ", fixed
+	col SLKREDSNG, "Ком. р-ды {2} {0}, руб./ед.", matrixid="SLKREDS", useobj, format=_INT, period=_СУММЕСЯЦ,wavg=SLKOLM, forperiods="_МЕС_СНГ", fixed
+	col SLPROCEDSNG, "Проценты {2} {0}, руб./ед.", matrixid="SLPROCEDS", useobj, format=_INT, period=_СУММЕСЯЦ,wavg=SLKOLM, forperiods="_МЕС_СНГ", fixed
+	col SLPRIBEDSQL, "Прибыль {2} {0}, руб./ед.", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ",wavg=SLKOLM, matrixformula="@SLREVEDS-@SLSSEDS-@SLUREDS-@SLKREDS-@SLPROCEDS", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Удельная себестоимость продаж (отчет)
+#------------------------------------------------------------------------------------
+subset cs_sale_cost_report, "Удельная себестоимость продаж(отчет)" :
+	col SLREV, hide, matrixid="SLREVM", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col SLREV, hide, matrixid="SLREVS", period=-501, forperiods="_МЕС_СНГ"
+
+	col SLKOL, "Кол-во {2} {0}", matrixid="SLKOLM", format=_DEC1, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and KOL"
+	col SLREVEDSQL, "Выручка {2} {0}, руб./ед.", matrixid="SLREVEDM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and ED and CENA",  matrixformula="CASE WHEN ISNULL(@SLKOLM,0)=0 THEN NULL ELSE @SLREVM / @SLKOLM * 1000 END", matrixformulatype="sql", editable = false
+	col SLSSED, "Цех. с-сть {2} {0}, руб./ед.", matrixid="SLSSEDM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and ED and SS"
+	col SLURED, "Упр. р-ды {2} {0}, руб./ед.", matrixid="SLUREDM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and ED and UR"
+	col SLKRED, "Ком. р-ды {2} {0}, руб./ед.", matrixid="SLKREDM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and ED and KR"
+	col SLPROCED, "Проценты {2} {0}, руб./ед.", matrixid="SLPROCEDM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and ED and PROC"
+	col SLPRIBEDSQL, "Прибыль {2} {0}, руб./ед.", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and BYMONTH and ED and PRIB", matrixformula="@SLREVEDM-@SLSSEDM-@SLUREDM-@SLKREDM-@SLPROCEDM", matrixformulatype="sql", editable = false
+
+	#с начала года 
+	col SLKOL, "Кол-во {2} {0}", format=_DEC1, matrixid="SLKOLS", period=-501, forperiods="_МЕС_СНГ", condition="FACT and СНГ and KOL"
+	col SLREVEDSQL, "Выручка {2} {0}, руб./ед.", matrixid="SLREVEDS", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="FACT and СНГ and ED and CENA", matrixformula="CASE WHEN ISNULL(@SLKOLS,0)=0 THEN NULL ELSE @SLREVS / @SLKOLS * 1000 END", matrixformulatype="sql", editable = false
+	col SLSSED, "Цех. с-сть {2} {0}, руб./ед.", matrixid="SLSSEDS", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="FACT and СНГ and ED and SS"
+	col SLURED, "Упр. р-ды {2} {0}, руб./ед.", matrixid="SLUREDS", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="FACT and СНГ and ED and UR"
+	col SLKRED, "Ком. р-ды {2} {0}, руб./ед.", matrixid="SLKREDS", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="FACT and СНГ and ED and KR"
+	col SLPROCED, "Проценты {2} {0}, руб./ед.", matrixid="SLPROCEDS", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="FACT and СНГ and ED and PROC"
+	col SLPRIBEDSQL, "Прибыль {2} {0}, руб./ед.", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="FACT and СНГ and ED and PRIB", matrixformula="@SLREVEDS-@SLSSEDS-@SLUREDS-@SLKREDS-@SLPROCEDS", matrixformulatype="sql", editable = false
+
+
+#====================================================================================
+#Продажи(форма план)
+#------------------------------------------------------------------------------------
+subset cs_sale_plan, "Продажи(форма план)" :
+	col SLSSED, hide, matrixid="SLSSEDP", useobj, forperiods="301,251,252,253,254,303,306,309"
+	col SLURED, hide, matrixid="SLUREDP", useobj, forperiods="301,251,252,253,254,303,306,309"
+	col SLKRED, hide, matrixid="SLKREDP", useobj, forperiods="301,251,252,253,254,303,306,309"
+	col SLPROCED, hide, matrixid="SLPROCEDP", useobj, forperiods="301,251,252,253,254,303,306,309"
+
+	col SLKOL, "Кол-во {2} {0}", matrixid="SLKOLP", format=_DEC1, forperiods="301,251,252,253,254,303,306,309"
+	col SLREVED, "Цена {2} {0}, руб./ед.",  wavg=SLKOLP, matrixid="SLREVMEDP", format=_DEC2, forperiods="301,251,252,253,254,303,306,309"
+
+	col SLREVSQL, "Выручка {2} {0}, т.р.", matrixid="SSREVP", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="@SLKOLP * @SLREVMEDP / 1000 + @SLREVVP", matrixformulatype="sql", editable = false
+	col SLSSSQL, "Цех. с-сть {2} {0}, т.р.", matrixid="SLSSP", useobj,  format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLSSEDP / 1000 + @SLSSVP", matrixformulatype="sql", editable = false
+	col SLURSQL, "Упр. р-ды {2} {0}, т.р.", matrixid="SLURP",useobj,  format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLUREDP / 1000 + @SLURVP ", matrixformulatype="sql", editable = false
+	col SLKRSQL, "Ком. р-ды {2} {0}, т.р.", matrixid="SLKRP",useobj,  format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLKREDP / 1000 + @SLKRVP", matrixformulatype="sql", editable = false
+	col SLPROCSQL, "Проценты {2} {0}, т.р.",matrixid="SLPROCP",useobj,   format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLPROCEDP / 1000 + @SLPROCVP ", matrixformulatype="sql", editable = false
+
+	col SLREV, "Выручка {2} {0}, т.р.", matrixid="SLREVVP", format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLSS, "Цех. с-сть {2} {0}, т.р.", matrixid="SLSSVP", format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLUR, "Упр. р-ды {2} {0}, т.р.", matrixid="SLURVP", format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLKR, "Ком. р-ды {2} {0}, т.р.", matrixid="SLKRVP", format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLPROC, "Проценты {2} {0}, т.р.",matrixid="SLPROCVP", format=_INT, forperiods="301,251,252,253,254,303,306,309"
+
+	col SLPRIBSQL, "Прибыль {2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="@SSREVP-@SLSSP-@SLURP-@SLURP-@SLPROCP", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Продажи(отчет план)
+#------------------------------------------------------------------------------------
+subset cs_sale_plan_report, "Продажи(отчет план)" :
+	col SLREVED, hide
+	col SLSSED, hide, useobj
+	col SLURED, hide, useobj
+	col SLKRED, hide, useobj
+	col SLPROCED, hide, useobj
+	col SLREV, hide
+	col SLSS, hide
+	col SLUR, hide
+	col SLKR, hide
+	col SLPROC, hide
+
+	col SLKOL, "Кол-во {2} {0}", matrixid="SLKOLP", format=_DEC1, forperiods="301,251,252,253,254,303,306,309", condition="KOL"
+
+	col SLREVEDSQL, "Цена {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="CASE WHEN ISNULL(@SLKOLP,0)=0 THEN NULL ELSE ( @SLKOLP * @SLREVED / 1000 + @SLREV ) / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false, condition="CENA and ED "
+	col SLSSEDSQL, "Цех. с-сть {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="CASE WHEN ISNULL(@SLKOLP,0)=0 THEN NULL ELSE ( @SLKOLP * @SLSSED / 1000 + @SLSS ) / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false, condition="SS and ED "
+	col SLUREDSQL, "Упр. р-ды {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="CASE WHEN ISNULL(@SLKOLP,0)=0 THEN NULL ELSE ( @SLKOLP * @SLURED / 1000 + @SLUR ) / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false, condition="UR and ED "
+	col SLKREDSQL, "Ком. р-ды {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="CASE WHEN ISNULL(@SLKOLP,0)=0 THEN NULL ELSE ( @SLKOLP * @SLKRED / 1000 + @SLKR ) / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false, condition="KR and ED "
+	col SLPROCEDSQL, "Проценты {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="CASE WHEN ISNULL(@SLKOLP,0)=0 THEN NULL ELSE ( @SLKOLP * @SLPROCED / 1000 + @SLPROC ) / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false, condition="PROC and ED "
+	col SLZATREDSQL, "Затраты{2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="CASE WHEN ISNULL(@SLKOLP,0)=0 THEN NULL ELSE ( @SLKOLP * ( @SLSSED + @SLURED + @SLKRED + @SLPROCED ) / 1000 + @SLSS + @SLUR + @SLKR + @SLPROC ) / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false, condition="ZATR and ED "
+	col SLPRIBEDSQL, "Прибыль {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="CASE WHEN ISNULL(@SLKOLP,0)=0 THEN NULL ELSE ( @SLKOLP * ( @SLREVED - @SLSSED - @SLURED - @SLKRED - @SLPROCED ) / 1000 + @SLREV - @SLSS - @SLUR - @SLKR - @SLPROC ) / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false, condition="PRIB and ED "
+
+	col SLREVSQL, "Выручка {2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="@SLKOLP * @SLREVED / 1000 + @SLREV", matrixformulatype="sql", editable = false, condition="CENA and VSEGO"
+	col SLSSSQL, "Цех. с-сть {2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLSSED / 1000 + @SLSS", matrixformulatype="sql", editable = false, condition="SS and VSEGO"
+	col SLURSQL, "Упр. р-ды {2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLURED / 1000 + @SLUR", matrixformulatype="sql", editable = false, condition="UR and VSEGO"
+	col SLKRSQL, "Ком. р-ды {2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLKRED / 1000 + @SLKR", matrixformulatype="sql", editable = false, condition="KR and VSEGO"
+	col SLPROCSQL, "Проценты {2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * @SLPROCED / 1000 + @SLPROC ", matrixformulatype="sql", editable = false, condition="PROC and VSEGO"
+	col SLZATRSQL, "Затраты{2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * ( @SLSSED + @SLURED + @SLKRED + @SLPROCED ) / 1000 + @SLSS + @SLUR + @SLKR + @SLPROC ", matrixformulatype="sql", editable = false, condition="ZATR and VSEGO"
+	col SLPRIBSQL, "Прибыль {2} {0}, т.р.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula=" @SLKOLP * ( @SLREVED - @SLSSED - @SLURED - @SLKRED - @SLPROCED ) / 1000 + @SLREV - @SLSS - @SLUR - @SLKR - @SLPROC ", matrixformulatype="sql", editable = false, condition="PRIB and VSEGO"
+
+#====================================================================================
+#Удельная себестоимость продаж(форма план)
+#------------------------------------------------------------------------------------
+subset cs_sale_cost_plan, "Продажи(форма план)" :
+	col SLREV, hide, matrixid="SLREVP", forperiods="301,251,252,253,254,303,306,309"
+
+	col SLKOL, "Кол-во {2} {0}", matrixid="SLKOLP", format=_DEC1, forperiods="301,251,252,253,254,303,306,309", fixed
+	col SLREVEDSQL, "Выручка {2} {0}, руб./ед.", matrixid="SLREVEDP", format=_INT, forperiods="301,251,252,253,254,303,306,309",  matrixformula="CASE WHEN ISNULL(@SLKOLM,0)=0 THEN NULL ELSE @SLREVP / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false
+	col SLSSED, "Цех. с-сть {2} {0}, руб./ед.", matrixid="SLSSEDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLURED, "Упр. р-ды {2} {0}, руб./ед.", matrixid="SLUREDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLKRED, "Ком. р-ды {2} {0}, руб./ед.", matrixid="SLKREDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLPROCED, "Проценты {2} {0}, руб./ед.", matrixid="SLPROCEDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLPRIBEDSQL, "Прибыль {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="@SLREVEDP-@SLSSEDP-@SLUREDP-@SLKREDP-@SLPROCEDP", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Удельная себестоимость продаж (отчет план)
+#------------------------------------------------------------------------------------
+subset cs_sale_cost_plan_report, "Продажи(отчет план)" :
+	col SLREV, hide, matrixid="SLREVP", forperiods="301,251,252,253,254,303,306,309"
+
+	col SLKOL, "Кол-во {2} {0}", matrixid="SLKOLP", format=_DEC1, forperiods="301,251,252,253,254,303,306,309", fixed
+	col SLREVEDSQL, "Выручка {2} {0}, руб./ед.", matrixid="SLREVEDP", format=_INT, forperiods="301,251,252,253,254,303,306,309",  matrixformula="CASE WHEN ISNULL(@SLKOLM,0)=0 THEN NULL ELSE @SLREVP / @SLKOLP * 1000 END", matrixformulatype="sql", editable = false
+	col SLSSED, "Цех. с-сть {2} {0}, руб./ед.", matrixid="SLSSEDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLURED, "Упр. р-ды {2} {0}, руб./ед.", matrixid="SLUREDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLKRED, "Ком. р-ды {2} {0}, руб./ед.", matrixid="SLKREDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLPROCED, "Проценты {2} {0}, руб./ед.", matrixid="SLPROCEDP", useobj, format=_INT, forperiods="301,251,252,253,254,303,306,309"
+	col SLPRIBEDSQL, "Прибыль {2} {0}, руб./ед.", format=_INT, forperiods="301,251,252,253,254,303,306,309", matrixformula="@SLREVEDP-@SLSSEDP-@SLUREDP-@SLKREDP-@SLPROCEDP", matrixformulatype="sql", editable = false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

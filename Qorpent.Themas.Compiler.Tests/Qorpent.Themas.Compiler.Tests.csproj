@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<IsTest>True</IsTest>
+    <Configuration>Debug</Configuration>
+    <ProjectGuid>{767385DE-30B7-4B06-B469-7A316E869A31}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Qorpent.Themas.Compiler.Tests</RootNamespace>
+    <AssemblyName>Qorpent.Themas.Compiler.Tests</AssemblyName><AssemblyNameBase>Qorpent.Themas.Compiler</AssemblyNameBase>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="bugfix\invalid_generic_import_in_assoi_eco.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="bugfix\invalid_role_resolution.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\doc.reports.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\eco.param.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.assoi.eco.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.base.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.eco.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.extensions.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.globals.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.group.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.paramlib.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.reports.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="systh\sys.templates.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="tfolder1\base1.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="tfolder2\child1.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="tfolder2\child2.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\cols1.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\contragents.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\credits.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\demo.chart.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\ditrectorat.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.abstract.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.colset.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.colset.olap.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.colset.plan.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.doc.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.group.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.optimization.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.process.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.bank.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.bio.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.calc.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.fin.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.nal.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.olap.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.prd.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.raw.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.res.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.sale.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.real.trud.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.resposibility.report.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.style.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.templates.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\eco.test.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\reportdef.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="usrth\root.bxl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BigThemaTest.cs" />
+    <Compile Include="BugFixingThemaTest.cs" />
+    <Compile Include="BugFixing\invalid_generic_import_in_assoi_eco.cs" />
+    <Compile Include="BugFixing\invalid_role_resolution.cs" />
+    <Compile Include="CompileSingleAction.cs" />
+    <Compile Include="EcoProcess\CompilerOptionTest.cs" />
+    <Compile Include="EcoProcess\EPTest.cs" />
+    <Compile Include="EcoProcess\OrgNodeTest.cs" />
+    <Compile Include="EcoProcess\ProcessAndThemaRefTest.cs" />
+    <Compile Include="EcoProcess\ProcessReadingTest.cs" />
+    <Compile Include="EmptyThemaCompilerTest.cs" />
+    <Compile Include="StepTests\BaseFileReadingTest.cs" />
+    <Compile Include="StepTests\CleanupParametersTest.cs" />
+    <Compile Include="StepTests\ClusterResolutionTest.cs" />
+    <Compile Include="StepTests\ConditionalCompilation.cs" />
+    <Compile Include="StepTests\EmbedItemParametersTest.cs" />
+    <Compile Include="StepTests\EmbedParametersTest.cs" />
+    <Compile Include="StepTests\EmbedSusetTest.cs" />
+    <Compile Include="StepTests\GenerateThemaXmlTest.cs" />
+    <Compile Include="StepTests\GeneratorsTest.cs" />
+    <Compile Include="StepTests\GlobalPreparationTest.cs" />
+    <Compile Include="StepTests\LibraryResolutionTest.cs" />
+    <Compile Include="StepTests\miniproj.cs" />
+    <Compile Include="StepTests\ParametersExtractionTest.cs" />
+    <Compile Include="StepTests\ResolveElementsTest.cs" />
+    <Compile Include="StepTests\ResolveLinksTest.cs" />
+    <Compile Include="StepTests\ResolveParametersTest.cs" />
+    <Compile Include="StepTests\ResolveParentAndGroupLinkTest.cs" />
+    <Compile Include="StepTests\SubsetExtractionTest.cs" />
+    <Compile Include="StepTests\ThemaImportsExtractionTest.cs" />
+    <Compile Include="StepTests\ThemaItemsExtractionTest.cs" />
+    <Compile Include="StepTests\ThemaParametersExtractionTest.cs" />
+    <Compile Include="StepTests\ThemasExtractionTest.cs" />
+    <Compile Include="TestProject.cs" />
+    <Compile Include="ThemaCompilerResultForQweb.cs" />
+    <Compile Include="ThemaCompilerTestBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="systh\folderhandler.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tfolder1\folderhandler.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tfolder2\folderhandler.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="tmp\folderhandler.txt" />
+    <Content Include="usrth\folderhandler.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="usrth\override.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+ 
+  <Import Project="..\commons\build.targets" />
+  <Import Project="*.import" />
+  <ItemGroup>
+    <None Include="*.import" />
+    <None Include="*.export" />
+  </ItemGroup>
+</Project>

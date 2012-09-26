@@ -1,0 +1,1650 @@
+﻿thema simple_thema, active=false :
+	activeB = false
+	activeC = false
+	fl_visibleA = false
+	rb_visibleA = false
+	
+report themas, "Карта наследования тем", role=ADMIN, group=sys:
+	import simple_thema
+	out :
+		role=ADMIN
+		isvalid
+		ask g_algorithm
+		param viewname : "reflection/themas"
+		param generatorname : "reflection/themas"
+		
+report ncpforms, "Формы, закрытые поверх контрольных точек", role=ADMIN, group=sys:
+	import simple_thema
+	out :
+		role=ADMIN
+		isvalid
+		var onlyblocked, type=bool, "Только до сих пор блокированные" : false
+		var onlycp, type=bool, "Только до сих пор с к.т." : false
+		var locker, "Блокировщик"
+		param viewname : "std/ncpforms"
+		param generatorname : "std/simple"
+				
+report orgstruct, "Карта организационной структуры" , role=ADMIN, group=sys:
+	import simple_thema
+	out :
+		role=ADMIN
+		isvalid
+		ask g_algorithm
+		ask os_cnt
+		ask os_reg
+		ask os_point
+		ask os_role
+		ask os_hold
+		ask os_group
+		
+		ask os_orgf
+		ask os_orgr
+		ask os_orgo
+		ask os_keo
+		ask os_kez
+		use viewname : "reflection/orgs"
+		use generatorname : "reflection/orgs"
+		
+assoireport messageread, "Отчет о результатах прочтения сообщений", role=DESIGNER,  group=analysisg :
+	rb_visibleA = true
+	out Ab:
+		isvalid
+		var message , "Сообщение", type=int
+		use viewname : "reflection/messageread"
+		use generatorname : "reflection/messageread"
+	out Aa :
+		isvalid
+		var startdate, "От", type=date , idx=110
+		var enddate, "До", type=date, idx =120
+		var search, "Искать в тексте", idx = 130
+		var direct, "Прямой порядок", type=bool, idx = 140
+		var formatsearch, "Выделять поисковую строку", type=bool, idx = 150 : true
+		var filtersearch, "Фильтровать по  поисковой строке", type=bool, idx = 160 : true
+		use viewname : "reflection/messagetext"
+		use generatorname : "reflection/messagetext"
+
+report orglist, "Реестр предприятий", role=HOLDANALYTIC, group=sys :
+	import simple_thema
+	configview = "reestr_config" 
+	out name="Реестр предприятий" :
+		isvalid
+		var groupping, "Группировка", radio :
+			listdefinition = """
+				otr:Отрасли|
+				reg:Регионы|
+				div:Дивизионы
+			"""
+			defaultvalue=otr
+		var orgnamefilter, "Фильтр по имени предприятия"
+		var townnamefilter, "Фильтр по имени города"
+		var regionnamefilter, "Фильтр по имени региона"
+		var otraslnamefilter, "Фильтр по имени отрасли"
+		var usegroup, type=bool, "Использовать группировку" : true
+		
+		use viewname : "reflection/orglist"
+		use generatorname : "reflection/orglist"
+		ask filteringgroup
+		var showemptygroups, "Показывать пустые группы", type=bool
+		var showcodes, type=bool, "Показывть коды" : true
+
+assoireport valutaset, "Курсы валют", role="VALUTAMANGER", roleprefix="", group=analysisg :
+	import simple_thema
+	activeB = true
+	useonobjstates = false
+	f_visibleA = true
+	f_visibleB = true
+	lockA = "valuta_fact"
+	lockB = "valuta_plan"
+	factiveA = true
+	factiveB = true
+	forperiodsA = "71"
+	forperiodsB = "72"
+	periodredirectA = ":0=71"
+	periodredirectB = ":0=72"
+	fixedobjA = "0CH"
+	fixedobjB = "0CH"
+	
+	formset A :
+		needpreloadscript : true
+		row "PR11", "Фактический курс"
+		row "PR12", "Фактический курс"
+		row "PR13", "Фактический курс"
+		row "PR14", "Фактический курс"
+		row "PR15", "Фактический курс"
+		row "PR16", "Фактический курс"
+		row "PR17", "Фактический курс"
+		row "PR18", "Фактический курс"
+		row "PR19", "Фактический курс"
+		row "PR110", "Фактический курс"
+		row "PR111", "Фактический курс"
+		row "PR112", "Фактический курс"
+		row "PR403", "Фактический курс"
+		row "PR406", "Фактический курс"
+		row "PR409", "Фактический курс"
+
+		col "vUSD", "$", period = 71, format = "#0.000000###"
+		col "vEUR", "€", period = 71, format = "#0.000000###"
+		col "vGBP", "£", period = 71, format = "#0.000000###"
+		col "vKZT", "Тенге", period = 71, format = "#0.000000###"
+		col "vCZK", "Крона", period = 71, format = "#0.000000###"
+		col "vRSD", "Динар", period = 71, format = "#0.000000###"
+	
+	formset B :
+		needpreloadscript : true
+		row "PR301", "Плановый курс"
+		row "PR401", "Курс ожидаемого"
+		col "vUSD", period = 72, "$", format = "#0.000000###"
+		col "vEUR", period = 72, "€", format = "#0.000000###"
+		col "vGBP", period = 72, "£", format = "#0.000000###"
+		col "vKZT", period = 72, "Тенге", format = "#0.000000###"
+		col "vCZK", period = 72, "Крона", format = "#0.000000###"
+		col "vRSD", period = 72, "Динар", format = "#0.000000###"
+	
+	
+	
+	out name="Курсы валют", role="DEFAULT" :
+		isvalid
+		ask year
+		var i_rsd,  "Сербский динар", type=bool , group="20. Входные валюты"
+		var i_czk,  "Чешская крона", type=bool , group="20. Входные валюты"
+		var i_kzt,  "Казахское тенге", type=bool , group="20. Входные валюты"
+		var i_usd,  "Доллары США", type=bool , group="20. Входные валюты"
+		var i_eur,  "Евро", type=bool , group="20. Входные валюты"
+		var i_rub,  "Рубль", type=bool , group="20. Входные валюты"
+		var formvals, "Другие входные валюты", group="20. Входные валюты"
+		
+		var o_rub,  "Рубль", type=bool , group="20. Выходные валюты"
+		var o_usd,  "Доллары США", type=bool , group="20. Выходные валюты"
+		var o_eur,  "Евро", type=bool , group="20. Выходные валюты"
+		var tovals, "Другие выходные валюты", group="20. Выходные валюты"
+
+		var out_valuta_suffix , "Тип курса", group="20. Выходные валюты" :
+			listdefinition = """
+			 : Принятый в компании|
+			 e : Официальный на конец периода (ЦБР)|
+			 z : Средний курс за период (ЦБР)
+		"""
+		
+	
+		var periods, "Периоды", group=_ГП_ВРЕМЯ, listdefinition="""
+				 : Нет набора|
+				11,12,22,13,1,14,24,15,25,16,2,17,27,18,28,19,3,110,210,111,211,112,4 : Весь год, факт |
+				11,12,13,14,15,16,17,18,19,110,111,112 : Месяцы |
+				1,2,3,4 : Кварталы |
+				11,12,22,13,1 : I кв |
+				14,24,15,25,16,2 : II кв |
+				17,27,18,28,19,3 : III кв |
+				110,210,111,211,112,4 : IV кв |
+				401,301,303,306,309 : Плановые
+			"""
+		var periods2, "Периоды (строкой)", group=_ГП_ВРЕМЯ
+		
+		use viewname : "reflection/valutaset"
+		use generatorname : "reflection/valutaset"
+		
+
+
+
+graphic graphtest, "Проверка графиков", role=ADMIN, group=sys :
+	import simple_thema
+	role = ADMIN
+	datagenerator = graph_test_data
+	
+forma objdata , "Дополнительные данные по предприятию", role=ADMIN,rootrow=OBJECTDATA, group=sys :
+	import simple_thema
+	form :
+		col "0CONSTSTR", "Значение"
+		col "0CONSTSTRRC", "Текущее значение", formula="@0CONSTSTR**~?", fixed
+	
+report vdrtest, "Проверка VDR", role=ADMIN, group=sys :
+	import simple_thema
+	out :
+		role=ADMIN
+		isvalid
+		param viewname : "std/vdr"
+		param generatorname : "std/vdr"
+		show starter, zone=start, text=start
+		show csser , zone=css :
+			text = """
+				#left {
+					background-color:red;
+				}
+				#right  {
+					background-color:blue;
+				}
+				#content  {
+					background-color:yellow;
+				}
+			"""
+		show top_1, "Top 1", view=vdr_test, at=top, idx=1 :
+			param val : "val 1"
+		show top_3, "Top 3", view=vdr_test, at=top, idx=3 :
+			param val : "val 3"
+		show top_2, "Top 2", view=vdr_test, at=top, idx=2 :
+			param val : "val 2 "
+			
+		show left_1, "Top 1", view=vdr_test, at=left, idx=1 :
+			param val : "val 1"
+		show left_3, "Top 3", view=vdr_test, at=left, idx=3 :
+			param val : "val 3"
+		show left_2, "Top 2", view=vdr_test, at=left, idx=2 :
+			param val : "val 2 "
+			
+		show content_1, "Top 1", view=vdr_test, at=content, idx=1 :
+			param val : "val 1"
+		show content_3, "Top 3", view=vdr_test, at=content, idx=3 :
+			param val : "val 3"
+		show content_2, "Top 2", view=vdr_test, at=content, idx=2 :
+			param val : "val 2 "
+			
+		show right_1, "Top 1", view=vdr_test, at=right, idx=1 :
+			param val : "val 1"
+		show right_3, "Top 3", view=vdr_test, at=right, idx=3 :
+			param val : "val 3"
+		show right_2, "Top 2", view=vdr_test, at=right, idx=2 :
+			param val : "val 2 "
+			
+		show bottom_1, "Top 1", view=vdr_test, at=bottom, idx=1 :
+			param val : "val 1"
+		show bottom_3, "Top 3", view=vdr_test, at=bottom, idx=3 :
+			param val : "val 3"
+		show bottom_2, "Top 2", view=vdr_test, at=bottom, idx=2 :
+			param val : "val 2 "
+			
+
+
+assoireport olap, "Стандартный OLAP-отчет", group=analysisg, role=OLAP :
+	rootrow = "OLAP"
+	out Aa, "OLAP-отчет", type=configure :
+		uselib assoilibAa
+		use showroots : true
+		use showcontrolpoints : true
+		ask formaperiods
+		ask formayearcount
+		ask formperiodset
+		ask useoneperiod
+		ask currentObject
+		ask only_current_admin
+		ask only_current_strict
+		ask olap : true
+		ask zoneToRow
+		var olapsubrow, "Показывать строку с периодами", type=bool , group=_ГП_ОЛАП : true
+		
+		
+		
+		generator _ГЕНЕРАТОР_СТОЛБЦОВ_ДИНАМИКА :
+			col=STUB
+			name="{2} {0}"
+		
+		generator _ГЕНЕРАТОР_СТРОК :
+			mark = OLAP
+			
+		generator _ГЕНЕРАТОР_СТРОК :
+			root = OLAP
+			hidden = true
+			groupcustomview="/customparameters/olap"
+			groupname="Показатели"
+			groupcode="olap2"
+			paramgroup=_ГП_ДЕРЕВО  
+		
+	
+		embed : "./extension"
+		
+		
+assoireport states, "Отчет о статусах по закрытию форм", group=analysisg, role=HOLDANALYTIC :
+	out Aa, "Отчет о статусах форм", type=configure :
+		use svod
+		use viewname
+		use generatorname
+		ask year
+		ask period
+		ask currentObject
+		ask main_font
+		use ext_css : """
+		.value_0ISOPEN {background-color: #ffaaaa;text-align:center !important; white-space : nowrap !important;}
+		.value_0ISBLOCK {background-color : #ffffaa;text-align:center !important; white-space : nowrap !important;}
+		.value_0ISCHECKED {background-color : #aaffaa;text-align:center !important; white-space : nowrap !important;}"""
+		ask custom_title
+		ask column_width
+		ask offline_data
+		ask print_orientation
+		ask print_margine
+		ask numberscale
+		ask numberformat
+		ask filteringgroup
+	
+		ask olap
+		ask zoneToRow
+
+		ask cacheMode
+		use dropzeroes : true
+		
+		var usefamilies, "Показывать ФИО", type="bool" : true
+		
+		param showhashheader, type=bool : false
+		ask column_width : 200
+		
+		var blockfilter,  "Фильтр по блокировкам", target=logicalzero, group=_ГП_ОБЪЕКТЫ :
+			listdefinition = """
+				NONE : Все  |
+				0ISOPEN : Только закрытые |
+				0ISBLOCK,0ISCHECKED : Только открытые |
+				0ISOPEN, 0ISCHECKED : Только непроверенные (из закрытых) |
+				0ISOPEN, 0ISBLOCK : Только проверенные |
+				- : Непустые
+			"""
+		var statetime, "Тип развертки" , target = condition, radio=true, group = _ГП_ВРЕМЯ :
+			listdefinition = """
+				ONLYONEPERIOD : Указанный период |
+				kv1 : I кв|
+				kv1,kv2 : I - II кв |
+				kv1,kv2,kv3 : I - III кв |
+				kv1,kv2,kv3,kv4 : Год |
+				kv1,kv2,kv3,kv4,tpfp : Все |
+				tpfp : Только ТПФП
+			"""
+			defaultvalue = ONLYONEPERIOD
+		var usetpfp , "Показывать ТПФП?", target=condition, altvalue=tpfp, group=_ГП_ВРЕМЯ, type=bool
+		
+		generator _ГЕНЕРАТОР_СТОЛБЦОВ_СТАТУСЫ :
+			valuereplacer = "0ISOPEN#(о)~0ISBLOCK#(з)~0ISCHECKED#(п)"
+		generator _ГЕНЕРАТОР_СТРОК :
+			root="0STATE"			
+		object type="myorgs", id="myorgs_2", code="myorgs_sum_split" , formula=orgs
+		useext states
+		param groupbydivs, defaultValue = 1 : "1"
+
+assoireport sqlxmlreport, "Отчет SQL/XML, предназначен для косвенного вызова", visible=false :
+	out Aa , "Отчет вызова SQL", type=configure :
+		var system , "БД" : "Default"
+		var proc , "Процедура"
+		var xslt, "XSLT-файл"
+		var applyxslt, "Применять преобразование", type=bool : true
+		var layout, "Обрамление"
+		var parametersmap , "Мапинг параметров отчета"
+		use viewname : "std/sqlreport"
+		use generatorname : "std/sqlreport"
+		useext sqlreport
+
+global _ГП_ЧАСТИ : "80. Разделы отчета"		
+global _ГП_СЛОИ : "90. Слои отчета"		
+assoireport objectpassport , "Паспорт предприятия", role = ADMIN, group=sys :
+	parts =  'views/report/objectpassport/parts.bxl'
+	out Aa, "Паспорт предприятия", type=configure
+		ask year
+		ask period
+		ask currentObject
+		var partselector, customview='/report/partselector_param', group=_ГП_ЧАСТИ
+		var overlayselector, customview='/report/overlayselector_param', group=_ГП_СЛОИ
+		var allstuff, "Все включено", type=bool, defaultvalue=true
+		use viewname : "objectpassport/default"
+		use generatorname : "objectpassport/default"
+		useext zetadosie
+		
+		
+paramlib kredits:
+	param dogovorid, "ИД договора", type=int, group=_ГП_ЧАСТИ
+	param settype, "Набор объектов", listdefinition="0:Один договор|1:Одно предприятие|5:Все предприятия" : 1
+	param reporttype, "Тип отчета", listdefinition="0:Таблица|1:Текст" : 0
+	param use_kredit, "Кредиты", type=bool : true
+	param use_zaim, "Займы", type=bool : true
+	param use_dolg, "Долгосрочные", type=bool : true
+	param use_krat, "Краткосрочные", type=bool : true
+	param use_val, "В национальной валюте", type=bool :true
+	param use_ival, "В иностранной валюте", type=bool :true
+	param use_active_only, "Только активные (по году)", type=bool : false
+	param use_reformation, "Реформация сроков", type=bool : false
+	param use_comments, "Выводить комментарий и доп. инф.", type=bool : true
+		
+assoireport kreditpassport , "Паспорт кредитного договора", role = CONTRACT, group=sys :
+	parts =  'views/report/krzaim/parts.bxl'
+	out Aa, "Паспорт договора", type=configure
+		ask year
+		ask period
+		ask currentObject
+		ask dogovorid
+		ask settype
+		ask reporttype
+		ask use_kredit
+		ask use_zaim
+		ask use_dolg
+		ask use_krat
+		ask use_val
+		ask use_ival
+		ask use_active_only
+		ask use_reformation
+		ask use_comments
+		var partselector, customview='/report/partselector_param', group=_ГП_ЧАСТИ
+		var overlayselector, customview='/report/overlayselector_param', group=_ГП_СЛОИ
+		var allstuff, "Все включено", type=bool, defaultvalue=true
+		use viewname : "krzaim/default_parts"
+		use generatorname : "krzaim/default_parts"
+		useext zetadosie
+		
+		
+		
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Choose>
+    <When Condition="'$(NoProjRef)'=='True' and '$(Configuration)' != 'Release' ">
+      <ItemGroup>
+        <Reference Include="Qorpent.Themas.Compiler.Mvc">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(AllBinPath)\Qorpent.Themas.Compiler.Mvc.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+	<When Condition="'$(NoProjRef)'=='True' and '$(Configuration)' == 'Release' ">
+      <ItemGroup>
+        <Reference Include="Qorpent.Themas.Compiler.Mvc">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(AllReleasePath)\Qorpent.Themas.Compiler.Mvc.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <ProjectReference Include="..\Qorpent.Themas.Compiler.Mvc\Qorpent.Themas.Compiler.Mvc.csproj">
+          <Name>Qorpent.Themas.Compiler.Mvc</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+</Project>

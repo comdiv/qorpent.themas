@@ -1,0 +1,2921 @@
+﻿####################################################################################
+###################                  Реальные темы                  #################
+#####################################################################################
+
+global _ПОДПИСЬ_В_ОТЧЕТЕ_ПРЕДПРИЯТИЯ : "false"
+
+
+#====================================================================================
+#Колонки для всех контрольных точек
+#------------------------------------------------------------------------------------
+subset cs_control_all, "Колонки для всех контрольных точек" :
+	col CONTROLONDEB, "На начало (дебет) {2} {0}", forpeiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed :  
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+	col CONTROLONKRED, "На начало {2} {0}", forpeiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed : 
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+	col CONTROLPD, "Приход (оборот) {2} {0}", forpeiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed : 
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+	col CONTROLRD, "Расход {2} {0}", forpeiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed : 
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+	col CONTROLOKDEB, "На конец (дебет) {2} {0}", forpeiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed : 
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+	col CONTROLOKKRED, "На конец {2} {0}", forpeiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed : 
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+	col PLAN, "План {2} {0}", fixed, forperiods="251,251,253,254", fixed : 
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+
+#====================================================================================
+#Все контрольные точки
+#------------------------------------------------------------------------------------
+assoifin controlpointall, "Все контрольные точки", group=eco_grp, role="CONTROL", roleprefix=""  :
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	activeC = false
+	lockA = "cpallA"
+	lockB = "cpallB"
+	report_a_roleA = "CONTROL"
+	report_a_roleB = "CONTROL"
+	form_roleA = "CONTROL"
+	form_roleB = "CONTROL"
+	rows :
+		row m111800, "Баланс 2011"
+		row m112800, "Прибыли и убытки 2011"
+		row m220800, "Налоги"
+		row m2301000, "Дебиторы и кредиторы"
+		row m214200, "Финансовые результаты"
+		row m217900, "Управленческие расходы"
+		row m218900, "Расходы на продажу"
+		row m250800, "Инвестиционные расходы"
+		row r1101000, "Расшифровка нематериальных активов"
+		row r1202000, "Расшифровка основных средств"
+		row r130900, "Расшифровка незавершенного строительства"
+		row r2162000, "Расшифровка расходов будущих периодов"
+		row r6402000, "Расшифровка доходов будущих периодов"
+		row m260900, "Затраты"
+		row r590900, "Расшифровка других расходов формы 3"
+		row m6001200, "Расходы на собственные нужды"
+	formset _ФОРМА_ПО_ФАКТУ :
+		ask rowtype : "!m2124011"
+		useset cs_control_all
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask rowtype : "!m2124011"
+		ask showcontrolpoints : true
+		ask showroots : true
+		ask dropzeroes : true
+		useset cs_control_all
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask rowtype : "!m2124011"
+		ask showcontrolpoints : true
+		ask showroots : true
+		ask dropzeroes : true
+		useset cs_control_all
+	formset _ФОРМА_ПО_ПЛАНУ :
+		ask rowtype : "!m2124011"
+		useset cs_control_all
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask rowtype : "!m2124011"
+		ask showcontrolpoints : true
+		ask showroots : true
+		ask dropzeroes : true
+		useset cs_control_all
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		ask rowtype : "!m2124011"
+		ask showcontrolpoints : true
+		ask showroots : true
+		ask dropzeroes : true
+		useset cs_control_all
+
+
+#====================================================================================
+#Финансовый анализ
+#------------------------------------------------------------------------------------
+assoifin finanalysis, "Финансовый анализ", rootrow=a100, role="BUDGET", group=fin_grp, parent=momeygroup :
+	import fordesign
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	activeC = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_balans_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes : true
+		ask usesng : true
+		ask usepredmes
+		ask kolmes
+		ask numberformat : _INT
+		useset cs_balansreport
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		use und_gdir 
+		use und_buh 
+		useset cs_balansreport
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset ss_balans
+		useset cs_balans_plan_form_1
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		useset cs_balans_report_plan
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		useset cs_balans_report_plan
+
+#====================================================================================
+#Баланс (форма № 1 ФО) 2011
+#------------------------------------------------------------------------------------
+global _NAME_BALANS_2011 : "Бухгалтерский баланс"
+assoifin balans2011, "Баланс (форма № 1 ФО)", rootrow=m111 :
+	formnameA = _NAME_BALANS_2011
+	ra_numberA = "Форма № 1 ФО"
+	ranameA = _NAME_BALANS_2011
+	rbnameA = _NAME_BALANS_2011
+	formnameB = _NAME_BALANS_2011
+	ra_numberB = "Форма № 1 ФО"
+	ranameB = _NAME_BALANS_2011
+	rbnameB = _NAME_BALANS_2011
+#	needfilesA = "balans,stfr"
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	activeC = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_balans_form_1
+#		col Б1, condition="C1  and C2"
+#		param conditions : "C1,C2"
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes : true
+		ask usesng : true
+		ask usepredmes
+		ask usepredsng : true
+		ask kolmes
+		ask useozhid
+		ask numberformat : _INT
+		ask useformmatrix : true
+		useset cs_balansreport_1
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		ask usepredsng : true
+		use und_gdir 
+		use und_buh 
+		useset ss_balans
+		ask useformmatrix : true
+		useset cs_balansreport_1
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset ss_balans
+		useset cs_balans_plan_form_1
+	formset _ФОРМА_ПО_КОРРЕКТИВУ :
+		useset cs_balans_korr_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask usealias
+		useset cs_balans_report_plan
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_gdir 
+		use und_buh 
+		useset cs_balans_report_plan
+
+#====================================================================================
+#Баланс (форма № 1 ФО) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport balans2011_corp, "Баланс (форма № 1 ФО)", rootrow=m111 :
+	ra_numberA = "Форма № 1 ФО"
+	ranameA = _NAME_BALANS_2011
+	ra_numberB = "Форма № 1 ФО"
+	ranameB = _NAME_BALANS_2011
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes : true
+		ask usesng : true
+		ask usepredmes
+		ask usepredsng : true
+		ask kolmes
+		ask useozhid
+		ask numberformat : _INT
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+		ask useformmatrix : true
+		useset cs_balansreport_1
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+		useset cs_balans_report_plan
+
+#====================================================================================
+#Баланс (форма № 1 ФО 2010)
+#------------------------------------------------------------------------------------
+global _NAME_BALANS : "Бухгалтерский баланс "
+assoifin balans, "Баланс (форма № 1 ФО в ред. 2010)", rootrow=m211, parent=balans2011 :
+	import blockform
+	formnameA = _NAME_BALANS
+	ra_numberA = "Форма № 1 ФО"
+	var1 = 2
+	ranameA = _NAME_BALANS
+	rbnameA = _NAME_BALANS
+	formnameB = _NAME_BALANS
+	ra_numberB = "Форма № 1 ФО"
+	ranameB = _NAME_BALANS
+	rbnameB = _NAME_BALANS
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+#	beginActualYear  = 1900
+#	endActualYear = 2009
+	activeC = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_balans_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes : true
+		ask usesng : true
+		ask usepredmes
+		ask kolmes
+		ask useformmatrix : true
+		ask numberformat : _INT
+		useset cs_balansreport
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		use und_gdir 
+		use und_buh 
+		ask useformmatrix : true
+		useset ss_balans
+		useset cs_balansreport
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset ss_balans
+		useset cs_balans_plan_form_1
+	formset _ФОРМА_ПО_КОРРЕКТИВУ :
+		useset cs_balans_korr_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		useset cs_balans_report_plan
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_gdir 
+		use und_buh 
+		useset cs_balans_report_plan
+
+#====================================================================================
+#Баланс (форма № 1 ФО 2010) ADMIN
+#------------------------------------------------------------------------------------
+global _NAME_BALANS : "Бухгалтерский баланс "
+assoifin balans_admin, "Баланс (форма № 1 ФО в ред. 2010) ADMIN", rootrow=m211, parent=balans2011 :
+	role=ADMIN
+	formnameA = _NAME_BALANS
+	ra_numberA = "Форма № 1 ФО"
+	var1 = 2
+	ranameA = _NAME_BALANS
+	rbnameA = _NAME_BALANS
+	formnameB = _NAME_BALANS
+	ra_numberB = "Форма № 1 ФО"
+	ranameB = _NAME_BALANS
+	rbnameB = _NAME_BALANS
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+#	beginActualYear  = 1900
+#	endActualYear = 2009
+	activeC = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_balans_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes : true
+		ask usesng : true
+		ask usepredmes
+		ask kolmes
+		ask useformmatrix : true
+		ask numberformat : _INT
+		useset cs_balansreport
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		use und_gdir 
+		use und_buh 
+		ask useformmatrix : true
+		useset ss_balans
+		useset cs_balansreport
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset ss_balans
+		useset cs_balans_plan_form_1
+	formset _ФОРМА_ПО_КОРРЕКТИВУ :
+		useset cs_balans_korr_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		useset cs_balans_report_plan
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_gdir 
+		use und_buh 
+		useset cs_balans_report_plan
+
+#====================================================================================
+#Баланс (форма № 1 ФО 2010) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+global _NAME_BALANS_2011 : "Бухгалтерский баланс"
+corpreport balans_corp, "Баланс (форма № 1 ФО в ред. 2010)", rootrow=m211 :
+	ra_numberA = "Форма № 1 ФО"
+	ranameA = _NAME_BALANS_2011
+	ra_numberB = "Форма № 1 ФО"
+	ranameB = _NAME_BALANS_2011
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes : true
+		ask usesng : true
+		ask usepredmes
+		ask kolmes
+		ask numberformat : _INT
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+		ask useformmatrix : true
+		useset cs_balansreport_1
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+		useset cs_balans_report_plan
+
+#====================================================================================
+#Расшифровка нематериальных активов
+#------------------------------------------------------------------------------------
+global _NAME_BAL_RNMA : "Расшифровка строки 1110 бухгалтерского баланса<br>'Нематериальные активы'"
+assoifin balans_rnma, "Расшифровка нематериальных активов (Прил. № 1 СФО)", group=fin_grp, roleprefix=FIN, parent=balans2011, rootrow=r110 :
+	import forprdtest
+	import kvart
+	activeB = false
+	activeC = false
+	formnameA = _NAME_BAL_RNMA
+	ra_numberA = "Приложение № 1 СФО"
+	ranameA = _NAME_BAL_RNMA
+	rbnameA = _NAME_BAL_RNMA
+	formnameB = _NAME_BAL_RNMA
+	ra_numberB = "Приложение № 1 СФО"
+	ranameB = _NAME_BAL_RNMA
+	rbnameB = _NAME_BAL_RNMA
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask cond_voa
+		useset cs_os_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan
+		ask cond_voa
+		useset cs_os_report
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_os
+		col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Ok.P@_СУММЕСЯЦ? - @Ok?"
+
+#====================================================================================
+#Расшифровка нематериальных активов
+#------------------------------------------------------------------------------------
+pril_voa pril_nma, "Приложение 1. Расшифровка НМА", idx=10, rootrow=r110 :
+	ra_numberA = "Приложение № 1 СФО"
+	ranameA = _NAME_BAL_RNMA
+	rbnameA = _NAME_BAL_RNMA
+	
+
+#====================================================================================
+#Расшифровка основных средств
+#------------------------------------------------------------------------------------
+global _NAME_BAL_ROS : "Расшифровка строки 1131 бухгалтерского баланса<br>'Основные средства'"
+assoifin balans_ros, "Расшифровка основных средств (Прил. № 1.1 СФО)", group=fin_grp, roleprefix=FIN, parent=balans2011, rootrow=r120 :
+	import forprdtest
+	import kvart
+	activeB = false
+	activeC = false
+	formnameA = _NAME_BAL_ROS
+	ra_numberA = "Приложение № 1.1 СФО"
+	ranameA = _NAME_BAL_ROS
+	rbnameA = _NAME_BAL_ROS
+	formnameB = _NAME_BAL_ROS
+	ra_numberB = "Приложение № 1.1 СФО"
+	ranameB = _NAME_BAL_ROS
+	rbnameB = _NAME_BAL_ROS
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask cond_voa
+		useset cs_os_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan
+		ask cond_voa
+		useset cs_os_report
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_os
+		col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Ok.P@_СУММЕСЯЦ? - @Ok?"
+
+#====================================================================================
+#Расшифровка нематериальных активов
+#------------------------------------------------------------------------------------
+pril_voa pril_os, "Приложение 1.1. Расшифровка ОС", idx=11, rootrow=r120 :
+	ra_numberA = "Приложение № 1.1 СФО"
+	ranameA = _NAME_BAL_ROS
+	rbnameA = _NAME_BAL_ROS
+
+
+#====================================================================================
+#Расшифровка незавершенного строительства
+#------------------------------------------------------------------------------------
+global _NAME_BAL_RNS : "Расшифровка строк 1132 и 1133 бухгалтерского баланса<br>'Незавершенное строительство и авансы, выданные под приобретение ОС и КВ'"
+ras_conto balans_rns, "Расшифровка незавершенного строительства (Прил. № 3 СФО)", group=fin_grp, roleprefix=FIN, parent=balans2011, rootrow=r130 :
+	activeB = false
+	activeC = false
+	formnameA = _NAME_BAL_RNS
+	ra_numberA = "Приложение № 3 СФО"
+	ranameA = _NAME_BAL_RNS
+	rbnameA = _NAME_BAL_RNS
+	formnameB = _NAME_BAL_RNS
+	ra_numberB = "Приложение № 3 СФО"
+	ranameB = _NAME_BAL_RNS
+	rbnameB = _NAME_BAL_RNS
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan 
+		ask cond_conto_vnob : false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask cond_conto_vnob : false
+
+#====================================================================================
+#Расшифровка незавершенного строительства
+#------------------------------------------------------------------------------------
+pril_buh_conto pril_rns, "Приложение 3. Расшифровка незавершенного строительства", idx=30, rootrow=r130:
+	roleprefix= "" 
+	report_a_roleA = "FIN_ANALYTIC|INVDR_ANALYTIC"
+	report_b_roleA = "FIN_ANALYTIC|INVDR_ANALYTIC"
+	ra_numberA = "Приложение № 3 СФО"
+	ranameA = _NAME_BAL_RNS
+	rbnameA = _NAME_BAL_RNS
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask cond_conto_vnob : false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask cond_conto_vnob : false
+
+
+#====================================================================================
+#Расшифровка финансовых вложений
+#------------------------------------------------------------------------------------
+global _NAME_BAL_FV : "Расшифровка строки 1150 и 1240 бухгалтерского баланса<br>'Финансовые вложения (долгосрочные и краткосрочные)'"
+ras_conto_kvart balans_rfv, "Расшифровка финансовых вложений (Прил. № 4 СФО)", group=fin_grp, roleprefix=FIN, parent=balans2011, rootrow=r140 :
+	import fordesign
+	activeB = false
+	activeC = false
+	formnameA = _NAME_BAL_FV
+	ra_numberA = "Приложение № 4 СФО"
+	ranameA = _NAME_BAL_FV
+	rbnameA = _NAME_BAL_FV
+	formnameB = _NAME_BAL_FV
+	ra_numberB = "Приложение № 4 СФО"
+	ranameB = _NAME_BAL_FV
+	rbnameB = _NAME_BAL_FV
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan 
+
+#====================================================================================
+#Расшифровка финансовых вложений
+#------------------------------------------------------------------------------------
+pril_buh_conto pril_rfv, "Приложение 4. Расшифровка финансовых вложений", idx=40, rootrow=r140 :
+	ra_numberA = "Приложение № 4 СФО"
+	ranameA = _NAME_BAL_FV
+	rbnameA = _NAME_BAL_FV
+
+#====================================================================================
+#Расшифровка сырья и материалов
+#------------------------------------------------------------------------------------
+global _NAME_BAL_RSIM : "Расшифровка строки 1211 бухгалтерского баланса<br>'Сырье, материалы и др. аналогичные ценности'"
+ras_conto_kvart balans_rsim, "Расшифровка сырья и материалов (Прил. № 5 СФО)", group=fin_grp, roleprefix=FIN, parent=balans2011, rootrow=r211 :
+	import fordesign
+	activeB = false
+	activeC = false
+	formnameA = _NAME_BAL_RSIM
+	ra_numberA = "Приложение № 5 СФО"
+	ranameA = _NAME_BAL_RSIM
+	rbnameA = _NAME_BAL_RSIM
+	formnameB = _NAME_BAL_RSIM
+	ra_numberB = "Приложение № 5 СФО"
+	ranameB = _NAME_BAL_RSIM
+	rbnameB = _NAME_BAL_RSIM
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan 
+
+#====================================================================================
+#Приложение 5. Расшифровка сырья и материалов
+#------------------------------------------------------------------------------------
+pril_buh_conto pril_sirm, "Приложение 5. Расшифровка сырья и материалов", idx=50, rootrow=r211 :
+	import fordesign
+	ra_numberA = "Приложение № 5 СФО"
+	ranameA = _NAME_BAL_RSIM
+	rbnameA = _NAME_BAL_RSIM
+
+#====================================================================================
+#Приложение 6. Сырье собственное
+#------------------------------------------------------------------------------------
+resource_balans_base pril_sir6, "Приложение 6. Сырье собственное", idx=60, roleprefix=MTR, group=analysisg, parent=sfr :
+	forgroup=PRD_SIR
+	biztran = SIR1091
+	import singlereport 
+	ra_numberA = "Приложение № 6 СФО"
+	ranameA = "Сырье собственное"
+	rbnameA = "Сырье собственное"
+	reportsetex Aa :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ab :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+
+
+#====================================================================================
+#Расшифровка расходов будущих периодов
+#------------------------------------------------------------------------------------
+global _NAME_BAL_RBP : "Расшифровка расходов будущих периодов"
+ras_conto balans_rbp, "Расшифровка расходов будущих периодов (Прил. № 10 ФО)", group=fin_grp, roleprefix=FIN, parent=balans2011, rootrow=r216 :
+	activeC = false
+	formnameA = _NAME_BAL_RBP
+	ra_numberA = "Приложение № 10 СФО"
+	ranameA = _NAME_BAL_RBP
+	rbnameA = _NAME_BAL_RBP
+	formnameB = _NAME_BAL_RBP
+	ra_numberB = "Приложение № 10 СФО"
+	ranameB = _NAME_BAL_RBP
+	rbnameB = _NAME_BAL_RBP
+#	formset _ФОРМА_ПО_ФАКТУ :
+#		col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="4", year=-1, validation="validate-int-cell-number", controlpoint=true
+#		col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="4", validation="validate-int-cell-number", controlpoint=true
+#		col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="4", validation="validate-int-cell-number", controlpoint=true
+#		col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="4", validation="validate-int-cell-number", controlpoint=true
+#		col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="4",  validation="validate-int-cell-number", fixed, controlpoint=true
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan 
+		ask cond_conto_vnob : false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask cond_conto_vnob : false
+
+#====================================================================================
+#Расшифровка расходов будущих периодов
+#------------------------------------------------------------------------------------
+pril_buh_conto pril_rbp, "Приложение 10. Расшифровка расходов будущих периодов", idx=100, rootrow=r216 :
+	import fordesign
+	ra_numberA = "Приложение № 10 СФО"
+	ranameA = _NAME_BAL_RBP
+	rbnameA = _NAME_BAL_RBP
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask cond_conto_vnob : false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask cond_conto_vnob : false
+
+
+#====================================================================================
+#Расшифровка доходов будущих периодов
+#------------------------------------------------------------------------------------
+global _NAME_BAL_RDBP : "Расшифровка строки 1530 бухгалтерского баланса<br>'Доходы будущих периодов'"
+ras_conto_kvart balans_rdbp, "Расшифровка доходов будущих периодов (Прил. № 17 СФО)", group=fin_grp, roleprefix=FIN, parent=balans2011, rootrow=r640 :
+	import forprdtest
+	activeB = false
+	activeC = false
+	formnameA = _NAME_BAL_RDBP
+	ra_numberA = "Приложение № 17 СФО"
+	ranameA = _NAME_BAL_RDBP
+	rbnameA = _NAME_BAL_RDBP
+	formnameB = _NAME_BAL_RDBP
+	ra_numberB = "Приложение № 17 СФО"
+	ranameB = _NAME_BAL_RDBP
+	rbnameB = _NAME_BAL_RDBP
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan 
+
+#====================================================================================
+#Расшифровка доходов будущих периодов
+#------------------------------------------------------------------------------------
+pril_buh_conto pril_dbp, "Приложение 17. Расшифровка доходов будущих периодов", idx=170, rootrow=r640 :
+	ra_numberA = "Приложение № 17 СФО"
+	ranameA = _NAME_BAL_RDBP
+	rbnameA = _NAME_BAL_RDBP
+
+#====================================================================================
+#Баланс (защищенная форма)
+#------------------------------------------------------------------------------------
+thema safebase , "Тема для импорта в защищенные формы", active=false:
+	needresponsibility=false
+	scheduleA=""
+	scheduleB=""
+	lockA="${id}A" #приходится делать так как в твоей ассои
+	lockB="${id}B" #блокировочный код формируется у баланса по старой
+	lockB="${id}C" #схеме от rootrow
+	fixrowsB="${fixrowsA}"
+	fixrowsC="${fixrowsA}"
+	defaultstateA="0ISCHECKED"
+	defaultstateB="0ISCHECKED"
+	defaultstateC="0ISCHECKED"
+	
+thema balans_safe, "Баланс (независимые данные)",parent=balans, active=false:
+	import balans
+	import safebase
+	fixrowsA = "m211213,m211214,m211215,m211216,m211650"
+	
+#====================================================================================
+#Баланс (страховщик)
+#------------------------------------------------------------------------------------
+thema sbalans, "Баланс (страховщик)", forgroup=STRACH, rootrow=m311, role=DESIGNER, parent=balans2011 :
+	import balans
+	
+#====================================================================================
+#Баланс (страховщик)
+#------------------------------------------------------------------------------------
+thema bankbalans, "Баланс (банк)", forgroup=BANK, rootrow=m411, role=DESIGNER, parent=balans2011 :
+	import balans
+
+#====================================================================================
+#Амортизация по приложению № 5 стр. 740
+#------------------------------------------------------------------------------------
+assoifin kovenant_amort,  "Амортизация по приложению № 5 стр. 740", rootrow=b102, forgroup=KOV_GPB, roleprefix=DR, parent=kovenant, role=BUDGET,group=cost_grp :
+	import kvart
+	activeB = false
+	activeC = false
+	useonobjstates = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_covenant_amort
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		useset cs_covenant_amort
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_covenant_amort
+
+#====================================================================================
+#Амортизация по приложению № 5 стр. 740
+#------------------------------------------------------------------------------------
+olap_report kovenant_amort_olap, "Амортизация по приложению № 5 стр. 740 (OLAP)", forgroup=KOV_GPB, roleprefix="DR", parent=kovenant, role=BUDGET,group=cost_grp :		
+	useonobjstates = false
+	rows :  
+		generator _ГЕНЕРАТОР_СТРОК :
+			rowlist = """
+				b102100: Амортизация (справка клиента)
+			"""
+			value = false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask und_buh : true
+		ask und_kdir : true
+		ask und_redirect : 357
+
+#====================================================================================
+#Нормативные ковенанты по группе
+#------------------------------------------------------------------------------------
+assoifin kovenant_normativ,  "Нормативные ковенанты по группе", rootrow=b101, forgroup=KOV_CONST, roleprefix=DR, parent=kovenant, role=BUDGET,group=cost_grp :
+	import kvart
+	needresponsibility = false
+	activeB = false
+	activeC = false
+	useonobjstates = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_covenant_normativ
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		useset cs_covenant_normativ_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_covenant_normativ_report
+
+#====================================================================================
+#Ковенанты ВТБ
+#------------------------------------------------------------------------------------
+assoifin kovenant_vtb,  "Ковенанты ВТБ", rootrow=b110, forgroup=KOV_VTB, roleprefix=DR, parent=kovenant, role=BUDGET, group=cost_grp :
+	import kvart
+	needresponsibility = false
+	activeB = false
+	activeC = false
+	useonobjstates = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_covenant_vtb
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		useset cs_covenant_vtb
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_covenant_vtb
+
+#====================================================================================
+#Ковенанты ВТБ
+#------------------------------------------------------------------------------------
+assoifin kovenant_gpb,  "Ковенанты Газпромбанка", rootrow=b120, forgroup=KOV_GPB, roleprefix=DR, parent=kovenant, role=BUDGET, group=cost_grp :
+	import kvart
+	needresponsibility = false
+	activeB = false
+	activeC = false
+	useonobjstates = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_covenant_gpb
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		useset cs_covenant_gpb
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_covenant_gpb
+
+#====================================================================================
+#Ковенанты ВТБ
+#------------------------------------------------------------------------------------
+assoifin kovenant_sb,  "Ковенанты Сбербанка", rootrow=b130, forgroup=KOV_SB, roleprefix=DR, parent=kovenant, role=BUDGET, group=cost_grp :
+	import kvart
+	needresponsibility = false
+	activeB = false
+	activeC = false
+	useonobjstates = false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_covenant_sb
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		useset cs_covenant_sb
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_covenant_sb
+
+#====================================================================================
+#отчет о прибылях и убытках (форма № 2 ФО)
+#------------------------------------------------------------------------------------
+global _NAME_PRIB_2011 : "Отчет о прибылях и убытках"
+monthsngform prib2011,  "Прибыли и убытки (форма № 2 ФО)", rootrow=m112, roleprefix=FIN :
+	activeC = true
+	froleC = ADMIN
+	raroleC  = ADMIN
+	rbroleC = ADMIN
+	formnameA = _NAME_PRIB_2011
+	ra_numberA = "Форма № 2 ФО"
+	ranameA = _NAME_PRIB_2011
+	rbnameA = _NAME_PRIB_2011
+	formnameB = _NAME_PRIB_2011
+	ra_numberB = "Форма № 2 ФО"
+	ranameB = _NAME_PRIB_2011
+	rbnameB = _NAME_PRIB_2011
+#	needfilesA="prib"
+	reportset pribAb :
+		use und_plan : false
+		use und_gdir 
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_plan
+		use und_gdir
+
+#====================================================================================
+#отчет о прибылях и убытках (форма № 2 ФО)
+#------------------------------------------------------------------------------------
+corpreport prib2011_corp,  "Прибыли и убытки (форма АХД)", rootrow=m112 :
+	activeC = false
+	ra_numberA = "Форма № 2 ФО"
+	ranameA = _NAME_PRIB_2011
+	ra_numberB = "Форма № 2 ФО"
+	ranameB = _NAME_PRIB_2011
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+
+#====================================================================================
+#отчет о прибылях и убытках (форма № 2 ФО)
+#------------------------------------------------------------------------------------
+global _NAME_PRIB : "Отчет о прибылях и убытках"
+monthsngform prib_admin,  "Прибыли и убытки (форма № 2 ФО в ред. 2010) ADMIN", rootrow=m212, roleprefix=FIN, parent=prib2011 :
+	role=ADMIN
+	activeC = true
+	froleC = ADMIN
+	raroleC  = ADMIN
+	var1 = 3
+	rbroleC = ADMIN
+	formnameA = _NAME_PRIB
+	ra_numberA = "Форма № 2 ФО"
+	ranameA = _NAME_PRIB
+	rbnameA = _NAME_PRIB
+	formnameB = _NAME_PRIB
+	ra_numberB = "Форма № 2 ФО"
+	ranameB = _NAME_PRIB
+	rbnameB = _NAME_PRIB
+	reportset Ab :
+		use und_plan : false
+		use und_gdir 
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_plan
+		use und_gdir
+
+#====================================================================================
+#отчет о прибылях и убытках (форма № 2 ФО)
+#------------------------------------------------------------------------------------
+global _NAME_PRIB : "Отчет о прибылях и убытках"
+monthsngform prib,  "Прибыли и убытки (форма № 2 ФО в ред. 2010)", rootrow=m212, roleprefix=FIN, parent=prib2011 :
+	import blockform
+	activeC = true
+	froleC = ADMIN
+	raroleC  = ADMIN
+	var1 = 3
+	rbroleC = ADMIN
+	formnameA = _NAME_PRIB
+	ra_numberA = "Форма № 2 ФО"
+	ranameA = _NAME_PRIB
+	rbnameA = _NAME_PRIB
+	formnameB = _NAME_PRIB
+	ra_numberB = "Форма № 2 ФО"
+	ranameB = _NAME_PRIB
+	rbnameB = _NAME_PRIB
+	reportset Ab :
+		use und_plan : false
+		use und_gdir 
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_plan
+		use und_gdir
+#====================================================================================
+#Отчет о прибылях и убытках - консолидированные
+#------------------------------------------------------------------------------------
+cons_report prib_cons,  "Прибыли и убытки", rootrow=m112 :
+	formsetex _ФОРМА_ПО_ФАКТУ :
+		param excluderows : "m212205,m212240,m212400,m2124021,m2124011"
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask rowtype : "!m212205,!m212240,!m212400,!m2124021,!m2124011"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask rowtype : "!m212205,!m212240,!m212400,!m2124021,!m2124011"
+
+
+#====================================================================================
+#отчет о прибылях и убытках (форма № 2 ФО ред. 2010) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport prib_corp,  "Прибыли и убытки (форма АХД в ред. 2010)", rootrow=m212 :
+	ranameA = _NAME_PRIB
+	ranameB = _NAME_PRIB
+	ra_numberA = "Форма № 2 ФО"
+	ra_numberB = "Форма № 2 ФО"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+
+
+#====================================================================================
+#отчет о прибылях и убытках (факт) 
+#------------------------------------------------------------------------------------
+global _NAME_PRIB_FACT : "Отчет о прибылях и убытках"
+pril_finot prib_fact2011, "Прибыли и убытки (форма № 2 ФО)", parent=corpreportgroup, rootrow=m112, group=analysisg :
+	formnameA = _NAME_PRIB_FACT
+	ra_numberA = "Форма № 2 ФО"
+	ranameA = _NAME_PRIB_FACT
+	rbnameA = _NAME_PRIB_FACT
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_plan : false
+		use und_gdir
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask und_plan : false
+		ask und_gdir
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		ask und_buh
+		ask und_gdir
+
+#====================================================================================
+#отчет о прибылях и убытках (факт) 
+#------------------------------------------------------------------------------------
+pril_finot prib_fact, "Прибыли и убытки (форма № 2 ФО в ред. 2010)", parent=corpreportgroup, rootrow=m212, group=analysisg :
+	formnameA = _NAME_PRIB_FACT
+	ra_numberA = "Форма № 2 ФО"
+	ranameA = _NAME_PRIB_FACT
+	rbnameA = _NAME_PRIB_FACT
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_plan : false
+		use und_gdir
+		use rowtype : "!m212240,!m212270,!m212203"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask und_plan : false
+		ask und_gdir
+		ask rowtype : "!m212240,!m212270,!m212203"
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		ask und_buh
+		ask und_gdir
+
+#====================================================================================
+#Балансировка контрольных точек по форме 2 ФО
+#------------------------------------------------------------------------------------
+#global _NAME_PRIB_KT : "Балансировка контрольных точек по форме 2 ФО"
+#monthsngform prib_kt, "Балансировка контрольных точек по форме 2 ФО", roleprefix=FIN, rootrow=kt212, parent=prib :
+#    import fordesign
+#    formnameA = _NAME_PRIB_KT
+#    ranameA = _NAME_PRIB_KT
+#    rbnameA = _NAME_PRIB_KT
+
+
+#====================================================================================
+#Расшифровка прочих доходов и расходов
+#------------------------------------------------------------------------------------
+#global _NAME_PRIB_RDR : "Расшифровка отдельных доходов и расходов"
+#monthsngform prib_rdr, "Расшифровка отдельных доходов и расходов (приложение к форме № 2 ФО)", roleprefix=FIN, rootrow=r212 :
+#	formnameA = _NAME_PRIB_RDR
+#	ra_numberA = "Приложение № 2.1 ФО"
+#	ranameA = _NAME_PRIB_RDR
+#	rbnameA = _NAME_PRIB_RDR
+#reportset prib_rdrAb :
+#	use und_plan : false
+#	use und_gdir
+
+#====================================================================================
+#Отчет о прибылях и убытках (страховщик)
+#------------------------------------------------------------------------------------
+thema sprib,  "Отчет о прибылях и убытках (страховщик)", forgroup=STRACH,  rootrow=m312, role=DESIGNER :
+	import prib
+	
+#====================================================================================
+#Отчет о прибылях и убытках (банк)
+#------------------------------------------------------------------------------------
+thema bankprib,  "Отчет о прибылях и убытках (банк)", forgroup=BANK,  rootrow=m412, role=DESIGNER :
+	import prib
+
+#====================================================================================
+#Расчет чистых активов 2011
+#------------------------------------------------------------------------------------
+global _FREE_ACTIVE_2011 : "Расчет чистых активов"
+assoifin free_active2011, "Расчет чистых активов", rootrow=m115 :
+	import kvart
+	needfilesA = "freeact"
+	activeB = false
+	activeC = false
+	formnameA = _FREE_ACTIVE_2011
+	ranameA = _FREE_ACTIVE_2011
+	rbnameA = _FREE_ACTIVE_2011
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_free_active_form_1
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+		useset cs_balansreport_1
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		use und_gdir
+		use und_buh
+		useset cs_balansreport_1
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+
+#====================================================================================
+#Расчет чистых активов
+#------------------------------------------------------------------------------------
+global _FREE_ACTIVE : "Расчет чистых активов"
+assoifin free_active, "Расчет чистых активов (в ред. 2010)", rootrow=m215, parent=free_active2011 :
+	import kvart
+	import blockform
+	activeB = false
+	activeC = false
+	formnameA = _FREE_ACTIVE
+	ranameA = _FREE_ACTIVE
+	rbnameA = _FREE_ACTIVE
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_free_active_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+		useset cs_balansreport
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask numberformat : _INT
+		use und_gdir
+		use und_buh
+		useset cs_balansreport
+		param org_defaults,target=condition:"СНГ,BYMONTH"
+
+#====================================================================================
+#Ковенанты
+#------------------------------------------------------------------------------------
+thema nalog_group, "Налоги",  group=fin_grp, role="NALGROUP"
+
+#====================================================================================
+#Налоги, платежи и сборы
+#------------------------------------------------------------------------------------
+global _NAME_NALOG : "Налоги, платежи и сборы"
+assoifin nalog,  "Налоги, платежи и сборы", roleprefix="NAL", parent=nalog_group, rootrow=m220:
+	useformmatrixA = true
+	useformmatrixB = true
+	useformmatrixC = true
+	activeC = false
+	formnameA = _NAME_NALOG 
+	ra_numberA = "Форма № 16"
+	ranameA = _NAME_NALOG 
+	rbnameA = _NAME_NALOG 
+	formnameB = _NAME_NALOG 
+	ra_numberB = "Форма № 16"
+	ranameB = _NAME_NALOG 
+	rbnameB = _NAME_NALOG 
+	#usefilials = true
+	#fordetailA = true
+	f_libB = ""
+	ra_lib2B = ""
+#	rb_lib2B = ""
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_nalog
+		useset cs_nalog_control_ost
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask usepredmes : false
+		ask usemes : true
+		ask usesng : true
+		ask usepredsng : true
+		ask planfact
+		useset cs_mes_nalog_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask usepredmes : false
+		ask usemes : true
+		ask usesng : true
+		ask usepredsng : true
+		ask planfact
+		use und_buh 
+		use und_plan 
+#		var default_conditions , target=condition : "СНГ and PLAN and FACT and PRED and BYMONTH and OTKL"
+		useset cs_mes_nalog_report
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset cs_nalog_form_plan
+		
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use usekvkurs
+		ask showcontrolpoints
+		ask usepredsng
+		ask kolgod6
+		ask planfact
+		ask useplanpred
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		ask kolplan
+		ask useotkl
+		ask useozhidcalc
+		ask usekvplan : false
+		ask offline_data : true
+		useset cs_nalog_report_plan
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_buh
+		use und_plan
+#		useset cs_nalog_report_plan
+
+
+#====================================================================================
+#Налоги по уровням бюджетов
+#------------------------------------------------------------------------------------
+thema nalog_budget,  "Налоги по уровням бюджетов", roleprefix="NAL", parent=nalog_group, rootrow=m228 :
+	import finreport
+	needresponsibility = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_buh
+		use und_plan
+		ask cond_nalog
+		ask userazvsaldo : false
+		ask formayearcount
+		ask summayear : false
+		ask usemes
+		ask usesng
+		ask usekorrnalog : false
+		ask useformmatrix : true
+		ask numberformat : _INT
+		useset cs_nalog_report_predyear
+		useset cs_nalog_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask cond_nalog
+		ask userazvsaldo : false
+		ask formayearcount
+		ask summayear : false
+		ask usemes
+		ask usesng
+		ask usekorrnalog : false
+		ask useformmatrix : true
+		ask numberformat : _INT
+		useset cs_nalog_report_predyear
+		useset cs_nalog_report
+
+#====================================================================================
+#Отчет о налогах и платежах (форма № 16.1)
+#------------------------------------------------------------------------------------
+global _NAME_NALOG161 : "Отчет о налогах и платежах"
+pril_nalog nalog_161, "Приложение 16.1. Отчет о налогах и платежах", idx=161, rootrow=m220, group=analysisg, parent=sfr  :
+	formnameA = _NAME_NALOG161
+	ra_numberA = "Приложение № 16.1"
+	ranameA = _NAME_NALOG161
+	rbnameA = _NAME_NALOG161
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		var maxlevel : 1
+		var rowtype : "!m220750,!m220350"
+		var dropzeroes : true
+		ask und_plan : false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask maxlevel : 1
+		ask rowtype : "!m220750,!m220350"
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_buh
+		use und_plan
+
+#====================================================================================
+#Отчет о налогах и платежах (форма № 16.2)
+#------------------------------------------------------------------------------------
+global _NAME_NALOG162 : "Отчет о налогах и платежах"
+pril_nalog nalog_162, "Приложение № 16.2. Отчет о налогах и платежах", idx=162, rootrow=m221,group=analysisg, parent=sfr :
+	formnameA = _NAME_NALOG162
+	ra_numberA = "Приложение № 16.2"
+	ranameA = _NAME_NALOG162
+	rbnameA = _NAME_NALOG162
+	lockA = "sm220"
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask und_plan : false
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_buh
+		use und_plan
+	
+
+#====================================================================================
+#Налоги, платежи и сборы
+#------------------------------------------------------------------------------------
+global _NAME_NALOG163 : "Налоги, платежи и сборы"
+pril_nalog nalog_163,  "Приложение № 16.3. Отчет о налогах и платежах", idx=163, rootrow=m220,group=analysisg, parent=sfr :
+	formnameA = _NAME_NALOG163 
+	ra_numberA = "Приложение № 16.3"
+	ranameA = _NAME_NALOG163 
+	rbnameA = _NAME_NALOG163 
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask und_plan : false
+		use maxlevel : 2
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask maxlevel : 2
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_buh
+		use und_plan
+		
+#====================================================================================
+#Колонки расчета налогооблагаемой базы
+#------------------------------------------------------------------------------------
+subset cs_nalog_nob :
+	col PLAN, "Нал/обл. база {0}", customCode="PLANNOB", forperiods="301,251,252,253,254", validation="validate-int-cell-number", format=_INT
+	col PLAN, "Сумма налога {0}", customCode="PLANNAL", forperiods="301,251,252,253,254", fixed:
+		translaterows="""
+			m222110=m221110,m222111=m221111,m222112=m221112,
+			m222120=m221120,
+			m222130=m221130,
+			m222140=m221140,
+			m222144=m221144,
+			m222150=m221150,
+			m222160=m221160,
+			m222170=m221170,
+			m222180=m221180,
+			m222190=m221190,
+			m222200=m221200,
+			m222210=m221210,
+			m222220=m221220,
+			m222230=m221230,
+			m222240=m221240,
+			m222250=m221250,
+			m222290=m221290,m222291=m221291,m222292=m221292,m222295=m221295,
+			m222380=m221380,m222381=m221381,m222382=m221382,m222385=m221385,
+			m222390=m221390,m222391=m221391,m222392=m221392,m222395=m221395,
+			m222300=m221300,m222301=m221301,m222302=m221302,m222305=m221305,
+			m222400=m221400,m222410=m221410,m222420=m221420,m222430=m221430,
+			m222600=m221600,
+			m222650=m221650,
+			m222700=m221700
+		"""
+#	col RATE, "Ставка, %", customCode="RATE", forperiods="301,251,252,253,254", formula=" @PLANNAL? / @PLANNOB? * 100 ", format=_DEC1
+	
+
+#====================================================================================
+#Налоги по соглашению о социальном партнерстве
+#------------------------------------------------------------------------------------
+global _NAME_NAL_SOC : "Налоги по соглашению о социальном партнерстве"
+assoifin nalog_soc_part,  "Налоги по соглашению о социальном партнерстве", rootrow=m229, parent=nalog_group :
+	import fordesign
+	import kvart
+	formnameA = _NAME_NAL_SOC
+	ranameA = _NAME_NAL_SOC
+	rbnameA = _NAME_NAL_SOC
+	ranameB = _NAME_NAL_SOC
+	rbnameB = _NAME_NAL_SOC
+	activeC = false
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		useset cs_nalog_soc_part
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_nalog_soc_part
+
+#====================================================================================
+#Налогооблагаемая база
+#------------------------------------------------------------------------------------
+global _NAME_NOB : "Налогооблагаемая база"
+pril_nalog nalog_nob,  "Налогооблагаемая база", rootrow=m222, parent=nalog_group :
+	import fordesign
+	formnameA = _NAME_NOB
+	ranameA = _NAME_NOB
+	rbnameA = _NAME_NOB
+	activeA = false
+	activeB = true
+	activeC = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		useset cs_nalog_nob
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset cs_nalog_nob
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		useset cs_nalog_nob
+
+#====================================================================================
+#Отчет НДС (форма № 16.4)
+#------------------------------------------------------------------------------------
+global _NAME_NDS : "Расчет НДС"
+assoifin nalog_nds,  "Расчет НДС (форма № 16.4)", roleprefix="NAL", parent=nalog_group, rootrow=m224:
+	import fordesign
+	import kvart
+	activeC = false
+	formnameA = _NAME_NDS
+	ra_numberA = "Форма № 16.4"
+	ranameA = _NAME_NDS
+	rbnameA = _NAME_NDS
+	formnameB = _NAME_NDS
+	ra_numberB = "Форма № 16.4"
+	ranameB = _NAME_NDS
+	rbnameB = _NAME_NDS
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		useset cs_nalog_nds
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		useset cs_nalog_nds
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_nalog_nds
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_buh
+		use und_plan
+		useset cs_nalog_nds
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset cs_nalog_nds
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		useset cs_nalog_nds
+
+#====================================================================================
+#Отчет НДС (форма № 16.4) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+assoifin nalog_nds_sfo, "Приложение № 16.4. Расчет НДС", roleprefix="NAL", idx=164, rootrow=m224, group=analysisg, parent=sfr :
+	import fordesign
+	import kvart
+	import finreport
+	needresponsibility = false
+	formnameA = _NAME_NDS
+	ra_numberA = "Приложение № 16.4"
+	ranameA = _NAME_NDS
+	rbnameA = _NAME_NDS
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		ask rowtype : "!m2241000"
+		useset cs_nalog_nds
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		ask rowtype : "!m2241000"
+		use und_buh
+		useset cs_nalog_nds
+
+#====================================================================================
+#Налоги по уровням бюджетов (форма № 16.5)
+#------------------------------------------------------------------------------------
+thema nalog_budget_sfo, "Приложение № 16.5. Налоги по уровням бюджетов", idx=165, roleprefix="NAL", rootrow=m228, group=analysisg, parent=sfr :
+	import finreport
+	needresponsibility = false
+	ra_numberB = "Приложение № 16.5"
+	ranameB = "Налоги по уровням бюджетов"
+	rbnameB = "Налоги по уровням бюджетов"
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_buh
+		ask cond_nalog
+		ask userazvsaldo : false
+		ask formayearcount
+		ask summayear : false
+		ask usemes
+		ask usesng
+		ask usekorrnalog : false
+		ask useformmatrix : true
+		ask numberformat : _INT
+		useset cs_nalog_report_predyear
+		useset cs_nalog_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask cond_nalog
+		ask userazvsaldo : false
+		ask formayearcount
+		ask summayear : false
+		ask usemes
+		ask usesng
+		ask usekorrnalog : false
+		ask useformmatrix : true
+		ask numberformat : _INT
+		useset cs_nalog_report_predyear
+		useset cs_nalog_report
+
+#====================================================================================
+#НДС по приобретенным ценнностям (Прил. № 23)
+#------------------------------------------------------------------------------------
+global _NAME_NDS19 : "НДС по приобретенным ценнностям <br/><h2><center>расшифровка строки 1220 Бухгалтерского баланса</center></h2>"
+assoifin nalog_nds19,  "НДС по приобретенным ценнностям (Прил. № 23)", parent=nalog_group, roleprefix="NAL", rootrow=m225:
+	import fordesign
+	import kvart
+	activeC = false
+	formnameA = _NAME_NDS19
+	ra_numberA = "Форма № 16.5"
+	ranameA = _NAME_NDS19
+	rbnameA = _NAME_NDS19
+	formnameB = _NAME_NDS19
+	ra_numberB = "Форма № 16.5"
+	ranameB = _NAME_NDS19
+	rbnameB = _NAME_NDS19
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		var cond_nalog, "Показатели по НДС", target=condition, listdefinition= _ОТЧЕТПОНАЛОГАМ : "OST;NACH;OPL;СНГ;BYMONTH"
+		useset cs_buh_conto_kvart
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_buh
+		use und_plan
+		var cond_nalog, "Показатели по НДС", target=condition, listdefinition= _ОТЧЕТПОНАЛОГАМ : "OST;NACH;OPL;СНГ;BYMONTH"
+		useset cs_buh_conto_kvart
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_buh_conto_kvart
+		col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Ok.P@_СУММЕСЯЦ? - @Ok?"
+
+#====================================================================================
+#Прил.23 НДС по приобретенным ценностям
+#------------------------------------------------------------------------------------
+pril_buh_conto pril_nds, "Приложение № 23. НДС по приобретенным ценностям", idx=230, rootrow=m225 :
+	ra_numberA = "Приложение № 23 СФО"
+	ranameA = _NAME_NDS19
+	rbnameA = _NAME_NDS19
+
+#====================================================================================
+#Расшифровка дебиторской и кредиторской задолженности
+#------------------------------------------------------------------------------------
+assoifin ras_dk, "Расшифровка дебиторской и кредиторской задолженности", rootrow=m230 :
+	activeB = false
+	activeC = false
+	begincontrolpoint = 2010
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_dkz
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask useformmatrix : true
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_dzk
+		ask cond_dzk_reserv
+		useset cs_dkz_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask useformmatrix : true
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_dzk
+		ask cond_dzk_reserv
+		use und_buh 
+		useset cs_dkz_report
+
+#====================================================================================
+#Приложение № 11. Дебиторская задолженность
+#------------------------------------------------------------------------------------
+assoifin ras_dz, "Приложение № 11. Дебиторская задолженность", idx110, group=analysisg, parent=sfr, rootrow=m232 :
+	import singlereport
+	needresponsibility = false
+	activeB = false
+	activeC = false
+	ra_numberA = "Приложение № 11 СФО"
+	ranameA = "Расшифровка строки 1230 Бухгалтерского баланса<br>'Дебиторская задолженность'"
+	rbnameA = "Расшифровка строки 1230 Бухгалтерского баланса<br>'Дебиторская задолженность'"
+	begincontrolpoint = 2010
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_dkz
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask usepredsng
+		use cond_dzk : "DZ;!KZ"
+		ask cond_dzk_reserv
+		useset cs_dkz_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask usepredsng
+		use cond_dzk : "DZ;!KZ"
+		ask cond_dzk_reserv
+		use und_buh 
+		useset cs_dkz_report
+
+#====================================================================================
+#Приложение № 15. Кредиторская задолженность
+#------------------------------------------------------------------------------------
+assoifin ras_kz, "Приложение № 15. Кредиторская задолженность", idx=150, group=analysisg, parent=sfr, rootrow=m232 :
+	import singlereport
+	needresponsibility = false
+	activeB = false
+	activeC = false
+	ra_numberA = "Приложение № 15 СФО"
+	ranameA = "Расшифровка строки 1520 Бухгалтерского баланса<br>'Кредиторская задолженность'"
+	rbnameA = "Расшифровка строки 1520 Бухгалтерского баланса<br>'Кредиторская задолженность'"
+	begincontrolpoint = 2010
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_dkz
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask usepredsng
+		use cond_dzk : "!DZ;KZ"
+		use cond_dzk_reserv : false
+		useset cs_dkz_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask usepredsng
+		use cond_dzk : "!DZ;KZ"
+		use cond_dzk_reserv : false
+		use und_buh 
+		useset cs_dkz_report
+		
+
+#====================================================================================
+#Дебиторка и кредиторка по контрагентам
+#------------------------------------------------------------------------------------
+assoifin ras_dk_ca, "Дебиторка и кредиторка по контрагентам", rootrow=m231, parent=ras_dk, roleprefix="DZK" :
+	activeB = false
+	activeC = false
+	usequickupdateA = false
+	usequickupdateB = false
+	usequickupdateC = false
+	configview = "/dkz/themaconfig"
+	begincontrolpoint = 2010
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_dkz
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_dzk
+		ask cond_dzk_reserv
+		useset cs_dkz_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask cond_dzk
+		ask usepredsng
+		ask cond_dzk_reserv
+		use und_buh
+		useset cs_dkz_report
+
+#====================================================================================
+#Дебиторка и кредиторка по контрагентам
+#------------------------------------------------------------------------------------
+assoifin ras_dk_ca_report, "Отчет о дебиторке и кредиторке (ADMIN)", rootrow=m232, parent=ras_dk, role=ADMIN :
+	activeB = false
+	activeC = false
+	usequickupdateA = false
+	usequickupdateB = false
+	usequickupdateC = false
+	begincontrolpoint = 2010
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_dkz
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_dzk
+		ask cond_dzk_reserv
+		useset cs_dkz_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask usemes
+		ask usesng
+		ask usepredsng
+		ask cond_dzk
+		ask cond_dzk_reserv
+		use und_buh
+		useset cs_dkz_report
+
+
+#====================================================================================
+#Основные показатели (форма № 2)
+#------------------------------------------------------------------------------------
+global _NAME_OSNPOK : "Основные показатели финансово-хозяйственной деятельности"
+monthform osnpok, "Основные показатели (форма № 2)", group=eco_grp, roleprefix=DR, rootrow=m200 :
+	formnameA = _NAME_OSNPOK
+	ra_numberA = "Форма № 2"
+	ranameA = _NAME_OSNPOK
+	rbnameA = _NAME_OSNPOK
+	formnameB = _NAME_OSNPOK
+	ra_numberB = "Форма № 2"
+	ranameB = _NAME_OSNPOK
+	rbnameB = _NAME_OSNPOK
+	showmeasurecolumnA = true
+	showmeasurecolumnB = true
+	showmeasurecolumnC = true
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_dir 
+#		param showmeasure : true
+		ask rowtype : "!m200415"
+#	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+#		param showmeasure : true
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ:
+		ask und_plan
+		ask und_dir
+		ask rowtype : "!m200415"
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+#		param showmeasure : true
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ:
+		ask rowtype : "!m200415"
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+#		param showmeasure : true
+
+#====================================================================================
+#Основные показатели (форма № 2)
+#------------------------------------------------------------------------------------
+assoieco osnpok_valuta, "Основные показатели (форма № 2)", group=eco_grp, roleprefix=DR, parent=osnpok, rootrow=m200 :
+	import fordesign
+	import singlereport
+	showmeasurecolumnA = true
+	showmeasurecolumnB = true
+	showmeasurecolumnC = true
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_dir
+		param showmeasure : true
+		ask rowtype : "!m200415"
+		useset cs_valuta_report_int
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		param showmeasure : true
+		useset cs_valuta_report_int
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ:
+		ask und_dir
+		ask und_plan
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		ask rowtype : "!m200415"
+		param showmeasure : true
+		useset cs_valuta_report_int
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ:
+		ask rowtype : "!m200415"
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		param showmeasure : true
+		useset cs_valuta_report_int
+
+#====================================================================================
+#Дополнительные показатели
+#------------------------------------------------------------------------------------
+assoieco doppok_valuta, "Дополнительные показатели", group=eco_grp, roleprefix=DR, parent=osnpok, rootrow=a200 :
+	import fordesign
+	import singlereport
+	showmeasurecolumnA = true
+	showmeasurecolumnB = true
+	showmeasurecolumnC = true
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ:
+		use und_dir
+		param showmeasure : true
+		useset cs_valuta_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ:
+		param showmeasure : true
+		useset cs_valuta_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ:
+		ask und_dir
+		ask und_plan
+		var default_conditions , target=condition : "USEKORRTPFP"
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		param showmeasure : true
+		useset cs_valuta_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ:
+		var default_conditions , target=condition : "USEKORRTPFP"
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		param showmeasure : true
+		useset cs_valuta_report
+
+
+#====================================================================================
+#Основные показатели (форма № 2) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport osnpok_corp,  "Основные показатели (форма № 2)", rootrow=m200, roleprefix=DR :
+	ranameA = _NAME_OSNPOK
+	ranameB = _NAME_OSNPOK
+	ra_numberA = "Форма № 2"
+	ra_numberB = "Форма № 2"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		param showmeasure : true
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask rowtype : "!m200415"
+		ask dropzeroes : false
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		param showmeasure : true
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask rowtype : "!m200415"
+		ask dropzeroes : false
+		ask maxperpage : 1
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+
+#====================================================================================
+#Основные показатели с утверждением холдинга (форма № 2)
+#------------------------------------------------------------------------------------
+monthform osnpok_hold, "Основные показатели (форма № 2) c утвержениями", group=analysisg, parent=holdundreport:
+	import osnpok
+	activeC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	needresponsibility = false
+	reportset Ab :
+		use und_dir : true
+		use und_kdir : true
+		use dropzeroes : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		ask rowtype : "!m200415"
+		use print_scale : 73
+	reportset Bb :
+		param showmeasure : true
+		use dropzeroes : true
+		use und_dir : true
+		use und_kdir : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		ask rowtype : "!m200415"
+		use print_scale : 73
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+	
+
+#====================================================================================
+#Основные показатели по персоналу (из формы № 2)
+#------------------------------------------------------------------------------------
+global _NAME_OSNPOK_TRUD : "Основные показатели по персоналу (из формы № 2)"
+monthform osnpok_trud, "Основные показатели по персоналу (из формы № 2)", , parent=trudgroup, group=trud_grp, roleprefix=ZP, rootrow=m20022 :
+	f_visibleA = false
+	f_visibleB = false
+	f_visibleC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	needresponsibility=false
+	scheduleA=""
+	formnameA = _NAME_OSNPOK_TRUD
+	ra_numberA = "Справочно из формы № 2"
+	ranameA = _NAME_OSNPOK_TRUD
+	rbnameA = _NAME_OSNPOK_TRUD
+	reportset Ab:
+		use und_plan : false
+		use und_buh : false
+
+#====================================================================================
+#Основные показатели за период 1990-2010 годы
+#------------------------------------------------------------------------------------
+assoieco osnpok_90, "Основные показатели 1990-2010", forgroup=MEDHISTORY, group=cost_grp, roleprefix=DR, rootrow=h200 :
+	import blockform
+	activeB = false
+	activeC = false
+	f_visibleA = false
+	fl_visibleA = false
+	useonobjstates = false
+	forperiodsA="4"
+	periodredirectA="11=4,12=4,13=4,14=4,15=4,16=4,17=4,18=4,19=4,110=4,111=4,112=4,1=4,2=4,3=4"
+	autofillA="4|sql:DEFAULT" 
+	showmeasurecolumnA = true
+	needresponsibility=false
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_osnpok_90
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask kolgod : Y10
+		ask cond_org_groups : "OG,OG_ORG"
+		ask cond_og : "OGMEDHISTORY"
+		ask cond_div : "NODIV"
+		ask filteringgroup : ""
+		ask dropzeroes : false
+		ask year : 2010
+		ask period : 4
+		param showmeasure : true
+		ask custom_title : "Основные показатели работы медных предприятий УГМК"
+		ask periodstring : "за 1990-2010 годы"
+		useset cs_osnpok_90
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask kolgod : Y20
+		param showmeasure : true
+		useset cs_osnpok_90
+
+#====================================================================================
+#Финансовые результаты (форма № 4)
+#------------------------------------------------------------------------------------
+global _NAME_FINRES : "Финансовые результаты"
+kvartform finres,  "Финансовые результаты (форма №4)", group=eco_grp, rootrow=m214 :
+	activeC = true
+	froleC = ADMIN
+	raroleC  = ADMIN
+	rbroleC = ADMIN
+	formnameA = _NAME_FINRES
+	ra_numberA = "Форма № 4"
+	ranameA = _NAME_FINRES
+	rbnameA = _NAME_FINRES
+	formnameB = _NAME_FINRES
+	ra_numberB = "Форма № 4"
+	ranameB = _NAME_FINRES
+	rbnameB = _NAME_FINRES
+	activecondition = true
+	reportset Ab:
+		use name_width : 450
+		use column_width : 85
+		param usekorrtpfp : false
+		ask rowtype : "-m21410018,-m21409012"
+	reportsetex Bb:
+		ask und_plan
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		use name_width : 450
+		use column_width : 85
+		ask rowtype : "-m21410018,-m21409012"
+
+#====================================================================================
+#Финансовые результаты (форма № 4)
+#------------------------------------------------------------------------------------
+corpreport finres_corp,  "Финансовые результаты (форма №4)", rootrow=m214 :
+	ranameA = _NAME_FINRES
+	ranameB = _NAME_FINRES
+	ra_numberA = "Форма № 4"
+	ra_numberB = "Форма № 4"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask rowtype : "!m21409012, !m21410018"
+		ask dropzeroes : false
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask rowtype : "!m21409012, !m21410018"
+		ask dropzeroes : false
+		ask maxperpage : 1
+
+#====================================================================================
+#Финансовые результаты (форма № 4) консолидированные
+#------------------------------------------------------------------------------------
+cons_report finres_cons,  "Финансовые результаты (форма №4)", rootrow=m214 :
+	formsetex _ФОРМА_ПО_ФАКТУ :
+		param excluderows : "m214200"
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask rowtype : "!m214200"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask rowtype : "!m214200"
+
+#====================================================================================
+#Себестоимость продаж по элементам - приложение для консолидации
+#------------------------------------------------------------------------------------
+cons_report finres_zatr,  "Себестоимость продаж по элементам", rootrow=p214, role="ADMIN"
+
+#====================================================================================
+#Группировка прочих доходов и расходов в форме 4
+#------------------------------------------------------------------------------------
+kvartform finres_group, "Группировка прочих доходов и расходов в форме 4", group=eco_grp, roleprefix=DR, parent=finres, rootrow=g214 :
+	import fordesign
+	activeC = false
+
+
+#====================================================================================
+#Финансовые результаты (форма №4) c утвержениями
+#------------------------------------------------------------------------------------
+monthform finres_hold, "Финансовые результаты (форма №4) c утвержениями", group=analysisg, parent=holdundreport:
+	import finres
+	activeC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	needresponsibility = false
+	reportset Ab :
+		use und_plan : true
+		use dropzeroes : true
+		param showmeasure : false
+		param usekorrtpfp : false
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		ask rowtype : "-m21410018,-m21409012"
+		use print_scale : 67
+	reportsetex Bb :
+		param showmeasure : false
+		param usekorrtpfp : false
+		use dropzeroes : true
+		use und_plan : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		ask rowtype : "-m21410018,-m21409012"
+		use column_width : 100
+		use name_width : 450
+		use print_scale : 67
+
+#====================================================================================
+#Приложение 18
+#------------------------------------------------------------------------------------
+global _NAME_PRIL_18 : "Финансовые результаты"
+pril_finot pril_18, "Приложение 18. Финансовые результаты", idx=180, rootrow=m214 :
+	ra_numberA = "Приложение № 18"
+	ranameA = _NAME_PRIL_18
+	rbnameA = _NAME_PRIL_18
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "-m2171130,-m2171220,-m2172315,-m2172240,-m2172320,-m2172335,-m2172334,-m2172339,-m2172310,-m2172390,-m2172224,"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "-m2171130,-m2171220,-m2172315,-m2172240,-m2172320,-m2172335,-m2172334,-m2172339,-m2172310,-m2172390,-m2172224,"
+
+#====================================================================================
+#Управленческие расходы (форма № 7)
+#------------------------------------------------------------------------------------
+global _NAME_F7 : "Управленческие расходы"
+kvartform f7,  "Управленческие расходы (форма №7)", group=eco_grp, rootrow=m217,  roleprefix=DR :
+	activeC = true
+	formnameA = _NAME_F7
+	ra_numberA = "Форма № 7"
+	ranameA = _NAME_F7
+	rbnameA = _NAME_F7
+	formnameB = _NAME_F7
+	ra_numberB = "Форма № 7"
+	ranameB = _NAME_F7
+	rbnameB = _NAME_F7
+	matrixexrowsA = "m212"
+	matrixexrowsB = "m212"
+	reportset Ab:
+		use name_width : 450
+		use dropzeroes : true
+		use column_width : 85
+		ask usekorrtpfp : false
+	reportset Aa:
+		ask usekorrtpfp : false
+		use name_width : 450
+		use dropzeroes : true
+		use column_width : 85
+	reportsetex Bb:
+		ask und_plan
+		ask dropzeroes : true
+		ask usekorrtpfp : false
+		ask showkorrtpfp : false
+
+#====================================================================================
+#Управленческие расходы (форма №7) консолидированные
+#------------------------------------------------------------------------------------
+cons_report f7_cons,  "Управленческие расходы (форма №7) ADMIN", rootrow=m217,  roleprefix=DR, role="ADMIN"
+
+
+#====================================================================================
+#Приложение 18.2
+#------------------------------------------------------------------------------------
+global _NAME_PRIL_182 : "Управленческие расходы"
+pril_finot pril_182, "Приложение 18.2. Управленческие расходы", idx=182, rootrow=m217 :
+	ra_numberA = "Приложение № 18.2"
+	ranameA = _NAME_PRIL_182
+	rbnameA = _NAME_PRIL_182
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "-m21410018,-m21409012"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "-m21410018,-m21409012"
+
+#====================================================================================
+#Управленческие расходы (форма № 7)
+#------------------------------------------------------------------------------------
+corpreport f7_corp,  "Управленческие расходы (форма №7)", roleprefix=DR, rootrow=m217 :
+	ranameA = _NAME_F7
+	ranameB = _NAME_F7
+	ra_numberA = "Форма № 7"
+	ra_numberB = "Форма № 7"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+
+#====================================================================================
+#Управленческие расходы (форма № 7) с утверждениями
+#------------------------------------------------------------------------------------
+monthform f7_hold, "Управленческие расходы (форма № 7) с утверждениями", group=analysisg, parent=holdundreport:
+	import f7
+	activeC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	needresponsibility = false
+	reportset Ab :
+		param showmeasure : false
+		use und_plan : true
+		use dropzeroes : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: true
+	reportset Bb :
+		param showmeasure : false
+		param usekorrtpfp : false
+		use dropzeroes : true
+		use und_plan : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: true
+		ask rowtype : "-m2171130,-m2171220,-m2172315,-m2172240,-m2172320,-m2172335,-m2172334,-m2172339,-m2172310,-m2172390,-m2172224,"
+
+#====================================================================================
+#Коммерческие расходы (форма № 8)
+#------------------------------------------------------------------------------------
+global _NAME_F8 : "Расходы на продажу"
+monthform f8,  "Расходы на продажу (форма №8)", group=eco_grp, rootrow=m218,  roleprefix=DR :
+	activeC = false
+	formnameA = _NAME_F8
+	ra_numberA = "Форма № 8"
+	ranameA = _NAME_F8
+	rbnameA = _NAME_F8
+	formnameB = _NAME_F8
+	ra_numberB = "Форма № 8"
+	ranameB = _NAME_F8
+	rbnameB = _NAME_F8
+	reportset Aa:
+		use name_width : 450
+		use dropzeroes : true
+		param usekorrtpfp : false
+		use column_width : 85
+	reportset Ab:
+		param usekorrtpfp : false
+		use name_width : 450
+		use dropzeroes : true
+		use column_width : 85
+	reportsetex Bb:
+		ask und_plan
+		ask dropzeroes : true
+		ask rowtype : "!m2181000"
+		ask usekorrtpfp : false
+		ask showkorrtpfp : false
+
+#====================================================================================
+#Коммерческие расходы (форма № 8) консолидированные
+#------------------------------------------------------------------------------------
+cons_report f8_cons,  "Коммерческие расходы (форма № 8) ADMIN", rootrow=m218,  roleprefix=DR, role="ADMIN"
+
+#====================================================================================
+#Приложение 18.3
+#------------------------------------------------------------------------------------
+global _NAME_PRIL_183 : "Коммерческие расходы"
+pril_finot pril_183, "Приложение 18.3. Коммерческие расходы", idx=183, rootrow=m218 :
+	ra_numberA = "Приложение № 18.3"
+	ranameA = _NAME_PRIL_183
+	rbnameA = _NAME_PRIL_183
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "-r590310,-r590320,-m218520,-m218670,!m2181000"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "-r590310,-r590320,-m218520,-m218670,!m2181000"
+
+
+#====================================================================================
+#Коммерческие расходы (форма № 8) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport f8_corp,  "Расходы на продажу (форма №8)", roleprefix=DR, rootrow=m218:
+	ranameA = _NAME_F8
+	ranameB = _NAME_F8
+	ra_numberA = "Форма № 8"
+	ra_numberB = "Форма № 8"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask usekorrtpfp: false
+		ask maxperpage : 1
+
+#====================================================================================
+#Коммерческие расходы (форма № 8) с утверждениями
+#------------------------------------------------------------------------------------
+monthform f8_hold, "Расходы на продажу (форма № 8) с утверждениями", group=analysisg, parent=holdundreport:
+	import f8
+	activeC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	needresponsibility = false
+	reportset Ab :
+		param showmeasure : false
+		use und_plan : true
+		use dropzeroes : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: true
+	reportsetex Bb :
+		param showmeasure : false
+		param usekorrtpfp : false
+		use dropzeroes : true
+		use und_plan : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: true
+		ask rowtype : "-r590310,-r590320,-m218520,-m218670,!m2181000"
+
+#====================================================================================
+#Расходы инвестиционного характера (форма № 9)
+#------------------------------------------------------------------------------------
+global _NAME_INV : "Расходы инвестиционного характера"
+monthform inv,  "Расходы инвестиционного характера (форма № 9)", group=eco_grp, rootrow=m250, roleprefix=INVDR :
+	formnameA = _NAME_INV
+	ra_numberA = "Форма № 9"
+	ranameA = _NAME_INV
+	rbnameA = _NAME_INV
+	formnameB = _NAME_INV
+	ra_numberB = "Форма № 9"
+	ranameB = _NAME_INV
+	rbnameB = _NAME_INV
+	reportsetex Ab:
+		ask hidespecialnulls: true
+		ask hideOwn: false
+		ask rowtype : "!m250199,!m250299,!m2502113,-m250219,-m250218,!m250800,!m2502113,!m2502163,!m2502171"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		param conditions : "KORR"
+	reportsetex Bb:
+		ask und_plan
+		ask rowtype : "!m250500"
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+	reportsetex Ba:
+		ask showcontrolpoints : false
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+
+
+#====================================================================================
+#Расходы инвестиционного характера (форма № 9) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport inv_corp,  "Расходы инвестиционного характера (форма № 9)", roleprefix=INVDR, rootrow=m250:
+	ranameA = _NAME_INV
+	ranameB = _NAME_INV
+	ra_numberA = "Форма № 9"
+	ra_numberB = "Форма № 9"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask rowtype : "!m250199,!m250299,!m2502113,!m2502163,!m2502171,-m250219,!m250800,-m2502161,-m2502162,-m250218"
+		ask dropzeroes: false
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask rowtype : "!m250199,!m250299,!m2502113,!m2502163,!m2502171,-m250219,!m250800,-m2502161,-m2502162,-m250218"
+		ask dropzeroes: false
+		ask maxperpage : 1
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+
+#====================================================================================
+#Расходы инвестиционного характера (форма № 9) c утвержениями
+#------------------------------------------------------------------------------------
+monthform inv_hold, "Расходы инвестиционного характера (форма № 9) c утвержениями", group=analysisg, parent=holdundreport:
+	import inv
+	activeC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	needresponsibility = false
+	reportset Ab :
+		param showmeasure : false
+		ask und_plan : true
+		ask dropzeroes : true
+		ask periodstring : 'EMPTY'
+		ask und_redirect : 357
+		ask dropzeroes: false
+		ask rowtype : "m250800,!m2502113,!m2502171,!m2502163,!m250500,!m250330"
+	reportsetex Bb :
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		param showmeasure : false
+		ask dropzeroes : true
+		ask und_plan : true
+		ask periodstring : 'EMPTY'
+		ask und_redirect : 357
+		ask dropzeroes: false
+		ask rowtype : "!m250800,!m2502113,!m2502171,!m2502163"
+
+#====================================================================================
+#Отчет о затратах на производство (форма № 3)
+#------------------------------------------------------------------------------------
+global _NAME_ZATR : "Отчет о затратах на производство и реализацию"
+global _NAME_ZATR_PLAN : "Затраты на производство и реализацию продукции (работ, услуг)"
+monthform zatr,  "Затраты на производство и реализацию (форма № 3)", group=eco_grp, rootrow=m260, roleprefix=DR:
+	activeC = false
+	formnameA = _NAME_ZATR
+	ra_numberA = "Форма №3"
+	ranameA = _NAME_ZATR
+	rbnameA = _NAME_ZATR
+	formnameB = _NAME_ZATR_PLAN
+	ra_numberB = "Форма №3"
+	ranameB = _NAME_ZATR_PLAN
+	rbnameB = _NAME_ZATR_PLAN
+#	useformmatrixA = false
+#	useformmatrixB = false
+	reportset Ab:
+		ask rowtype : "!m260850,!m260900"
+		use name_width : 450
+		use column_width : 85
+		param usekorrtpfp : false
+	reportsetex Bb:
+		ask und_plan
+#		ask rowtype : "!m260850,!m260900"
+		ask rowtype : "!m260850,!m260900,-m260700,-m260720,-m260131,-m260139,-m260179,-m260185"
+		use name_width : 450
+		use column_width : 85
+		ask usekorrtpfp : false
+		ask showkorrtpfp : false
+
+#====================================================================================
+#Приложение 18.4
+#------------------------------------------------------------------------------------
+global _NAME_PRIL_184 : "Затраты на производство и реализацию"
+pril_finot pril_184, "Приложение 18.4. Затраты на производство и реализацию", idx=184, rootrow=m260 :
+	ra_numberA = "Приложение № 18.4"
+	ranameA = _NAME_PRIL_184
+	rbnameA = _NAME_PRIL_184
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "!m260850,!m260900,-m260700,-m260139,-m260179,-m260185,-m260131,!m260541,-m260133"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use dropzeroes: false
+		ask rowtype : "!m260850,!m260900,-m260700,-m260139,-m260179,-m260185,-m260131,!m260541,-m260133"
+
+#====================================================================================
+#Отчет о затратах на производство (форма № 3) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport zatr_corp,  "Затраты на производство и реализацию (форма № 3)", roleprefix=DR, rootrow=m260:
+	ranameA = _NAME_ZATR
+	ranameB = _NAME_ZATR
+	ra_numberA = "Форма №3"
+	ra_numberB = "Форма №3"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usekorrtpfp: false
+		ask rowtype : "-m260700,-m260139,-m260179,-m260185,!m2601341, !m260541, !m260850, !m260853, !m260854, !m260860, !m260861, !k260702, !k260576, !k260711"
+		use dropzeroes: false
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask usekorrtpfp : false
+		ask showkorrtpfp : false
+		ask rowtype : "-m260700,-m260139,-m260179,-m260185,!m2601341, !m260541, !m260850, !m260853, !m260854, !m260860, !m260861, !k260702, !k260576, !k260711"
+		use dropzeroes: false
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+
+#====================================================================================
+#Затраты на производство и реализацию (форма № 3) c утвержениями
+#------------------------------------------------------------------------------------
+monthform zatr_hold, "Затраты на производство и реализацию (форма № 3) c утвержениями", group=analysisg, parent=holdundreport:
+	import zatr
+	activeC = false
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	matrixexrowsA = "r590"
+	matrixexrowsB = "r590"
+	needresponsibility = false
+	reportset Ab :
+		param showmeasure : false
+		use und_plan : true
+		use dropzeroes : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		ask rowtype : "!m260850,!m260900,-m260700,-m260139,-m260179,-m260185,-m260131,!m260541,-m260133"
+	reportsetex Bb :
+		param showmeasure : false
+		ask usekorrtpfp : false
+		ask showkorrtpfp : false
+		use dropzeroes : true
+		use und_plan : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		ask rowtype : "!m260850,!m260900,-m260700,-m260139,-m260179,-m260185,-m260131,!m260541,-m260133"
+
+#====================================================================================
+#Расшифровка расходов на сырье
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_SIR : "Расшифровка затрат на сырье"
+monthform zatr_sir, "Расшифровка затрат на сырье (Прил. № 3.1)", roleprefix=DR, group=eco_grp, parent=zatr, rootrow=r260100:
+	import fordesign
+	activeC = false
+	formnameA = _NAME_ZATR_SIR
+	ra_numberA = "Приложение № 3.1"
+	ranameA = _NAME_ZATR_SIR
+	rbnameA = _NAME_ZATR_SIR
+	formnameB = _NAME_ZATR_SIR
+	ra_numberB = "Приложение № 3.1"
+	ranameB = _NAME_ZATR_SIR
+	rbnameB = _NAME_ZATR_SIR
+
+#====================================================================================
+#Расшифровка услуг вспомогательного производства
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_USLPER : "Расшифровка услуг вспомогательного производства"
+assoifin zatr_uslper, "Расшифровка услуг вспомогательного производства (Прил. № 3.2)", roleprefix=DR, group=eco_grp, parent=zatr, rootrow=r260135:
+	import fordesign
+	import overrideplan
+	import kvart
+	activeC = false
+	formnameA = _NAME_ZATR_USLPER
+	ra_numberA = "Приложение № 3.2"
+	ranameA = _NAME_ZATR_USLPER
+	rbnameA = _NAME_ZATR_USLPER
+	formnameB = _NAME_ZATR_USLPER
+	ra_numberB = "Приложение № 3.2"
+	ranameB = _NAME_ZATR_USLPER
+	rbnameB = _NAME_ZATR_USLPER
+	cols  :
+		col KOL, _КОЛ, format=_DEC1
+		col CENA1, _ЦЕНА, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, validation="validate-int-cell-number"
+		col KOL, _КОЛ, format=_DEC1, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+		col CENA1, _ЦЕНА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, validation="validate-int-cell-number"
+		col SUMMA1, "Контроль оборотов [=0]", forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA.P@_ПРЕД_СУММЕСЯЦ? + @SUMMA? - @SUMMA.P@_СУММЕСЯЦ? + @KOL.P@_ПРЕД_СУММЕСЯЦ? + @KOL? - @KOL.P@_СУММЕСЯЦ?" 
+		col SUMMA2, "Контроль за месяц по ф. № 3 [=0]", fixed, formula="@Б1? - @SUMMA? " 
+		col SUMMA3, "Контроль с н.г. по ф. № 3 [=0]", fixed, formula="@Б1.P@_СУММЕСЯЦ? - @SUMMA.P@_СУММЕСЯЦ? " 
+	formset _ФОРМА_ПО_ФАКТУ :
+		embed  : "_SELFELEMENT/cols/*"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		col KOL, "Кол-во {2} {0}", format=_DEC1, year=-1, period=401, forperiods=251
+		col CENA, "Цена {2} {0}", year=-1, period=401, forperiods=251
+		col SUMMA1, "Сумма {2} {0}", fixed, formula="@KOL? * @CENA? / 1000", year=-1, period=401, forperiods=251
+
+		col KOL, "Кол-во {2} {0}", format=_DEC1
+		col CENA, "Цена {2} {0}"
+		col SUMMA2, "Сумма {2} {0}", fixed, formula="@KOL? * @CENA? / 1000"
+
+
+#====================================================================================
+#Колонки количество-цена-сумма факт
+#------------------------------------------------------------------------------------
+subset cs_kcs_fact :
+	col KOL, _КОЛ, format=_DEC1
+	col CENACALC, _ЦЕНА, fixed, format=_DEC2
+	col SUMMA, _СУММА, validation="validate-int-cell-number", format=_INT
+	col KOL, _КОЛ, format=_DEC1, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+	col CENACALC, _ЦЕНА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, format=_DEC2
+	col SUMMA, _СУММА, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, validation="validate-int-cell-number", format=_INT
+
+#====================================================================================
+#Колонки плановой формы количество-цена-сумма
+#------------------------------------------------------------------------------------
+subset cs_kcs_plan_form :
+	col KOL, "Кол-во {2} {0}", format=_DEC1, year=-1, period=401, forperiods=251
+	col CENA, "Цена {2} {0}", format=_DEC2, year=-1, period=401, forperiods=251
+	col SUMMACALC, "Сумма {2} {0}", fixed, format=_INT, year=-1, period=401, forperiods=251
+
+	col KOL, "Кол-во {2} {0}", format=_DEC1
+	col CENA, "Цена {2} {0}", format=_DEC2
+	col SUMMACALC, "Сумма {2} {0}", fixed, format=_INT
+
+#	col KOL, "Кол-во {2} {0}", period=303, forperiods=251, format=_DEC1
+#	col CENA, "Цена {2} {0}", period=303, forperiods=251, format=_DEC2
+#	col SUMMACALC, "Сумма {2} {0}", fixed, period=303, forperiods=251, format=_INT
+#	col KOL, "Кол-во {2} {0}", period=306, forperiods=252, format=_DEC1, format=_DEC1
+#	col CENA, "Цена {2} {0}", period=306, forperiods=252, format=_DEC2
+#	col SUMMACALC, "Сумма {2} {0}", fixed, period=306, forperiods=252, format=_INT
+#	col KOL, "Кол-во {2} {0}", format=_DEC1, period=309, forperiods=253, format=_DEC1
+#	col CENA, "Цена {2} {0}", period=309, forperiods=253, format=_DEC2
+#	col SUMMACALC, "Сумма {2} {0}", fixed, period=309, forperiods=253, format=_INT
+
+#====================================================================================
+#Колонки планового отчета количество-цена-сумма
+#------------------------------------------------------------------------------------
+subset cs_kcs_plan_report :
+	col KOL, "Кол-во {2} {0}", format=_DEC1, year=-1, period=401, forperiods=251
+	col CENA, "Цена {2} {0}", format=_DEC2, year=-1, period=401, forperiods=251
+	col SUMMACALC, "Сумма {2} {0}", fixed, format=_INT, year=-1, period=401, forperiods=251
+
+	col KOL, "Кол-во {2} {0}", format=_DEC1
+	col CENA, "Цена {2} {0}", format=_DEC2
+	col SUMMACALC, "Сумма {2} {0}", fixed, format=_INT
+
+#====================================================================================
+#Расшифровка расходов на топливо и энергию
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_TER : "Расшифровка затрат на топливо и энергию"
+assoifin zatr_ter, "Расшифровка затрат на топливо и энергию (Прил. № 3.3)", group=eco_grp, roleprefix=DR, parent=zatr:
+	activeC = false
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	formnameA = _NAME_ZATR_TER
+	ra_numberA = "Приложение № 3.3"
+	ranameA = _NAME_ZATR_TER
+	rbnameA = _NAME_ZATR_TER
+	formnameB = _NAME_ZATR_TER
+	ra_numberB = "Приложение № 3.3"
+	ranameB = _NAME_ZATR_TER
+	rbnameB = _NAME_ZATR_TER
+	showmeasurecolumnA = true
+	import kvart
+	rows :
+		row m260170,"Топливо"
+		row m260180,"Энергия"
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_kcs_fact
+		col SUMMA1, "Контроль оборотов [=0]", forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA.P@_ПРЕД_СУММЕСЯЦ? + @SUMMA? - @SUMMA.P@_СУММЕСЯЦ? + @KOL.P@_ПРЕД_СУММЕСЯЦ? + @KOL? - @KOL.P@_СУММЕСЯЦ?" 
+		col SUMMA2, "Контроль за месяц по ф. № 3 [=0]", forperiods=_НЕ_ЯНВ, fixed, formula="@Б1? - @SUMMA? " 
+		col SUMMA3, "Контроль с н.г. по ф. № 3 [=0]", fixed, formula="@Б1.P@_СУММЕСЯЦ? - @SUMMA.P@_СУММЕСЯЦ? " 
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask showroots : true
+		useset cs_kcs_fact
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask showroots : true
+		useset cs_kcs_fact
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset cs_kcs_plan_form
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		ask showroots : true
+		useset cs_kcs_plan_form
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask showroots : true
+		useset cs_kcs_plan_report
+
+#====================================================================================
+#Расшифровка расходов на электроэнергию
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_EL : "Расчет расходов на электроэнергию"
+assoifin zatr_el, "Расчет расходов на электроэнергию", group=eco_grp, roleprefix=DR, parent=zatr, rootrow=r260180:
+	import kvart
+	import overrideplan
+	activeC = false
+#	ra_lib2B = ""
+#	rb_lib2B = ""
+#	f_libB = ""
+	import fordesign
+	formnameA = _NAME_ZATR_EL
+	ra_numberA = "Приложение № 3.3"
+	ranameA = _NAME_ZATR_EL
+	rbnameA = _NAME_ZATR_EL
+	formnameB = _NAME_ZATR_EL
+	ra_numberB = "Приложение № 3.3"
+	ranameB = _NAME_ZATR_EL
+	rbnameB = _NAME_ZATR_EL
+	showmeasurecolumnA = true
+	formset _ФОРМА_ПО_ФАКТУ :
+		col KOL, _КОЛ, format=_DEC1
+		col CENA1, _ЦЕНА, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, validation="validate-int-cell-number"
+		col KOL, _КОЛ, format=_DEC1, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+		col CENA1, _ЦЕНА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, validation="validate-int-cell-number"
+		col SUMMA1, "Контроль оборотов [=0]", forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA.P@_ПРЕД_СУММЕСЯЦ? + @SUMMA? - @SUMMA.P@_СУММЕСЯЦ? + @KOL.P@_ПРЕД_СУММЕСЯЦ? + @KOL? - @KOL.P@_СУММЕСЯЦ?" 
+		col SUMMA2, "Контроль за месяц по ф. № 3 [=0]", forperiods=_НЕ_ЯНВ, fixed, formula="@Б1? - @SUMMA? " 
+		col SUMMA3, "Контроль с н.г. по ф. № 3 [=0]", fixed, formula="@Б1.P@_СУММЕСЯЦ? - @SUMMA.P@_СУММЕСЯЦ? " 
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		col KOL, _КОЛ, format=_DEC1
+		col CENA1, _ЦЕНА, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, validation="validate-int-cell-number"
+		col KOL, _КОЛ, format=_DEC1, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+		col CENA1, _ЦЕНА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, validation="validate-int-cell-number"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		col KOL, "Кол-во {2} {0}", period=401, year=-1, forperiods=251, format=_DEC1
+		col CENA, "Цена {2} {0}", period=401, year=-1, forperiods=251 
+		col FIXZATR, "Пост. затр. {2} {0}", period=401, year=-1, forperiods=251
+		col SUMMA1, "Сумма {2} {0}", fixed, period=401, year=-1, forperiods=251, formula="@KOL? * @CENA? / 1000 + @FIXZATR? "
+
+		col KOL, "Кол-во {2} {0}", format=_DEC1
+		col CENA, "Цена {2} {0}"
+		col FIXZATR, "Пост. затр. {2} {0}"
+		col SUMMA1, "Сумма {2} {0}", fixed, formula="@KOL? * @CENA? / 1000 + @FIXZATR?"
+
+#		col KOL, "Кол-во {2} {0}", period=303, forperiods=251, format=_DEC1
+#		col CENA, "Цена {2} {0}", period=303, forperiods=251 
+#		col FIXZATR, "Пост. затр. {2} {0}", period=303, forperiods=251
+#		col SUMMA1, "Сумма {2} {0}", fixed, period=303, forperiods=251, formula="@KOL? * @CENA? / 1000 + @FIXZATR? "
+
+#		col KOL, "Кол-во {2} {0}", period=306, forperiods=252, format=_DEC1
+#		col CENA, "Цена {2} {0}", period=306, forperiods=252
+#		col FIXZATR, "Пост. затр. {2} {0}", period=306, forperiods=252
+#		col SUMMA1, "Сумма {2} {0}", fixed, period=306, forperiods=252, formula="@KOL? * @CENA? / 1000 + @FIXZATR? "
+
+#		col KOL, "Кол-во {2} {0}", format=_DEC1, period=309, forperiods=253
+#		col CENA, "Цена {2} {0}", period=309, forperiods=253
+#		col FIXZATR, "Пост. затр. {2} {0}", period=309, forperiods=253
+#		col SUMMA1, "Сумма {2} {0}", fixed, period=309, forperiods=253, formula="@KOL? * @CENA? / 1000 + @FIXZATR?"
+
+#====================================================================================
+#Расшифровка расходов на топливо
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_TOPL : "Расчет расходов на топливо"
+assoifin zatr_topl, "Расчет расходов на топливо", group=eco_grp, roleprefix=DR, parent=zatr, rootrow=r260175:
+	import fordesign
+	import kvart
+	import overrideplan
+	activeC = false
+	formnameA = _NAME_ZATR_TOPL
+	ra_numberA = "Приложение № 3.3"
+	ranameA = _NAME_ZATR_TOPL
+	rbnameA = _NAME_ZATR_TOPL
+	formnameB = _NAME_ZATR_TOPL
+	ra_numberB = "Приложение № 3.3"
+	ranameB = _NAME_ZATR_TOPL
+	rbnameB = _NAME_ZATR_TOPL
+	showmeasurecolumnA = true
+	formset _ФОРМА_ПО_ФАКТУ :
+		col KOL, _КОЛ, format=_DEC1
+		col CENA1, _ЦЕНА, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, validation="validate-int-cell-number"
+		col KOL, _КОЛ, format=_DEC1, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+		col CENA1, _ЦЕНА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, validation="validate-int-cell-number"
+		col SUMMA1, "Контроль оборотов [=0]", forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA.P@_ПРЕД_СУММЕСЯЦ? + @SUMMA? - @SUMMA.P@_СУММЕСЯЦ? + @KOL.P@_ПРЕД_СУММЕСЯЦ? + @KOL? - @KOL.P@_СУММЕСЯЦ?" 
+		col SUMMA2, "Контроль за месяц по ф. № 3 [=0]", forperiods=_НЕ_ЯНВ, fixed, formula="@Б1? - @SUMMA? " 
+		col SUMMA3, "Контроль с н.г. по ф. № 3 [=0]", fixed, formula="@Б1.P@_СУММЕСЯЦ? - @SUMMA.P@_СУММЕСЯЦ? " 
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		col KOL, _КОЛ, format=_DEC1
+		col CENA1, _ЦЕНА, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, validation="validate-int-cell-number"
+		col KOL, _КОЛ, format=_DEC1, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+		col CENA1, _ЦЕНА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, formula="@SUMMA? / @KOL? * 1000"
+		col SUMMA, _СУММА, auto, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, validation="validate-int-cell-number"
+	formset _ФОРМА_ПО_ПЛАНУ :
+		col KOL, "Кол-во {2} {0}", format=_DEC1, year=-1, period=401, forperiods=251
+		col CENA, "Цена {2} {0}", year=-1, period=401, forperiods=251
+		col SUMMA1, "Сумма {2} {0}", fixed, formula="@KOL? * @CENA? / 1000", year=-1, period=401, forperiods=251
+
+		col KOL, "Кол-во {2} {0}", format=_DEC1
+		col CENA, "Цена {2} {0}"
+		col SUMMA1, "Сумма {2} {0}", fixed, formula="@KOL? * @CENA? / 1000"
+#		col KOL, "Кол-во {2} {0}", period=303, forperiods=251, format=_DEC1
+#		col CENA, "Цена {2} {0}", period=303, forperiods=251 
+#		col SUMMA1, "Сумма {2} {0}", fixed, period=303, forperiods=251, formula="@KOL? * @CENA? / 1000"
+#		col KOL, "Кол-во {2} {0}", period=306, forperiods=252, format=_DEC1
+#		col CENA, "Цена {2} {0}", period=306, forperiods=252
+#		col SUMMA1, "Сумма {2} {0}", fixed, period=306, forperiods=252, formula="@KOL? * @CENA? / 1000"
+#		col KOL, "Кол-во {2} {0}", format=_DEC1, period=309, forperiods=253
+#		col CENA, "Цена {2} {0}", period=309, forperiods=253
+#		col SUMMA1, "Сумма {2} {0}", fixed, period=309, forperiods=253, formula="@KOL? * @CENA? / 1000"
+
+
+#====================================================================================
+#Расшифровка прочих расходов (Прил. № 3.4)
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_PR : "Расшифровка прочих расходов к форме 'Затраты на производство и реализацию'"
+kvartform zatr_pr, "Расшифровка прочих расходов (Прил. № 3.4)", group=eco_grp, roleprefix=DR, parent=zatr, rootrow=r590 :
+	activeC = false
+	formnameA = _NAME_ZATR_PR
+	ra_numberA = "Приложение № 3.4"
+	ranameA = _NAME_ZATR_PR
+	rbnameA = _NAME_ZATR_PR
+	formnameB = _NAME_ZATR_PR
+	ra_numberB = "Приложение № 3.4"
+	ranameB = _NAME_ZATR_PR
+	rbnameB = _NAME_ZATR_PR
+	matrixexrowsA = "m260"
+	matrixexrowsB = "m260"
+	useformmatrixA = false
+	useformmatrixB = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask usekorrtpfp : false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usekorrtpfp : false
+	reportsetex Bb :
+		ask und_plan
+		ask dropzeroes : true
+		ask usekorrtpfp : false
+		ask showkorrtpfp : false
+
+#====================================================================================
+#Расшифровка прочих расходов (Прил. № 3.4) - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport zatr_pr_corp,  "Расшифровка прочих расходов (Прил. № 3.4)", roleprefix=DR, rootrow=r590 :
+	ranameA = _NAME_ZATR_PR
+	ranameB = _NAME_ZATR_PR
+	ra_numberA = "Приложение № 3.4"
+	ra_numberB = "Приложение № 3.4"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask dropzeroes: false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask dropzeroes: false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+
+#====================================================================================
+#Группировка прочих расходов
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_PR_GROUP : "Группировка прочих расходов в форме 3.4."
+kvartform zatr_pr_group, "Группировка прочих расходов  в форме 3.4.", group=eco_grp, roleprefix=DR, parent=zatr, rootrow=g590 :
+	import fordesign
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usekorrtpfp: false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask usekorrtpfp: false
+
+
+#====================================================================================
+#Расшифровка прочих расходов (Прил. № 3.4) с расшифровками
+#------------------------------------------------------------------------------------
+monthform zatr_pr_hold, "Расшифровка прочих расходов (Прил. № 3.4) с расшифровками", group=analysisg, parent=holdundreport:
+	import zatr_pr
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	rbnameB = "Расшифровка других расходов в затратах на производство и реализацию"
+	activeC = false
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+	ra_visibleA =false
+	ra_visibleB =false
+	needresponsibility = false
+	reportset Ab :
+		param showmeasure : false
+		use und_plan : true
+		use dropzeroes : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: true
+		ask rowtype : "-r590310,-r590320,!r590900"
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+	reportsetex Bb :
+		param showmeasure : false
+		param usekorrtpfp : false
+		use dropzeroes : true
+		use und_plan : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: true
+		ask rowtype : "-r590310,-r590320,!r590900"
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+
+#====================================================================================
+# Амортизация
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_AM : "Амортизация (прил 3.5)"
+monthform zatr_am,  "Амортизация (прил. 3.5)", group=eco_grp, parent=zatr, rootrow=k260400, roleprefix=DR:
+	formnameA = _NAME_ZATR_AM
+	ra_numberA = "Форма №3 (амортизация)"
+	ranameA = _NAME_ZATR_AM
+	rbnameA = _NAME_ZATR_AM
+	activeC = false
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask usekorrtpfp : false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask usekorrtpfp : false
+
+#====================================================================================
+#Корректировка отдельных статей затрат по форме № 3
+#------------------------------------------------------------------------------------
+global _NAME_ZATR_KORR_PR : "Уточнение отдельных статей затрат по форме № 3"
+monthform zatr_korr_pr,  "Уточнение отдельных статей затрат по форме № 3", group=eco_grp, rootrow=k999, roleprefix=DR, parent=zatr:
+	import fordesign
+	activeC = false
+	formnameA = _NAME_ZATR_KORR_PR
+	ra_numberA = "Форма №3 (отдельные статьи затрат)"
+	ranameA = _NAME_ZATR_KORR_PR
+	rbnameA = _NAME_ZATR_KORR_PR
+	reportset Bb :
+		param usekorrtpfp : false
+
+#====================================================================================
+#Расходы на собственные нужды (форма № 6)
+#------------------------------------------------------------------------------------
+global _NAME_RASHSN : "Расходы на собственные нужды"
+monthform rashsn,  "Расходы на собственные нужды (форма № 6)", rootrow=m600, group=eco_grp, roleprefix=SOC:
+	formnameA = _NAME_RASHSN
+	ra_numberA = "Форма № 6"
+	ranameA = _NAME_RASHSN
+	rbnameA = _NAME_RASHSN
+	formnameB = _NAME_RASHSN
+	ra_numberB = "Форма № 6"
+	ranameB = _NAME_RASHSN
+	rbnameB = _NAME_RASHSN
+	reportset Ab :
+		ask und_plan : false # по умолчанию
+		ask und_soc 
+		ask und_soc_dir 
+		ask dropzeroes : true
+		ask rowtype : "!m6001000"
+	reportsetex Bb :
+		ask und_soc
+		ask und_plan
+		ask und_soc_dir 
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		use dropzeroes : true
+		ask rowtype : "!m6001100,!m6001000"
+	
+#====================================================================================
+#Расходы на собственные нужды (форма № 6)
+#------------------------------------------------------------------------------------
+corpreport rashsn_corp,  "Расходы на собственные нужды (форма № 6)", roleprefix=SOC, rootrow=m600:
+	ranameA = _NAME_RASHSN
+	ranameB = _NAME_RASHSN
+	ra_numberA = "Форма № 6"
+	ra_numberB = "Форма № 6"
+	ra_lib2A = "ecolibMFACTSVOD"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask rowtype : "-m600195,-m600395,-m600445,-m600480,-m600595,-m600695,-m600795,-m600895,-m600900,!m6001000"
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask rowtype : "-m600195,-m600395,-m600445,-m600480,-m600595,-m600695,-m600795,-m600895,-m600900,!m6001000"
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+
+#====================================================================================
+#Расходы на собственные нужды (форма № 6)
+#------------------------------------------------------------------------------------
+monthform rashsn_hold,  "Расходы на собственные нужды (форма № 6) с утв. УГМК", group=analysisg, parent=holdundreport:
+	import rashsn
+	import holdunderwrite
+	reportset Ab :
+		use und_plan : true
+		use und_buh : false
+		use und_soc
+		use und_soc_dir
+		use dropzeroes : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		use maxlevel : 2
+		use rowtype : "!m6001100,!m6001000,-m600940,-m600640,-m600960,-m600195,-m600395,-m600430,-m600445,-m600480,-m600595,-m600695,-m600795,-m600895,-m600995"
+	reportsetex Bb :
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		use dropzeroes : true
+		use und_soc_dir : true
+		use und_plan : true
+		use und_soc : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		use maxlevel : 2
+		use rowtype : "!m6001100,!m6001000,-m600940,-m600640,-m600960,-m600195,-m600395,-m600430,-m600445,-m600480,-m600595,-m600695,-m600795,-m600895,-m600995,!m6001100"
+
+
+#====================================================================================
+#Расходы на собственные нужды (форма № 6) с расшифровками
+#------------------------------------------------------------------------------------
+monthform rashsn_no_ras,  "Расходы на собственные нужды (форма № 6) c расшифровками", group=analysisg, parent=holdundreport, rootrow=m600:
+	import holdunderwrite
+	reportset Ab :
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		use maxlevel : 1
+		use dropzeroes: false
+		ask rowtype : "!m6001100,!m6001000,-m600100,+m600195,+m600395,+m600430,+m600445,+m600480,+m600595,+m600695,+m600795,+m600895,+m600995,!m6001000"
+	reportsetex Bb :
+		ask und_plan
+		ask und_soc
+		ask usekorrtpfp : false
+		ask showkorrtpfp : true
+		use dropzeroes : true
+		use periodstring : 'EMPTY'
+		use und_redirect : 357
+		use dropzeroes: false
+		ask rowtype : "!m6001100,!m6001000,!m600110,!m600120,!m600130,!m600140,!m600150,!m600160,!m600170,!m600180,!m600190,!m600191,!m600310,!m600320,!m600330,!m600340,!m600350,!m600360,!m600370,!m600410,!m600420,!m600440,!m600460,!m600470,!m600510,!m600520,!m600530,!m600540,!m600610,!m600620,!m600650,!m600660,!m600670,!m600710,!m600720,!m600731,!m600732,!m600741,!m600742,!m600760,!m600771,!m600772,!m600773,!m600775,!m600780,!m600790,!m600710,!m600710,!m600710,!m600710,!m600810,!m600820,!m600830,!m600831,!m600840,!m600850,!m600855,!m600860,!m600865,!m600866,!m600870,!m600875,!m600880,!m600885,!m600890,!m600910,!m600920,!m600930,!m600940,!m600950,!m600970,!m600975,!m600980,!m600985,!m600990,!m600991,!m600992"
+
+#====================================================================================
+#Приложение 19 
+#------------------------------------------------------------------------------------
+global _NAME_RASHSN_P19 : "Расходы на собственные нужды"
+pril_finot rashsn_p19, "Приложение 19. Расходы организации на собственные нужды", idx=190, rootrow=m600, group=analysisg, parent=sfr :
+	formnameA = _NAME_RASHSN_P19
+	ra_numberA = "Приложение № 19"
+	ranameA = _NAME_RASHSN_P19
+	rbnameA = _NAME_RASHSN_P19
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		ask rowtype : "!m6001000,!m6001100,!m6001200"
+		ask showcontrolpoints : false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask rowtype : "!m6001000,!m6001100,!m6001200"
+		ask showcontrolpoints : false
+
+#====================================================================================
+#Общепроизводственные расходы
+#------------------------------------------------------------------------------------
+monthform opr,  "Общепроизводственные расходы", group=eco_grp, rootrow=m216, roleprefix=DR:
+	import fordesign
+	activeC = false
+	
+
+#====================================================================================
+#Финансовый план
+#------------------------------------------------------------------------------------
+monthform finplan,  "Финансовый план", group=fin_grp, rootrow=f110, roleprefix=FIN, parent=momeygroup:
+	import fordesign
+	activeC = false
+
+#====================================================================================
+#Расходы по персоналу
+#------------------------------------------------------------------------------------
+monthform zp_zatr,  "Расходы по персоналу", group=eco_grp, parent=zatr, rootrow=m265, roleprefix=DR:
+	import fordesign
+	activeC = false
+
+#====================================================================================
+#Внутрикорпоративные услуги
+#------------------------------------------------------------------------------------
+kvartform vncorp_usl,  "Внутрикорпоративные услуги", group=cost_grp, rootrow=z310, roleprefix=COST:
+	import fordesign
+	activeC = false
+
+		
+#====================================================================================
+#Движение денежных средств
+#------------------------------------------------------------------------------------
+global _NAME_DDS : "Отчет о движении денежных средств"
+finreport dds, "Движение денежных средств" , rootrow=m213, group=fin_grp, parent=momeygroup :
+	ranameA = _NAME_DDS
+	rbnameA = _NAME_DDS
+	ranameB = _NAME_DDS
+	rbnameB = _NAME_DDS
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_buh
+		use und_plan
+		var cond_, "Показатели по ДДС", target=condition, listdefinition= _ТПСНГ : "PRED;BYMONTH;СНГ"
+		useset cs_dds_report
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_dds_report
+
+			
+#------------------------------------------------------------------------------------
+#Контакты
+#------------------------------------------------------------------------------------
+thema contacts :
+	visible=false
+	out "-orgtel", "Телефонный справочник предприятия" :
+		role=DEFAULT
+		isvalid
+		template=empty
+		var currentObject, "Предприятие", type=int
+		param viewname : "contacts/orgtel"
+		param generatorname : "contacts/orgtel"
+	out "-allorgtel", "Полный справочник пользователей" :
+		role=ADMIN
+		isvalid
+		template=empty
+		param viewname : "contacts/orgtelsvod"
+		param generatorname : "contacts/orgtelsvod"
+
+#====================================================================================
+#Показатели для Алагирского цементного завода
+#------------------------------------------------------------------------------------
+assoieco osnpok_alagir, "Показатели для Алагирского ЦЗ (ADMIN)", group=analysisg, rootrow=a102, role=ADMIN :
+	activeB = false
+	activeC = false
+	f_visibleA = false
+	fl_visibleA = false
+	rb_visibleA =false
+	needresponsibility=false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+#		use cond_org_groups : "OG,OG_ORG"
+#		use cond_div : "NODIV"
+#		use cond_otrasl : "NOOTR"
+#		use cond_reg : "NOREG"
+#		use cond_og : "PRD_ALCZ"	
+		ask dropzeroes : false
+		col Б1, _FACT, year=-4, forperiod=4
+		col Б1, _FACT, year=-3, forperiod=4
+		col Б1, _FACT, year=-2, forperiod=4
+		col Б1, _FACT, year=-1, forperiod=4
+		col PLAN, _FACT, period=401, forperiod=4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

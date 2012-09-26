@@ -1,0 +1,782 @@
+﻿####################################################################################
+##################                  Реальные темы                  #################
+####################################################################################
+
+#====================================================================================
+#Глобальные переменные
+#------------------------------------------------------------------------------------
+global "_DEC3" : "#,##0.###"
+
+global "_КОЛ_НАЧ" : "Кол-во на нач. {2} {0}"
+global "_ЦЕНА_НАЧ" : "Цена на нач. {2} {0}, руб."
+global "_СУММА_НАЧ" : "Сумма на нач {2} {0}, тыс. руб."
+global "_КОЛ_ПРИХОД" : "Кол-во прихода {2} {0}"
+global "_ЦЕНА_ПРИХОД" : "Цена прихода {2} {0}, руб."
+global "_СУММА_ПРИХОД" : "Сумма прихода {2} {0}, тыс. руб."
+global "_КОЛ_РАСХОД" : "Кол-во расхода {2} {0}"
+global "_ЦЕНА_РАСХОД" : "Цена расхода {2} {0}, руб."
+global "_СУММА_РАСХОД" : "Сумма расхода {2} {0}, тыс. руб."
+global "_КОЛ_КОН" : "Кол-во на кон. {2} {0}"
+global "_ЦЕНА_КОН" : "Цена на кон. {2} {0}, руб."
+global "_СУММА_КОН" : "Сумма на кон. {2} {0}, тыс. руб."
+
+#====================================================================================
+#Параметры фильтрации разделов
+#------------------------------------------------------------------------------------
+paramlib :
+	param show_summs_only, "Сокр. вид", type=bool, radio=true, group=_ГП_ДЕРЕВО, idx=110 , defaultvalue=false :
+		listdefinition = """
+			false:Полный отчет |
+			true:Только Всего
+		"""
+	param use_metal_filter, "Вид отчета", type=bool, radio=true, group=_ГП_ДЕРЕВО, idx=111 , defaultvalue=false :
+		listdefinition = """
+			false:Полный отчет |
+			true:По металлам
+		"""
+	param metal_filter_au, "Золото", type=bool, group=_ГП_ДЕРЕВО, idx=112 : false
+	param metal_filter_ag, "Серебро", type=bool, group=_ГП_ДЕРЕВО, idx=113 : false
+	param metal_filter_cu, "Медь", type=bool, group=_ГП_ДЕРЕВО, idx=114 : false
+	param metal_filter_zn, "Цинк", type=bool, group=_ГП_ДЕРЕВО, idx=115 : false
+	param metal_filter_pb, "Свинец", type=bool, group=_ГП_ДЕРЕВО, idx=116 : false
+	
+	param metal_filter_smt, "СМТ", type=bool, group=_ГП_ДЕРЕВО, idx=117 : false
+	param metal_filter_sod, "Сод.", type=bool, group=_ГП_ДЕРЕВО, idx=118 : false
+	
+	param include_raw , "Сырье", type=bool, idx=11, group=_ГП_ДЕРЕВО : false
+	param include_raw_self , "Собственное сырье", idx=12, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_raw_gift , "Давальческое сырье", idx=13, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_raw_sum , "Итоги по сырью", idx=14, type=bool, group=_ГП_ДЕРЕВО : false
+
+	param include_gp , "Продукция", idx=21, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_gp_self , "Собственная продукция", idx=22, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_gp_gift , "Давальческая продукция", idx=23, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_gp_sum , "Итоги по продукции", idx=24, type=bool, group=_ГП_ДЕРЕВО : false
+
+	param include_sale , "Реализация", idx=31, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_sale_self , "Собственная продукция", idx=32, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_sale_gift , "Услуги по переработке", idx=33, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_sale_sum , "Итоги по реализации", idx=34,  type=bool, group=_ГП_ДЕРЕВО : false
+
+	param include_nezav , "НЗП", idx=41, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_nezav_self , "Собственное НЗП", idx=42, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_nezav_gift , "Давальческое НЗП", idx=43, type=bool, group=_ГП_ДЕРЕВО : false
+	param include_nezav_sum , "Итоги по НЗП", idx=44, type=bool, group=_ГП_ДЕРЕВО : false
+
+#====================================================================================
+#Формы движения материальных ценностей
+#------------------------------------------------------------------------------------
+thema material_balans, "Движение материальных ценностей (old)", group="cost_grp", role="ADMIN"
+
+#====================================================================================
+#Спец-отчет по загрузке сырья в производство
+#------------------------------------------------------------------------------------
+#material_balans_base rawinput, "Сводный отчет по загрузке сырья в производство", role="ADMIN" :
+#	activeC = false
+#	f_visibleA = false
+#	f_visibleB = false
+#	reportset Ab :
+#		use viewname : "raw/rawinput"
+#		use generatorname : "raw/rawinput"
+#	reportset Bb :
+#		use viewname : "raw/rawinput"
+#		use generatorname : "raw/rawinput"
+		
+#====================================================================================
+#Загрузка сырья в передел черновой меди
+#------------------------------------------------------------------------------------
+material_balans_base rawinput_rawtype, "Загрузка сырья в передел черновой меди", role="ADMIN" :
+	activeC = false
+	f_visibleA = false
+	f_visibleB = false
+	reportset Ab :
+		param userawtype, type=bool : true
+		use viewname : "raw/rawinput_rt"
+		use generatorname : "raw/rawinput_rt"
+	reportsetex Aa :
+		use viewname : "raw/rawinput_rt"
+		use generatorname : "raw/rawinput_rt"
+	reportset Bb :
+		param userawtype, type=bool : true
+		use viewname : "raw/rawinput_rt"
+		use generatorname : "raw/rawinput_rt"
+	reportsetex Ba :
+		use viewname : "raw/rawinput_rt"
+		use generatorname : "raw/rawinput_rt"
+		
+
+#=================================0===================================================
+#Сводый отчет по движению сырья и продукции
+#------------------------------------------------------------------------------------
+thema raw_report_svod , "Сводый отчет по движению сырья", group="cost_grp", parent = "material_balans", rootrow = 'm150', role="ADMIN" :
+	import assoieco
+	import forprdtest
+	activeC = false
+
+	rb_visibleA = true
+	rb_visibleB = true
+	ra_visibleA = true
+	ra_visibleB = true
+	f_visibleA = false
+	f_visibleB = false
+	fl_visibleA = false
+	fl_visibleB = false
+
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+
+	forgroup=PRD_SIR
+	reportsetex Aa :
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_report
+	reportsetex Ab :
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_report
+	reportsetex Ba :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_plan_report
+	reportsetex Bb :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_plan_report
+	
+#====================================================================================
+#Базовая форма по движению ценностей 
+#------------------------------------------------------------------------------------
+thema material_balans_base, "Базовая форма по движению ценностей", group="cost_grp", parent = "material_balans", rootrow = 'm150', role="ADMIN", abst :
+	import assoieco
+	import forprdtest
+	usequickupdateA = false
+	usequickupdateB = false
+	usequickupdateC = false
+	activeC = false
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	
+	lockA = "${code}A"
+	lockB = "${code}B"
+	mbtype = ""
+	selfform = "false"
+	reportset Aa :
+		use viewname : "raw/default"
+		use generatorname : "raw/default"
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+		ask use_metal_filter
+		ask show_summs_only
+		ask metal_filter_au
+		ask metal_filter_ag
+		ask metal_filter_cu
+		ask metal_filter_zn
+		ask metal_filter_pb
+		ask metal_filter_smt
+		ask metal_filter_sod
+	reportset Ab :
+		use viewname : "raw/default"
+		use generatorname : "raw/default"
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+	reportset Ba :
+		use viewname : "raw/default"
+		use generatorname : "raw/default"
+		ask use_metal_filter
+		ask show_summs_only
+		ask metal_filter_au
+		ask metal_filter_ag
+		ask metal_filter_cu
+		ask metal_filter_zn
+		ask metal_filter_pb
+		ask metal_filter_smt
+		ask metal_filter_sod
+		hide useotkl
+	reportset Bb :
+		use viewname : "raw/default"
+		use generatorname : "raw/default"
+
+#====================================================================================
+#Поставка сырья
+#------------------------------------------------------------------------------------
+material_balans_base raw_provide, "Движение сырья",  group="cost_grp" :
+	tableviewA = "rawprovide"
+	tableviewB = "rawprovide"
+	mbtype = "raw"
+	forgroup=PRD_SIR
+	formset A :
+		param mbtype : "${mbtype}"
+		param selfform : "${selfform}"
+		useset cs_material_balans
+		useset cs_material_balans_control
+	reportsetex Ab :
+		ask include_raw : true
+		ask include_raw_self : true
+		ask include_raw_gift : true
+		ask include_raw_sum : true
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_report
+	reportsetex Aa :
+		use include_raw : true
+		ask include_raw_self : true
+		ask include_raw_gift : true
+		ask include_raw_sum : true
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_report
+	formset B :
+		param mbtype : "${mbtype}"
+		param selfform : "${selfform}"
+		useset cs_material_balans_plan
+	reportsetex Bb :
+		use include_raw : true
+		ask include_raw_self : true
+		ask include_raw_gift : true
+		ask include_raw_sum : true
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_plan_report
+	reportsetex Ba :
+		use include_raw : true
+		ask include_raw_self : true
+		ask include_raw_gift : true
+		ask include_raw_sum : true
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_material_balans_plan_report
+
+	
+	
+#====================================================================================
+#Баланс МТР (форма факт)
+#------------------------------------------------------------------------------------
+subset cs_material_balans, "Баланс МТР (форма факт)" :
+	#колонки за месяц
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, forperiods="_ЯНВ"
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, auto, fixed, forperiods="_НЕ_ЯНВ"
+	col ONCENACALC, _ЦЕНА_НАЧ, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col ONSUMMA, _СУММА_НАЧ, format=_INT, forperiods="_ЯНВ", validation="validate-int-cell-number"
+	col ONSUMMA, _СУММА_НАЧ, format=_INT, auto, fixed, forperiods="_НЕ_ЯНВ"
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col PDCENACALC, _ЦЕНА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", validation="validate-int-cell-number"
+
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col RDCENACALC, _ЦЕНА_РАСХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col OKKOL, _КОЛ_КОН, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col OKCENACALC, _ЦЕНА_КОН, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col OKSUMMA, _СУММА_КОН, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	#колонки за с начала года
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, period=-503, forperiods="_МЕС_СНГ", fixed
+	col ONCENACALC, _ЦЕНА_НАЧ, format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ"
+	col ONSUMMA, _СУММА_НАЧ, format=_INT, period=-503, forperiods="_МЕС_СНГ", fixed
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col PDCENACALC, _ЦЕНА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ"
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col RDCENACALC, _ЦЕНА_РАСХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ"
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+
+	col OKKOL, _КОЛ_КОН, format=_DEC3, period=-205, forperiods="_МЕС_СНГ"
+	col OKCENACALC, _ЦЕНА_КОН, format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ"
+	col OKSUMMA, _СУММА_КОН, format=_INT, period=-205, forperiods="_МЕС_СНГ"
+
+#====================================================================================
+#Поступление МТР (форма факт)
+#------------------------------------------------------------------------------------
+subset cs_material_prihod, "Поступление МТР (форма факт)" :
+	#колонки за месяц
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col PDCENACALC, _ЦЕНА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", validation="validate-int-cell-number"
+
+	#колонки за с начала года
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col PDCENACALC, _ЦЕНА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ"
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+
+#====================================================================================
+#Баланс МТР (форма факт)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_nat, "Баланс МТР (форма факт)" :
+	#колонки за месяц
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, forperiods="_ЯНВ"
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, auto, fixed, forperiods="_НЕ_ЯНВ"
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col OKKOL, _КОЛ_КОН, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	#колонки за с начала года
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, period=-503, forperiods="_МЕС_СНГ", fixed
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col OKKOL, _КОЛ_КОН, format=_DEC3, period=-205, forperiods="_МЕС_СНГ"
+
+#====================================================================================
+#Поступление давальческих МТР (форма факт)
+#------------------------------------------------------------------------------------
+subset cs_material_prihod_nat, "Поступление давальческих МТР (форма факт)" :
+	#колонки за месяц
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	#колонки за с начала года
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+
+#====================================================================================
+#Баланс МТР (колонки)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_control, "Баланс МТР (контроль оборотов)" :
+	col KOLCONTR, "[Контроль кол-ва] = 0", format=_DEC3, formula=" @ONKOL.P11? + @PDKOL.P-501? - @RDKOL.P-501? - @ONKOL? - @PDKOL? + @RDKOL? ", forperiods="_НЕ_ЯНВ" :
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+	col SUMCONTR, "[Контроль суммы] = 0", format=_INT, formula=" @ONSUMMA.P11? + @PDSUMMA.P-501? - @RDSUMMA.P-501? - @ONSUMMA? - @PDSUMMA? + @RDSUMMA? ", forperiods="_НЕ_ЯНВ" :
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+
+#====================================================================================
+#Баланс МТР (оперативный план отчет)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_operplan, "Баланс МТР (оперативный план)" :
+	col ONKOLPLAN, "_КОЛ_НАЧ план", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and KOL and OSTN and BYMONTH"
+	col ONCENAPLAN, "_ЦЕНА_НАЧ план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and CENA and OSTN and BYMONTH"
+	col ONSUMMAPLAN, "_СУММА_НАЧ план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and SUMMA and OSTN and BYMONTH"
+
+	col PDKOLPLAN, "_КОЛ_ПРИХОД план", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and KOL and PRIHOD and BYMONTH"
+	col PDCENAPLAN, "_ЦЕНА_ПРИХОД план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and CENA and PRIHOD and BYMONTH"
+	col PDSUMMAPLAN, "_СУММА_ПРИХОД план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and SUMMA and PRIHOD and BYMONTH"
+
+	col RDKOLPLAN, "_КОЛ_РАСХОД план", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and KOL and RASHOD and BYMONTH"
+	col RDCENAPLAN, "_ЦЕНА_РАСХОД план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and CENA and RASHOD and BYMONTH"
+	col RDSUMMAPLAN, "_СУММА_РАСХОД план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and SUMMA and RASHOD and BYMONTH"
+
+	col OKKOLPLAN, "_КОЛ_КОН план", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and KOL and OSTK and BYMONTH"
+	col OKCENAPLAN, "_ЦЕНА_КОН план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and CENA and OSTK and BYMONTH"
+	col OKSUMMAPLAN, "_СУММА_КОН план", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="PLAN and SUMMA and OSTK and BYMONTH"
+
+#==================================================================================== 
+#Баланс МТР (оперативный план отчет с н.г.)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_operplan_sng, "Баланс МТР (оперативный план с н.г.)" :
+	#колонки за с начала года для месячных периодов
+	col ONKOLPLAN, "_КОЛ_НАЧ план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and KOL and OSTN and BYMONTH"
+	col ONCENAPLAN, "_ЦЕНА_НАЧ план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and CENA and OSTN and BYMONTH"
+	col ONSUMMAPLAN, "_СУММА_НАЧ план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and SUMMA and OSTN and BYMONTH"
+
+	col PDKOLPLAN, "_КОЛ_ПРИХОД план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and KOL and PRIHOD and BYMONTH"
+	col PDCENAPLAN, "_ЦЕНА_ПРИХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and CENA and PRIHOD and BYMONTH"
+	col PDSUMMAPLAN, "_СУММА_ПРИХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and SUMMA and PRIHOD and BYMONTH"
+
+	col RDKOLPLAN, "_КОЛ_РАСХОД план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and KOL and RASHOD and BYMONTH"
+	col RDCENAPLAN, "_ЦЕНА_РАСХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and CENA and RASHOD and BYMONTH"
+	col RDSUMMAPLAN, "_СУММА_РАСХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and SUMMA and RASHOD and BYMONTH"
+
+	col OKKOLPLAN, "_КОЛ_КОН план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and KOL and OSTK and BYMONTH"
+	col OKCENAPLAN, "_ЦЕНА_КОН план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and CENA and OSTK and BYMONTH"
+	col OKSUMMAPLAN, "_СУММА_КОН план", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", condition="PLAN and SUMMA and OSTK and BYMONTH"
+
+	#колонки за с начала года для периодов с начала года
+	col ONKOLPLAN, "_КОЛ_НАЧ план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and KOL and OSTN and СНГ"
+	col ONCENAPLAN, "_ЦЕНА_НАЧ план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and CENA and OSTN and СНГ"
+	col ONSUMMAPLAN, "_СУММА_НАЧ план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and SUMMA and OSTN and СНГ"
+
+	col PDKOLPLAN, "_КОЛ_ПРИХОД план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and KOL and PRIHOD and СНГ"
+	col PDCENAPLAN, "_ЦЕНА_ПРИХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and CENA and PRIHOD and СНГ"
+	col PDSUMMAPLAN, "_СУММА_ПРИХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and SUMMA and PRIHOD and СНГ"
+
+	col RDKOLPLAN, "_КОЛ_РАСХОД план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and KOL and RASHOD and СНГ"
+	col RDCENAPLAN, "_ЦЕНА_РАСХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and CENA and RASHOD and BYMONTH"
+	col RDSUMMAPLAN, "_СУММА_РАСХОД план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and SUMMA and RASHOD and СНГ"
+
+	col OKKOLPLAN, "_КОЛ_КОН план", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and KOL and OSTK and СНГ"
+	col OKCENAPLAN, "_ЦЕНА_КОН план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and CENA and OSTK and СНГ"
+	col OKSUMMAPLAN, "_СУММА_КОН план", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", condition="PLAN and SUMMA and OSTK and СНГ"
+
+#====================================================================================
+#Баланс МТР (отклонения от оперативного плана отчет)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_operplan_otkl, "Баланс МТР (оперативный план)" :
+	col ONKOLPLANOTKL, "_КОЛ_НАЧ откл. от плана", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @ONKOL? - @ONKOLPLAN? ", condition="PLAN and FACT and KOL and OSTN and BYMONTH and OTKL"
+	col ONCENAPLANOTKL, "_ЦЕНА_НАЧ откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @ONCENACALC? - @ONCENAPLAN? ", condition="PLAN and FACT and CENA and OSTN and BYMONTH and OTKL"
+	col ONSUMMAPLANOTKL, "_СУММА_НАЧ откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @ONSUMMA? - @ONSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and OSTN and BYMONTH and OTKL"
+
+	col PDKOLPLANOTKL, "_КОЛ_ПРИХОД откл. от плана", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @PDKOL? - @PDKOLPLAN? ", condition="PLAN and FACT and KOL and PRIHOD and BYMONTH and OTKL"
+	col PDCENAPLANOTKL, "_ЦЕНА_ПРИХОД откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @PDCENACALC? - @PDCENAPLAN? ", condition="PLAN and FACT and CENA and PRIHOD and BYMONTH and OTKL"
+	col PDSUMMAPLANOTKL, "_СУММА_ПРИХОД откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @PDSUMMA? - @PDSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and PRIHOD and BYMONTH and OTKL"
+
+	col RDKOLPLANOTKL, "_КОЛ_РАСХОД откл. от плана", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @RDKOL? - @RDKOLPLAN? ", condition="PLAN and FACT and KOL and RASHOD and BYMONTH and OTKL"
+	col RDCENAPLANOTKL, "_ЦЕНА_РАСХОД откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @RDCENACALC? - @RDCENAPLAN? ", condition="PLAN and FACT and CENA and RASHOD and BYMONTH and OTKL"
+	col RDSUMMAPLANOTKL, "_СУММА_РАСХОД откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @RDSUMMA? - @RDSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and RASHOD and BYMONTH and OTKL"
+
+	col OKKOLPLANOTKL, "_КОЛ_КОН откл. от плана", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @OKKOL? - @OKKOLPLAN? ", condition="PLAN and FACT and KOL and OSTK and BYMONTH and OTKL"
+	col OKCENAPLANOTKL, "_ЦЕНА_КОН откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @OKCENACALC? - @OKCENAPLAN? ", condition="PLAN and FACT and CENA and OSTK and BYMONTH and OTKL"
+	col OKSUMMAPLANOTKL, "_СУММА_КОН откл. от плана", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", formula=" @OKSUMMA? - @OKSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and OSTK and BYMONTH and OTKL"
+
+#====================================================================================
+#Баланс МТР (отклонения от оперативного плана с н.г.)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_operplan_sng_otkl, "Баланс МТР (оперативный план c н.г.)" :
+	col ONKOLPLANOTKL1, "_КОЛ_НАЧ откл. от плана", format=_DEC3,  period=-503, forperiods="_МЕС_СНГ", formula=" @ONKOL? - @ONKOLPLAN? ", condition="PLAN and FACT and KOL and OSTN and BYMONTH and OTKL"
+	col ONCENAPLANOTKL1, "_ЦЕНА_НАЧ откл. от плана", format=_INT,  period=-503, forperiods="_МЕС_СНГ", formula=" @ONCENACALC? - @ONCENAPLAN? ", condition="PLAN and FACT and CENA and OSTN and BYMONTH and OTKL"
+	col ONSUMMAPLANOTKL1, "_СУММА_НАЧ откл. от плана", format=_INT,  period=-503, forperiods="_МЕС_СНГ", formula=" @ONSUMMA? - @ONSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and OSTN and BYMONTH and OTKL"
+
+	col PDKOLPLANOTKL1, "_КОЛ_ПРИХОД откл. от плана", format=_DEC3,  period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", formula=" @PDKOL.P-501? - @PDKOLPLAN? ", condition="PLAN and FACT and KOL and PRIHOD and BYMONTH and OTKL"
+	col PDCENAPLANOTKL1, "_ЦЕНА_ПРИХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", formula=" @PDCENACALC.P-501? - @PDCENAPLAN? ", condition="PLAN and FACT and CENA and PRIHOD and BYMONTH and OTKL"
+	col PDSUMMAPLANOTKL1, "_СУММА_ПРИХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", formula=" @PDSUMMA.P-501? - @PDSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and PRIHOD and BYMONTH and OTKL"
+
+	col RDKOLPLANOTKL1, "_КОЛ_РАСХОД откл. от плана", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", formula=" @RDKOL.P-501? - @RDKOLPLAN? ", condition="PLAN and FACT and KOL and RASHOD and BYMONTH and OTKL"
+	col RDCENAPLANOTKL1, "_ЦЕНА_РАСХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", formula=" @RDCENACALC.P-501? - @RDCENAPLAN? ", condition="PLAN and FACT and CENA and RASHOD and BYMONTH and OTKL"
+	col RDSUMMAPLANOTKL1, "_СУММА_РАСХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ", formula=" @RDSUMMA.P-501? - @RDSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and RASHOD and BYMONTH and OTKL"
+
+	col OKKOLPLANOTKL1, "_КОЛ_КОН откл. от плана", format=_DEC3, period=-205, forperiods="_МЕС_СНГ", formula=" @OKKOL? - @OKKOLPLAN? ", condition="PLAN and FACT and KOL and OSTK and BYMONTH and OTKL"
+	col OKCENAPLANOTKL1, "_ЦЕНА_КОН откл. от плана", format=_INT, period=-205, forperiods="_МЕС_СНГ", formula=" @OKCENACALC? - @OKCENAPLAN? ", condition="PLAN and FACT and CENA and OSTK and BYMONTH and OTKL"
+	col OKSUMMAPLANOTKL1, "_СУММА_КОН откл. от плана", format=_INT, period=-205, forperiods="_МЕС_СНГ", formula=" @OKSUMMA? - @OKSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and OSTK and BYMONTH and OTKL"
+
+	col ONKOLPLANOTKL2, "_КОЛ_НАЧ откл. от плана", format=_DEC3, period=-503, forperiods="_НЕ_ЯНВ", formula=" @ONKOL? - @ONKOLPLAN? ", condition="PLAN and FACT and KOL and OSTN and СНГ and OTKL"
+	col ONCENAPLANOTKL2, "_ЦЕНА_НАЧ откл. от плана", format=_INT, period=-503, forperiods="_НЕ_ЯНВ", formula=" @ONCENACALC? - @ONCENAPLAN? ", condition="PLAN and FACT and CENA and OSTN and СНГ and OTKL"
+	col ONSUMMAPLANOTKL2, "_СУММА_НАЧ откл. от плана", format=_INT, period=-503, forperiods="_НЕ_ЯНВ", formula=" @ONSUMMA? - @ONSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and OSTN and СНГ and OTKL"
+
+	col PDKOLPLANOTKL2, "_КОЛ_ПРИХОД откл. от плана", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", formula=" @PDKOL.P-501? - @PDKOLPLAN? ", condition="PLAN and FACT and KOL and PRIHOD and СНГ and OTKL"
+	col PDCENAPLANOTKL2, "_ЦЕНА_ПРИХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", formula=" @PDCENACALC.P-501? - @PDCENAPLAN? ", condition="PLAN and FACT and CENA and PRIHOD and СНГ and OTKL"
+	col PDSUMMAPLANOTKL2, "_СУММА_ПРИХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", formula=" @PDSUMMA.P-501? - @PDSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and PRIHOD and СНГ and OTKL"
+
+	col RDKOLPLANOTKL2, "_КОЛ_РАСХОД откл. от плана", format=_DEC3, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", formula=" @RDKOL.P-501? - @RDKOLPLAN? ", condition="PLAN and FACT and KOL and RASHOD and СНГ and OTKL"
+	col RDCENAPLANOTKL2, "_ЦЕНА_РАСХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", formula=" @RDCENACALC.P-501? - @RDCENAPLAN? ", condition="PLAN and FACT and CENA and RASHOD and СНГ and OTKL"
+	col RDSUMMAPLANOTKL2, "_СУММА_РАСХОД откл. от плана", format=_INT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", formula=" @RDSUMMA.P-501? - @RDSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and RASHOD and СНГ and OTKL"
+
+	col OKKOLPLANOTKL2, "_КОЛ_КОН откл. от плана", format=_DEC3, period=-205, forperiods="_НЕ_ЯНВ", formula=" @OKKOL? - @OKKOLPLAN? ", condition="PLAN and FACT and KOL and OSTK and СНГ and OTKL"
+	col OKCENAPLANOTKL2, "_ЦЕНА_КОН откл. от плана", format=_INT, period=-205, forperiods="_НЕ_ЯНВ", formula=" @OKCENACALC? - @OKCENAPLAN? ", condition="PLAN and FACT and CENA and OSTK and СНГ and OTKL"
+	col OKSUMMAPLANOTKL2, "_СУММА_КОН откл. от плана", format=_INT, period=-205, forperiods="_НЕ_ЯНВ", formula=" @OKSUMMA? - @OKSUMMAPLAN? ", condition="PLAN and FACT and SUMMA and OSTK and СНГ and OTKL"
+
+#====================================================================================
+#Баланс МТР (колонки)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_report, "Баланс МТР (отчет факт)" :
+	#оперативный план
+	useset cs_material_balans_operplan
+
+	#показатели за месяц
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and KOL and OSTN and BYMONTH"
+	col ONCENACALC, _ЦЕНА_НАЧ, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and CENA and OSTN and BYMONTH"
+	col ONSUMMA, _СУММА_НАЧ, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and SUMMA and OSTN and BYMONTH"
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and KOL and PRIHOD and BYMONTH"
+	col PDCENACALC, _ЦЕНА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and CENA and PRIHOD and BYMONTH"
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and SUMMA and PRIHOD and BYMONTH"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and KOL and RASHOD and BYMONTH"
+	col RDCENACALC, _ЦЕНА_РАСХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and CENA and RASHOD and BYMONTH"
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and SUMMA and RASHOD and BYMONTH"
+
+	col OKKOL, _КОЛ_КОН, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and KOL and OSTK and BYMONTH"
+	col OKCENACALC, _ЦЕНА_КОН, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and CENA and OSTK and BYMONTH"
+	col OKSUMMA, _СУММА_КОН, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", condition="FACT and SUMMA and OSTK and BYMONTH"
+
+	useset cs_material_balans_operplan_otkl
+
+	useset cs_material_balans_operplan_sng
+
+	#показатели с начала года для месячных периодов
+	col ONKOL1, _КОЛ_НАЧ, format=_DEC3, period=-501, forperiods="_НЕ_ЯНВ", formula=" @ONKOL.P11? ", condition="FACT and KOL and OSTN and СНГ"
+	col ONCENACALC, _ЦЕНА_НАЧ, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and OSTN and СНГ"
+	col ONSUMMA1, _СУММА_НАЧ, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", formula=" @ONSUMMA.P11? ", condition="FACT and SUMMA and OSTN and СНГ"
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and PRIHOD and СНГ"
+	col PDCENACALC, _ЦЕНА_ПРИХОД, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and PRIHOD and СНГ"
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and SUMMA and PRIHOD and СНГ"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and RASHOD and СНГ"
+	col RDCENACALC, _ЦЕНА_РАСХОД, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and RASHOD and СНГ"
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and SUMMA and RASHOD and СНГ"
+
+	col OKKOL, _КОЛ_КОН, format=_DEC3, period=-205, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTK and СНГ"
+	col OKCENACALC, _ЦЕНА_КОН, format=_INT, period=-205, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and OSTK and СНГ"
+	col OKSUMMA, _СУММА_КОН, format=_INT, period=-205, forperiods="_НЕ_ЯНВ", condition="FACT and SUMMA and OSTK and СНГ"
+
+	#показатели с начала года для периодов с начала года
+	col ONKOL1, _КОЛ_НАЧ, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", formula=" @ONKOL.P11? ", condition="FACT and KOL and OSTN and BYMONTH"
+	col ONCENACALC, _ЦЕНА_НАЧ, format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and CENA and OSTN and BYMONTH"
+	col ONSUMMA1, _СУММА_НАЧ, format=_INT, period=-501, forperiods="_МЕС_СНГ", formula=" @ONSUMMA.P11? ", condition="FACT and SUMMA and OSTN and BYMONTH"
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and PRIHOD and BYMONTH"
+	col PDCENACALC, _ЦЕНА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and CENA and PRIHOD and BYMONTH"
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and SUMMA and PRIHOD and BYMONTH"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and RASHOD and BYMONTH"
+	col RDCENACALC, _ЦЕНА_РАСХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and CENA and RASHOD and BYMONTH"
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and SUMMA and RASHOD and BYMONTH"
+
+	col OKKOL, _КОЛ_КОН, format=_DEC3, period=-205, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTK and BYMONTH"
+	col OKCENACALC, _ЦЕНА_КОН, format=_INT, period=-205, forperiods="_МЕС_СНГ", condition="FACT and CENA and OSTK and BYMONTH"
+	col OKSUMMA, _СУММА_КОН, format=_INT, period=-205, forperiods="_МЕС_СНГ", condition="FACT and SUMMA and OSTK and BYMONTH"
+
+	useset cs_material_balans_operplan_sng_otkl
+
+#====================================================================================
+#Баланс МТР (форма план)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_plan, "Баланс МТР (форма план)" :
+	col ONKOL, "_КОЛ_НАЧ план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col ONCENA, "_ЦЕНА_НАЧ план", format=_INT, forperiods="_PLAN_PERIOD"
+	col ONSUMMACALC, "_СУММА_НАЧ план", format=_INT, forperiods="_PLAN_PERIOD"
+
+	col PDKOL, "_КОЛ_ПРИХОД план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col PDCENA, "_ЦЕНА_ПРИХОД план", format=_INT, forperiods="_PLAN_PERIOD"
+	col PDSUMMACALC, "_СУММА_ПРИХОД план", format=_INT, forperiods="_PLAN_PERIOD"
+
+	col RDKOL, "_КОЛ_РАСХОД план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col RDCENA, "_ЦЕНА_РАСХОД план", format=_INT, forperiods="_PLAN_PERIOD"
+	col RDSUMMACALC, "_СУММА_РАСХОД план", format=_INT, forperiods="_PLAN_PERIOD"
+
+	col OKKOL, "_КОЛ_КОН план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col OKCENA, "_ЦЕНА_КОН план", format=_INT, forperiods="_PLAN_PERIOD"
+	col OKSUMMACALC, "_СУММА_КОН план", format=_INT, forperiods="_PLAN_PERIOD"
+
+#====================================================================================
+#Поступление МТР (форма план)
+#------------------------------------------------------------------------------------
+subset cs_material_prihod_plan, "Поступление МТР (форма план)" :
+	col PDKOL, "_КОЛ_ПРИХОД план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col PDCENA, "_ЦЕНА_ПРИХОД план", format=_INT, forperiods="_PLAN_PERIOD"
+	col PDSUMMACALC, "_СУММА_ПРИХОД план", format=_INT, forperiods="_PLAN_PERIOD"
+
+#====================================================================================
+#Баланс МТР (форма план)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_nat_plan, "Баланс МТР (форма план)" :
+	col ONKOL, "_КОЛ_НАЧ план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col PDKOL, "_КОЛ_ПРИХОД план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col RDKOL, "_КОЛ_РАСХОД план", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col OKKOL, "_КОЛ_КОН план", format=_DEC3, forperiods="_PLAN_PERIOD"
+
+#====================================================================================
+#Поступление давальческих МТР (форма план)
+#------------------------------------------------------------------------------------
+subset cs_material_prihod_nat_plan, "Поступление давальческих МТР (форма план)" :
+	col PDKOL, "_КОЛ_ПРИХОД план", format=_DEC3, forperiods="_PLAN_PERIOD"
+
+#====================================================================================
+#Баланс МТР (отчет план)
+#------------------------------------------------------------------------------------
+subset cs_material_balans_plan_report, "Баланс МТР (отчет план)" :
+	col ONKOL, "_КОЛ_НАЧ план", format=_DEC3, forperiods="_PLAN_PERIOD", condition="KOL and OSTN"
+	col ONCENA, "_ЦЕНА_НАЧ план", format=_INT, forperiods="_PLAN_PERIOD", condition="CENA and OSTN"
+	col ONSUMMACALC, "_СУММА_НАЧ план", format=_INT, forperiods="_PLAN_PERIOD", condition="SUMMA and OSTN"
+
+	col PDKOL, "_КОЛ_ПРИХОД план", format=_DEC3, forperiods="_PLAN_PERIOD", condition="KOL and PRIHOD"
+	col PDCENA, "_ЦЕНА_ПРИХОД план", format=_INT, forperiods="_PLAN_PERIOD", condition="CENA and PRIHOD"
+	col PDSUMMACALC, "_СУММА_ПРИХОД план", format=_INT, forperiods="_PLAN_PERIOD", condition="SUMMA and PRIHOD"
+
+	col RDKOL, "_КОЛ_РАСХОД план", format=_DEC3, forperiods="_PLAN_PERIOD", condition="KOL and RASHOD"
+	col RDCENA, "_ЦЕНА_РАСХОД план", format=_INT, forperiods="_PLAN_PERIOD", condition="CENA and RASHOD"
+	col RDSUMMACALC, "_СУММА_РАСХОД план", format=_INT, forperiods="_PLAN_PERIOD", condition="SUMMA and RASHOD"
+
+	col OKKOL, "_КОЛ_КОН план", format=_DEC3, forperiods="_PLAN_PERIOD", condition="KOL and OSTK"
+	col OKCENA, "_ЦЕНА_КОН план", format=_INT, forperiods="_PLAN_PERIOD", condition="CENA and OSTK"
+	col OKSUMMACALC, "_СУММА_КОН план", format=_INT, forperiods="_PLAN_PERIOD", condition="SUMMA and OSTK"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

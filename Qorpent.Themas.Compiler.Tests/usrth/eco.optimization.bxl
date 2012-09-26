@@ -1,0 +1,276 @@
+﻿#####################################################################################
+###################                 Каталог оптимизации             #################
+#####################################################################################
+
+optimization nalog_budget :
+	reportA :
+		matrixexrows : "m220"
+
+optimization zatr :
+	allforms: 
+		matrixexrows : "r590 m2172200  m218400 m218600 m218202 m212020 m212030 m212040 m220400 m218524 m211213 m211216 m211650 m211217 m211214 m211215 ~t110200"
+	formA :
+		col DELTA, matrixforrows="^m211", visible=false
+		col DELTA, period=303, matrixforrows="^m211", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col DELTA, period=306, matrixforrows="^m211", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col DELTA, period=309, matrixforrows="^m211", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col DELTA, period=301, matrixforrows="^m211", forperiods="4,110,111,112", visible=false
+		col JOB, matrixforrows="^t1", visible=false
+		col JOB, period=303, matrixforrows="^t1", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col JOB, period=306, matrixforrows="^t1", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col JOB, period=309, matrixforrows="^t1", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col JOB, period=301, matrixforrows="^t1", forperiods="4,110,111,112", visible=false	
+	formB:
+		col DELTA, matrixforrows="^m211", period=4, year=-1, visible=false
+		col DELTA, matrixforrows="^m211", period=254, visible=false
+		col DELTA, period=303, matrixforrows="^m211", visible=false
+		col DELTA, period=306, matrixforrows="^m211",  visible=false
+		col DELTA, period=309, matrixforrows="^m211",  visible=false
+		col DELTA, period=301, matrixforrows="^m211",  visible=false
+		col DELTA, period=31, matrixforrows="^m211", visible=false
+		col DELTA, period=32, matrixforrows="^m211",  visible=false
+		col DELTA, period=33, matrixforrows="^m211",  visible=false
+		col DELTA, period=34, matrixforrows="^m211",  visible=false
+		col JOB, matrixforrows="^t1", period="4",year=-1, visible=false
+		col JOB, matrixforrows="^t1", period="254", visible=false
+		col JOB, period=303, matrixforrows="^t1", visible=false
+		col JOB, period=306, matrixforrows="^t1",  visible=false
+		col JOB, period=309, matrixforrows="^t1",  visible=false
+		col JOB, period=301, matrixforrows="^t1",  visible=false
+		col JOB, period=31, matrixforrows="^t1", visible=false
+		col JOB, period=32, matrixforrows="^t1",  visible=false
+		col JOB, period=33, matrixforrows="^t1",  visible=false
+		col JOB, period=34, matrixforrows="^t1",  visible=false
+	reportB :
+		col PLANC, period=31, visible = false
+		col PLANC, period=32, visible = false
+		col PLANC, period=33, visible = false
+		col PLANC, period=34, visible = false
+	reportA :
+		col PLANC, period=31, visible = false
+		col PLANC, period=32, visible = false
+		col PLANC, period=33, visible = false
+		col PLANC, period=34, visible = false
+
+
+
+optimization balans :
+	allforms:
+		useformmatrix : "true"
+		
+optimization inv :
+	allforms :
+		matrixexrows : """~r130 m212141 m212142 m212150 m212180 m212160 m212010 m212020 m212030 m212040 m212060 
+			m212070 m212080 m212090 m212100 m211130
+		"""
+		col Б1, period=301,  matrixforrows="^m((250)|(212))", visible=false
+		col Б1, matrixforrows="^m((250)|(212))", visible=false
+		col Б1, period=303, matrixforrows="^m((250)|(212))", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Б1, period=306, matrixforrows="^m((250)|(212))", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Б1, period=309, matrixforrows="^m((250)|(212))", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Б1, period=301, matrixforrows="^m((250)|(212))", forperiods="4,110,111,112", visible=false
+		
+		col Б2, period=301,  matrixforrows="^m211", visible=false
+		col Б2, matrixforrows="^m211", visible=false
+		col Б2, period=306, matrixforrows="^m211", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Б2, period=309, matrixforrows="^m211", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Б2, period=301, matrixforrows="^m211", forperiods="4,110,111,112", visible=false
+		col Б1, period=306, matrixforrows="^m211", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Б1, period=309, matrixforrows="^m211", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Б1, period=301, matrixforrows="^m211", forperiods="4,110,111,112", visible=false
+		
+		
+		col Rd, period=301,  matrixforrows="^r130", visible=false
+		col Rd, matrixforrows="^r130", visible=false
+		col Rd, period=303, matrixforrows="^r130", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Rd, period=306, matrixforrows="^r130", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Rd, period=309, matrixforrows="^r130", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Rd, period=301, matrixforrows="^r130", forperiods="4,110,111,112", visible=false
+		
+		
+		col Pd, period=301,  matrixforrows="^r130", visible=false
+		col Pd, matrixforrows="^r130", visible=false
+		col Pd, period=303, matrixforrows="^r130", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Pd, period=306, matrixforrows="^r130", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Pd, period=309, matrixforrows="^r130", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Pd, period=301, matrixforrows="^r130", forperiods="4,110,111,112", visible=false
+		
+		col Ok, period=301,  matrixforrows="^r130", visible=false
+		col Ok, matrixforrows="^r130", visible=false
+		col Ok, period=303, matrixforrows="^r130", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Ok, period=306, matrixforrows="^r130", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Ok, period=309, matrixforrows="^r130", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Ok, period=301, matrixforrows="^r130", forperiods="4,110,111,112", visible=false
+		
+
+optimization osnpok :
+	allforms :
+		matrixexrows : "m212 m250 m600 m260 m218 ~r130 ~m211 ~t120 t110500 t110600 ~t110200 " 
+		col Б1, period=301,  matrixforrows="^m((250)|(212))", visible=false
+		col Б1, matrixforrows="^m((250)|(212))", visible=false
+		col Б1, period=303, matrixforrows="^m((250)|(212))", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Б1, period=306, matrixforrows="^m((250)|(212))", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Б1, period=309, matrixforrows="^m((250)|(212))", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Б1, period=301, matrixforrows="^m((250)|(212))", forperiods="4,110,111,112", visible=false
+		
+		col Б2, period=301,  matrixforrows="^m211", visible=false
+		col Б2, matrixforrows="^m211", visible=false
+		col Б2, period=306, matrixforrows="^m211", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Б2, period=309, matrixforrows="^m211", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Б2, period=301, matrixforrows="^m211", forperiods="4,110,111,112", visible=false
+		col Б1, period=306, matrixforrows="^m211", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Б1, period=309, matrixforrows="^m211", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Б1, period=301, matrixforrows="^m211", forperiods="4,110,111,112", visible=false
+		
+		
+		col Rd, period=301,  matrixforrows="^r130", visible=false
+		col Rd, matrixforrows="^r130", visible=false
+		col Rd, period=303, matrixforrows="^r130", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Rd, period=306, matrixforrows="^r130", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Rd, period=309, matrixforrows="^r130", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Rd, period=301, matrixforrows="^r130", forperiods="4,110,111,112", visible=false
+		
+		
+		col Pd, period=301,  matrixforrows="^r130", visible=false
+		col Pd, matrixforrows="^r130", visible=false
+		col Pd, period=303, matrixforrows="^r130", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Pd, period=306, matrixforrows="^r130", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Pd, period=309, matrixforrows="^r130", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Pd, period=301, matrixforrows="^r130", forperiods="4,110,111,112", visible=false
+		
+		col Ok, period=301,  matrixforrows="^r130", visible=false
+		col Ok, matrixforrows="^r130", visible=false
+		col Ok, period=303, matrixforrows="^r130", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Ok, period=306, matrixforrows="^r130", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Ok, period=309, matrixforrows="^r130", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Ok, period=301, matrixforrows="^r130", forperiods="4,110,111,112", visible=false
+		
+		col DELTA, matrixforrows="^m211", visible=false
+		col DELTA, period=303, matrixforrows="^m211", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col DELTA, period=306, matrixforrows="^m211", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col DELTA, period=309, matrixforrows="^m211", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col DELTA, period=301, matrixforrows="^m211", forperiods="4,110,111,112", visible=false
+		
+		col Б2, matrixforrows="^m211", visible=false
+		col Б2, period=303, matrixforrows="^m211", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col Б2, period=306, matrixforrows="^m211", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col Б2, period=309, matrixforrows="^m211", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col Б2, period=301, matrixforrows="^m211", forperiods="4,110,111,112", visible=false
+		
+		col PLAN, matrixforrows="^t1", visible=false
+		col JOB, matrixforrows="^t1", visible=false
+		col JOB, period=303, matrixforrows="^t1", forperiods="1,11,12,13,2,14,15,16", visible=false
+		col JOB, period=306, matrixforrows="^t1", forperiods="2,14,15,16,3,17,18,19", visible=false
+		col JOB, period=309, matrixforrows="^t1", forperiods="3,17,18,19,4,110,111,112", visible=false
+		col JOB, period=301, matrixforrows="^t1", forperiods="4,110,111,112", visible=false		
+	
+	reportB :
+		col PLANC, period=31, visible = false
+		col PLANC, period=32, visible = false
+		col PLANC, period=33, visible = false
+		col PLANC, period=34, visible = false
+		col Rd, matrixforrows="^r130", visible=false
+	reportA :
+		col PLANC, period=31, visible = false
+		col PLANC, period=32, visible = false
+		col PLANC, period=33, visible = false
+		col PLANC, period=34, visible = false
+		col Б1, period=31, visible = false
+		col Б1, period=32, visible = false
+		col Б1, period=33, visible = false
+		col Б1, period=34, visible = false
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

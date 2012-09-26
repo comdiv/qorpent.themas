@@ -1,0 +1,75 @@
+﻿####################################################################################
+###################                  ШАБЛОНЫ	                   #################
+####################################################################################
+
+
+thema testsvod, "Тестирование настройки сводов (ADMIN)", role="ADMIN" :
+#	import balans #отвалился имопорт 2.03.2011
+	reportsetex Aa: 
+		var param_template_objeset_select ,  "Набор объектов" , role=HOLDANALYTIC, group=_ГП_СВОД, target=condition, listdefinition="""
+			t_objset_def:По умолчанию|
+			t_objset_current:Текущее|
+			t_objset_div:Дивизионы
+		"""
+		var param_template_format_table, "Формат таблицы", role=ANALYTIC, group=_ГП_СВОД, target=condition, listdefinition="""
+			t_table_format_def:По умолчанию|
+			t_table_format_serif:Шрифт Serif
+		"""
+		var param_template_und_doc, "Подписи документа", role=ANALYTIC, group=_ГП_СВОД, target=condition, listdefinition="""
+			t_und_doc_def:Без подписей
+		"""
+		var param_template_app_doc, "Утверждение документа", role=ANALYTIC, group=_ГП_СВОД, target=condition, listdefinition="""
+			t_app_doc_def:Без утверждений|
+			t_app_doc_gd:Ген. директор|
+			t_app_doc_kom:Ком. директор|
+			t_app_doc_soc:Дир. по соц. вопр.|
+			t_app_doc_inv:Дир. по инвестициям
+		"""
+
+		hide only_current_admin
+		hide only_current_strict
+		hide cond_org_groups
+		hide cond_otrasl
+		hide cond_div
+		hide cond_reg
+		hide cond_og
+		hide filteringgroup
+		hide filteringgroupcorr
+		hide objtype
+		hide zdf_block
+		hide zdf_data
+
+		hide level_0_style
+		hide level_1_style
+		hide level_2_style
+		hide level_3_style
+		hide level_4_style
+		hide ext_css
+		hide headerfile
+		hide footerfile
+		hide main_font
+		hide column_width
+		hide name_width
+		hide number_width
+
+		hide und_gdir
+		hide und_kdir
+		hide und_buh
+		hide und_plan
+		hide und_ing
+		hide und_soc
+		hide und_trud
+
+		hide und_dir
+		hide und_soc_dir
+		hide und_kom_dir
+		hide und_inv_dir
+
+
+
+
+
+
+
+
+

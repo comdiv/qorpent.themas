@@ -1,0 +1,76 @@
+﻿####################################################################################
+###################                  ШАБЛОНЫ	                   #################
+####################################################################################
+
+
+thema templates, "Шаблоны параметров", group=sys, role=ADMIN
+thema template, "Шаблон", group=sys, parent=templates, role=ADMIN, abst:
+	import assoieco
+	activeB = false
+	activeC = false
+	ra_libA = ""
+	rb_visibleA=false
+	factiveA = false
+	rb_activeA=false
+
+template template_objset , "Управление набором объектов"  :
+	reportset Aa:
+		ask only_current_admin
+		ask only_current_strict
+		ask cond_org_groups
+		ask cond_otrasl
+		ask cond_div
+		ask cond_reg
+		ask cond_og
+		ask filteringgroup
+		ask filteringgroupcorr
+		ask objtype
+		#ask zdf_block
+		ask zdf_data
+		hide number
+		
+template template_format_table, "Форматироваание таблицы" :
+	reportset Aa: 
+		ask level_0_style
+		ask level_1_style
+		ask level_2_style
+		ask level_3_style
+		ask level_4_style
+		ask ext_css
+		ask headerfile
+		ask footerfile
+		ask main_font
+		ask column_width
+		ask name_width
+		ask number_width
+
+template template_und_doc, "Подписи документа" :
+	reportset Aa: 
+		ask und_gdir
+		ask und_kdir
+		ask und_rud
+		ask und_teh
+		ask und_buh
+		ask und_plan
+		ask und_soc
+		ask und_trud
+
+
+template template_app_doc, "Утверждение документа" :
+	reportset Aa: 
+		ask und_dir
+		ask und_soc_dir
+		ask und_kom_dir
+		ask und_rud_dir
+		ask und_teh_dir
+		ask und_inv_dir
+
+
+
+
+
+
+		
+
+
+

@@ -1,0 +1,11 @@
+﻿thema SUBPARTBASE :
+	rolesuf. = ""
+	role. = "${prefix}${rolesuf.}"
+
+SUBPARTBASE SUBPART, "Проверка", index=A, generic
+
+
+thema REAL :
+	prefix=DR
+	rolesufA=_OPER
+	import SUBPART

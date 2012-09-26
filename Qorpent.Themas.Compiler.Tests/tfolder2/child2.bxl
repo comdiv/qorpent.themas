@@ -1,0 +1,26 @@
+﻿child1 child2
+	f = 1
+	outext A
+		col D
+		col E
+
+thema ext1, abst=1
+	extend child1
+	u = 2
+
+thema erext, abst=1
+	extend nonexisted
+	u = 3
+
+thema withbadimport
+	import badimport
+
+param b, type=int : 56
+
+
+child2 restest
+	y = @code
+	a = @x
+	b = @y
+	c = @a
+	d = "${a}_${b}_${y}"

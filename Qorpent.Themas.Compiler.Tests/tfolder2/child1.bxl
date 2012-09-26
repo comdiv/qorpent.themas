@@ -1,0 +1,20 @@
+﻿global X, zzz
+thema child1 :
+	import base1
+	x = child
+	outset A :
+		col C
+
+
+
+subset A :
+	col X, ~A
+	col Y
+	col Z
+subset C :
+	useset B
+
+
+thema nocluster , cluster=""  # cleanup cluster
+thema cluster_def_a , +cluster="A"
+cluster_def_a cluster_ab , +cluster="B", -cluster="DEFAULT"

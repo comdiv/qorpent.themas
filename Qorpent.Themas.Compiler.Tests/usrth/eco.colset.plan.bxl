@@ -1,0 +1,521 @@
+﻿#####################################################################################
+###################              Плановые наборы колонок             #################
+#####################################################################################
+
+#====================================================================================
+#Квартальные планы
+#------------------------------------------------------------------------------------
+subset cs_kvplan, "Квартальные планы" :
+	col PLAN, "План I кв {0}", period=303, forperiods="306,309", format=_INT, fixed
+	col PLAN2KV, "План II кв {0}", forperiods="306,309,254", fixed, format=_INT
+	col PLAN3KV, "План III кв {0}", forperiods="309,254", fixed, format=_INT
+	col PLAN4KV, "План IV кв {0}", forperiods=254, fixed, format=_INT
+
+
+#====================================================================================
+#Ожидаемые годовые показатели
+#------------------------------------------------------------------------------------
+subset cs_ozhid_god, "Ожидаемые годовые показатели" :
+	col FACT9M, _FACT, period=3, format=_INT, forperiods="251,301", year=-1, fixed, condition="OZHIDCALC and ( OZHID or FACT ) "
+#	col PLAN4KV, "План IV кв. {0}", format=_INT, forperiods="251,301", year=-1, fixed, condition="OZHIDCALC"
+#	col OZHIDGOD, "Ожид-е {0} (расчет)", matrixid="OZHIDCALCID", format=_INT, forpeiods="251,301", year=-1, fixed, condition="OZHIDCALC"
+	col PLAN, "Ожидаемое {0}", customCode=FACTOZHID, matrixid="OZHIDID", year = -1, period=401, forperiods="251", format=_INT, controlpoint=true, condition="OZHID or FACT"
+	col PLAN, "Ожидаемое {0}", customCode=FACTOZHID, year = -1, period=401, forperiods="301", fixed, format=_INT, condition="OZHID or FACT"
+#	col OTKLOZHID, "Откл-е от расчетного {0}", matrixformula="OZHIDID,-OZHIDCALCID", matrixformulatype="sum", period=251, year=-1, format=_INT, forperiods="251,301", formula=" @PLAN.P401? - @OZHIDGOD? ", condition="OZHIDCALC"
+
+#====================================================================================
+#План (форма)
+#------------------------------------------------------------------------------------
+subset cs_plan_form_1, "Плановая форма" :
+	import cs_ozhid_god
+	col Б1, "Факт {0}", year = -1, period=4, fixed, forperiods="252,253,254", format=_INT
+
+	col PLAN, "ТПФП {0} утв.", matrixid="PLAN301", period=301, forperiods="301,251,252,253,254,303,306,309", fixed, format="#,###.##"
+	col PLAN, "ТПФП {2} {0}", matrixid="PLAN250",  forperiods="251,252,253", validation="validate-int-cell-number", format="#,###.##", controlpoint=true
+	col PLAN, "ТПФП {2} {0}", matrixid="PLAN250", forperiods="254", fixed, format="#,###.##"
+	col PLAN, "План {2} {0}", matrixid="PLAN303",  forperiods="303", validation="validate-int-cell-number", format="#,###.##", controlpoint=true
+	col PLAN, "План {2} {0}", matrixid="PLAN306",  forperiods="306", validation="validate-int-cell-number", format="#,###.##", controlpoint=true
+	col PLAN, "План {2} {0}", matrixid="PLAN309",  forperiods="309", validation="validate-int-cell-number", format="#,###.##", controlpoint=true
+
+	col PLANC, "в т.ч. корр. за 1 кв. {0}", period=31,  forperiods="303", format="#,###.##", formula=" @PLANC.P311? ", condition="KORR"
+	col PLANC, "в т.ч. корр. за 2 кв. {0}", period=32,  forperiods="306", format="#,###.##", formula=" @PLANC.P(311,312,322)? ", condition="KORR"
+	col PLANC, "в т.ч. корр. за 3 кв. {0}", period=33,  forperiods="309", format="#,###.##", formula=" @PLANC.P(311,312,313,322,323)? ", condition="KORR"
+
+	col PLANCONTR, "Откл. от утв. ТПФП", matrixformula="PLAN250,-PLAN301", matrixformulatype="sum", forperiods="251", formula=" @PLAN.P251? - @PLAN.P301? ", fixed, format=_INT
+	col PLANCONTR, "Откл. от утв. ТПФП", matrixformula="PLAN250,-PLAN301", matrixformulatype="sum", forperiods="252", formula=" @PLAN.P252? - @PLAN.P301? ", fixed, format=_INT
+	col PLANCONTR, "Откл. от утв. ТПФП", matrixformula="PLAN250,-PLAN301", matrixformulatype="sum", forperiods="253", formula=" @PLAN.P253? - @PLAN.P301? ", fixed, format=_INT
+	col PLANCONTR, "Откл. от утв. ТПФП", matrixformula="PLAN250,-PLAN301", matrixformulatype="sum", forperiods="254", formula=" @PLAN.P254? - @PLAN.P301? ", fixed, format=_INT
+	
+	col PLANC, "Корр. за I кв {0}", period="31" , matrixid="KORR1", forperiods="251,252,253,254", fixed, format=_INT
+	col PLANC, "Корр. за II кв {0}", period="32" , matrixid="KORR2", forperiods="252,253,254", fixed, format=_INT
+	col PLANC, "Корр. за III кв {0}", period="33", matrixid="KORR3", forperiods="253,254", fixed, format=_INT
+	col PLANC, "Корр. за IV кв {0}", period="34", matrixid="KORR4", forperiods="254", fixed, format=_INT
+	col PLANCORRECTED, "ТПФП {0} утв. с уч. корр.", matrixformula="PLAN301,KORR1", matrixformulatype="sum", forperiods="251", formula=" @PLAN.P301? + @PLANC.P31? ", fixed, format=_INT
+	col PLANCORRECTED, "ТПФП {0} утв. с уч. корр.", matrixformula="PLAN301,KORR1,KORR2", matrixformulatype="sum", forperiods="252", formula=" @PLAN.P301? + @PLANC.P(31,32)? ", fixed, format=_INT
+	col PLANCORRECTED, "ТПФП {0} утв. с уч. корр.", matrixformula="PLAN301,KORR1,KORR2,KORR3", matrixformulatype="sum", forperiods="253", formula=" @PLAN.P301? + @PLANC.P(31,32,33)? ", fixed, format=_INT
+	col PLANCORRECTED, "ТПФП {0} утв. с уч. корр.", matrixformula="PLAN301,KORR1,KORR2,KORR3,KORR4", matrixformulatype="sum", forperiods="254", formula=" @PLAN.P301? + @PLANC.P(31,32,33,34)? ", fixed, format=_INT
+
+	import cs_kvplan
+		
+
+#====================================================================================
+#Плановая форма по налогам
+#------------------------------------------------------------------------------------
+subset cs_nalog_form_plan, "Плановая форма по налогам" :
+#	import cs_ozhid_god
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="251", validation="validate-int-cell-number", format=_INT, controlpoint=true
+	col Pd_korr, "в т.ч. перерасчет за пред. годы", year = -1, period=401, forperiods="251", validation="validate-int-cell-number", format=_INT, controlpoint=true
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="301", fixed, format=_INT
+	col Pd_korr, "в т.ч. перерасчет за пред. годы", year = -1, period=401, forperiods="301", fixed, format=_INT
+	col Pd, "Факт {0}", year = -1, period=4, fixed, forperiods="252,253,254", format=_INT
+	col Pd_korr, "в т.ч. перерасчет за пред. годы", year = -1, period=4, fixed, forperiods="252,253,254", format=_INT
+
+#	col NOB, "Налогооблагаемая база {0}", forperiods="251,252,253,254,303,306,309", validation="validate-int-cell-number", format=_INT
+	col PLAN, "ТПФП {0} утв.", period=301, forperiods="251,252,253,254,303,306,309", fixed, format=_INT
+	col PLAN, "ТПФП {2} {0}",  forperiods="251,252,253,254,303,306,309", validation="validate-int-cell-number", format="#,###.##", controlpoint=true
+	col PLAN, "ТПФП {2} {0}",  forperiods="301", fixed, format=_INT
+
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="251", formula=" @PLAN.P251? - @PLAN.P301? ", fixed, format=_INT
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="252", formula=" @PLAN.P252? - @PLAN.P301? ", fixed, format=_INT
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="253", formula=" @PLAN.P253? - @PLAN.P301? ", fixed, format=_INT
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="254", formula=" @PLAN.P254? - @PLAN.P301? ", fixed, format=_INT
+
+#	col CONTRIZM, "[контр. кор. 2 кв. {0}] = 0", forperiods=252, formula=" @PLAN.P251? - @PLAN.P252? + @PLANC.P32? ", fixed, format=_INT
+#	col CONTRIZM, "[контр. кор. 3 кв. {0}] = 0", forperiods=253, formula=" @PLAN.P252? - @PLAN.P253? + @PLANC.P33? ", fixed, format=_INT
+#	col CONTRIZM, "[контр. кор. 4 кв. {0}] = 0", forperiods=254, formula=" @PLAN.P253? - @PLAN.P254? + @PLANC.P34? ", fixed, format=_INT
+
+#	col PLAN, "План I кв {0}", period=303, forperiods=251, validation="validate-int-cell-number", format=_INT, controlpoint=true
+#	col PLAN, "План I пг {0}", period=306, forperiods=252, validation="validate-int-cell-number", format=_INT, controlpoint=true
+#	col PLAN, "План 9 мес. {0}", period=309, forperiods=253, validation="validate-int-cell-number", format=_INT, controlpoint=true
+
+	col PLANKV, "План II кв {0}", forperiods=306, formula=" @PLAN.P306? - @PLAN.P303? ", fixed, format=_INT
+	col PLANKV, "План III кв {0}", forperiods=309, formula=" @PLAN.P309? - @PLAN.P306? ", fixed, format=_INT
+#	col PLANKV, "План IV кв {0}", forperiods=254, formula=" @PLAN.P301? - @PLAN.P309? ", fixed, format=_INT
+
+#====================================================================================
+#Колонки для плановой формы по балансу (1)
+#------------------------------------------------------------------------------------
+subset cs_balans_plan_form_1, "Баланс план (форма)" :
+	col Б1, "На начало {0}", year=-1, period=3, fixed, validation="validate-int-cell-number", forperiods="301,251,252,253,254"
+	col PLAN, "Ожидаемое на конец {0}", year = -1, period=401, forperiods="301", fixed, validation="validate-int-cell-number"
+	col PLAN, "Ожидаемое на конец {0}", year = -1, period=401, forperiods="251", validation="validate-int-cell-number"
+	col PLAN, "Ожидаемое на конец {0}", year = -1, period=401, forperiods="252,253,254,303,306,309", fixed, validation="validate-int-cell-number"
+		
+	col PLAN, "ТПФП на кон. {0} утв." , period=301, forperiods="251,252,253,254,303,306,309", fixed, validation="validate-int-cell-number"
+	col PLAN, "ТПФП на кон. {0}",  forperiods="251,252,253,254", validation="validate-int-cell-number", format="#,###.##"
+	col PLAN, "План на кон. {2} {0}",  forperiods="303,306,309", validation="validate-int-cell-number", format="#,###.##"
+	col PLAN, "ТПФП на кон. {0}",  forperiods="301", fixed, validation="validate-int-cell-number"
+
+	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="251", formula=" @PLAN.P251? - @PLAN.P301? ", fixed
+	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="252", formula=" @PLAN.P252? - @PLAN.P301? ", fixed
+	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="253", formula=" @PLAN.P253? - @PLAN.P301? ", fixed
+	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="254", formula=" @PLAN.P254? - @PLAN.P301? ", fixed
+
+#	col CONTRIZM, "Контр. кор. II кв. {0}", forperiods=252, formula=" @PLAN.P251? - @PLAN.P252? + @PLANC.P32? ", fixed
+#	col CONTRIZM, "Контр. кор. III кв. {0}", forperiods=253, formula=" @PLAN.P252? - @PLAN.P253? + @PLANC.P33? ", fixed
+#	col CONTRIZM, "Контр. кор. IV кв. {0} ", forperiods=254, formula=" @PLAN.P253? - @PLAN.P254? + @PLANC.P34? ", fixed
+
+#	col PLAN, "ТПФП на кон. I кв {0}", period=303, forperiods=251, validation="validate-int-cell-number"
+#	col PLAN, "ТПФП на кон. I пг {0}", period=306, forperiods=252, validation="validate-int-cell-number"
+#	col PLAN, "ТПФП на кон. 9 мес. {0}", period=309, forperiods=253, validation="validate-int-cell-number"
+			
+	col PLANIZMGOD, "Изм. за {0} утв.", forperiods="301,251,252,253,254", formula=" @PLAN.P301? - @PLAN.Y-1.P401? ", fixed
+	col PLANIZMSNG1, "Изм. за I кв {0}", forperiods=303, formula=" @PLAN.P303? - @PLAN.Y-1.P401? ", fixed
+	col PLANIZMSNG2, "Изм. за I пг {0}", forperiods=306, formula=" @PLAN.P306? - @PLAN.Y-1.P401? ", fixed
+	col PLANIZMSNG3, "Изм. за 9 мес {0}", forperiods=309, formula=" @PLAN.P309? - @PLAN.Y-1.P401? ", fixed
+
+#====================================================================================
+#Колонки для планового отчета по балансу
+#------------------------------------------------------------------------------------
+subset cs_balans_report_plan, "Колонки для планового отчета по балансу" :
+	col Б1, "На начало {0}", year=-1, period=3
+	col PLAN, "Ожидаемое на конец {0}", year = -1, period=401, forperiods="301"
+	col PLAN, "Ожидаемое на конец {0}", year = -1, period=401, forperiods="251"
+	col PLAN, "Ожидаемое на конец {0}", year = -1, period=401, forperiods="252,253,254,303,306,309"
+		
+	col PLAN, "ТПФП на кон. {0} утв." , period=301, forperiods="303,306,309"
+	col PLAN, "ТПФП на кон. {0}",  forperiods="251,252,253,254"
+	col PLAN, "ТПФП на кон. {0}",  forperiods="301"
+	col PLAN, "План на кон. {2} {0}",  forperiods="303,306,309"
+
+#	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="251", formula=" @PLAN.P251? - @PLAN.P301? ", fixed
+#	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="252", formula=" @PLAN.P252? - @PLAN.P301? ", fixed
+#	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="253", formula=" @PLAN.P253? - @PLAN.P301? ", fixed
+#	col PLANCONTR, "Откл. от тек. ТПФП", forperiods="254", formula=" @PLAN.P254? - @PLAN.P301? ", fixed
+
+#	col PLAN, "ТПФП на кон. I кв {0}", period=303, forperiods=251
+#	col PLAN, "ТПФП на кон. I пг {0}", period=306, forperiods=252
+#	col PLAN, "ТПФП на кон. 9 мес. {0}", period=309, forperiods=253
+			
+	col PLANIZMGOD, "Изм. за {0} утв.", forperiods="301,251,252,253,254", formula=" @PLAN.P301? - @PLAN.Y-1.P401? "
+	col PLANIZMSNG1, "Изм. за I кв {0} утв.", forperiods=303, formula=" @PLAN.P303? - @PLAN.Y-1.P401? "
+	col PLANIZMSNG2, "Изм. за I пг {0} утв.", forperiods=306, formula=" @PLAN.P306? - @PLAN.Y-1.P401? "
+	col PLANIZMSNG3, "Изм. за 9 мес {0} утв.", forperiods=309, formula=" @PLAN.P309? - @PLAN.Y-1.P401? "
+
+
+#====================================================================================
+#Новый плановый отчет (1)
+#------------------------------------------------------------------------------------
+global _TEKPLANPERIODS : "251,252,253,254,3512"
+global _ALLPLANPERIODS : "301,251,252,253,254,3512"
+
+subset cs_plan_report_1, "Новый плановый отчет (1)" :
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-12, condition="Y12"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-11, condition="Y11"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-10, condition="Y10"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-9, condition="Y9"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-8, condition="Y8"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-7, condition="Y7"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-6, condition="Y6"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-5, condition="Y5"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-4, condition="Y4"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-3, condition="Y3"
+	col Б1, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-2, condition="Y2"
+	col PLAN, "ТПФП {0}", customCode=PLANPRED, period=301, condition="not KVKURS and PLANPRED and PLAN and not USEKORRTPFP", forperiods="251,252,253,254,3512", year = -1, fixed, format=_INT
+	col PLAN1, "ТПФП {0} с уч. корр.", customCode=PLANPRED, period=301, condition="not KVKURS and PLANPRED and PLAN and USEKORRTPFP ", forperiods="251,252,253,254,3512", year = -1, fixed, format=_INT, formula=" f.If ( pathin('m200250'), { ( $t110100@PLAN.P301? + $t110100@PLANC.P(31,32,33,34)? ) / ( $t110300@PLAN.P301? + $t110300@PLANC.P(31,32,33,34)? ) * 1000 / 12 }, { @PLAN.P301? + @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? } ) "
+	col PLANKV, "ТПФП {0}", customCode=PLANPRED1, period=301, condition="KVKURS and PLANPRED and PLAN", year=-1, forperiods="251,252,253,254,3512", format=_INT, formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? + @DELTAKV.P301?"
+
+	col PLANCSNG, "в т.ч. корр. ТПФП {0}", year = -1, forperiods="251,252,253,254,3512", condition="PLANPRED and PLAN and USEKORRTPFP and SHOWKORRTPFP", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", fixed, format=_INT
+	col PLANCSNG, "Корр. к ТПФП {0}", year = -1, forperiods="251,252,253,254,3512", condition="PLANPRED and PLAN and not USEKORRTPFP and SHOWKORRTPFP", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", fixed, format=_INT
+
+	import cs_ozhid_god
+	col SUMGOD12, "Всего за 12 лет", forperiods="251,301", condition="SUMMAYEAR and Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4? + @Б1.Y-6.P4? + @Б1.Y-7.P4? + @Б1.Y-8.P4? + @Б1.Y-9.P4? + @Б1.Y-10.P4? + @Б1.Y-11.P4? + @Б1.Y-12.P4?"
+	col SUMGOD11, "Всего за 11 лет", forperiods="251,301", condition="SUMMAYEAR and Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4? + @Б1.Y-6.P4? + @Б1.Y-7.P4? + @Б1.Y-8.P4? + @Б1.Y-9.P4? + @Б1.Y-10.P4? + @Б1.Y-11.P4?"
+	col SUMGOD10, "Всего за 10 лет", forperiods="251,301", condition="SUMMAYEAR and Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4? + @Б1.Y-6.P4? + @Б1.Y-7.P4? + @Б1.Y-8.P4? + @Б1.Y-9.P4? + @Б1.Y-10.P4?"
+	col SUMGOD9, "Всего за 9 лет", forperiods="251,301", condition="SUMMAYEAR and Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4? + @Б1.Y-6.P4? + @Б1.Y-7.P4? + @Б1.Y-8.P4? + @Б1.Y-9.P4?"
+	col SUMGOD8, "Всего за 8 лет", forperiods="251,301", condition="SUMMAYEAR and Y8 and not Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4? + @Б1.Y-6.P4? + @Б1.Y-7.P4? + @Б1.Y-8.P4?"
+	col SUMGOD7, "Всего за 7 лет", forperiods="251,301", condition="SUMMAYEAR and Y7 and not Y8 and not Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4? + @Б1.Y-6.P4? + @Б1.Y-7.P4?"
+	col SUMGOD6, "Всего за 6 лет", forperiods="251,301", condition="SUMMAYEAR and Y6 and not Y7 and not Y8 and not Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4? + @Б1.Y-6.P4?"
+	col SUMGOD5, "Всего за 5 лет", forperiods="251,301", condition="SUMMAYEAR and Y5 and not Y6 and not Y7 and not Y8 and not Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4? + @Б1.Y-5.P4?"
+	col SUMGOD4, "Всего за 4 года", forperiods="251,301", condition="SUMMAYEAR and Y4 and not Y5 and not Y6 and not Y7 and not Y8 and not Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4? + @Б1.Y-4.P4?"
+	col SUMGOD3, "Всего за 3 года", forperiods="251,301", condition="SUMMAYEAR and Y3 and not Y4 and not Y5 and not Y6 and not Y7 and not Y8 and not Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4? + @Б1.Y-3.P4?"
+	col SUMGOD2, "Всего за 2 года", forperiods="251,301", condition="SUMMAYEAR and Y2 and not Y3 and not Y4 and not Y5 and not Y6 and not Y7 and not Y8 and not Y9 and not Y10 and not Y11 and not Y12", formula="@PLAN.Y-1.P401? + @Б1.Y-2.P4?"
+#	col PLAN, "Ожидаемое {0}", customCode=FACTOZHID, year = -1, period=401, condition="PREDYEAR", forperiods="301,251,3512", validation="validate-int-cell-number", format=_INT
+	col Б1, "Факт {0}", customCode=FACTOZHID, year = -1, period=4, fixed, condition="PREDYEAR and FACT", forperiods="252,253,254", format=_INT
+
+
+	col PLAN, "ТПФП {0} утв.", period=301, forperiods="303,306,309", format=_INT, condition="PLAN"
+
+	col PLAN, "План {2} {0}", period=303, forperiods="301,251,252,253,254", condition="P1 and PLAN", format=_INT
+	col PLAN, "План {2} {0}", period=306, forperiods="301,251,252,253,254", condition="P2 and PLAN", format=_INT
+	col PLAN, "ТПФП {2} {0}", period=309, forperiods="301,251,252,253,254", condition="P3 and PLAN", format=_INT
+
+#	col PLAN, "Проект {2} {0}",  forperiods=_TEKPLANPERIODS, format=_INT, condition="PLAN"
+	col PLAN, "ТПФП {0}",  customCode=PLANTEK, forperiods="301,251,252,253,254,3512", format=_INT, condition="PLAN"
+	col PLAN, "План {2} {0}",  customCode=PLANKVART, forperiods="303,306,309", format=_INT, condition="PLAN"
+#	col OTKL, "Откл-е {2} от утв. ТПФП", forperiods=_TEKPLANPERIODS, format=_INT, formulatype="stack-value", formula="-,1,2", condition="PLAN"
+
+	col OTKL1, "Откл-е от ТПФП {0}", forperiods="251,252,253,254,3512", year = -1, format=_INT, formula=" @PLANTEK? - @PLANPRED? ", condition="not KVKURS and PLANPRED and OTKL and PLAN and USEKORRTPFP"
+	col OTKL2, "Откл-е от ТПФП {0}", forperiods="251,252,253,254,3512", year = -1, format=_INT, formula=" @PLANTEK? - @PLANPRED? ", condition="not KVKURS and PLANPRED and OTKL and PLAN and not USEKORRTPFP"
+	col OTKL3, "Откл-е от ТПФП {0}", forperiods="251,252,253,254,3512", year = -1, format=_INT, formula=" @PLANTEK? - @PLANPRED1? ", condition="KVKURS and PLANPRED and OTKL and PLAN"
+	col OTKL, "Откл-е от ожид. {3}", forperiods="251,252,253,254,3512", format=_INT, formula=" @PLANTEK? - @FACTOZHID? ", condition="OTKL and PREDYEAR and PLAN and ( OZHID or FACT ) "
+#	import cs_kvartplan_report
+
+#====================================================================================
+#Колонки квартальных планов
+#------------------------------------------------------------------------------------
+subset cs_kvartplan_report, "Колонки квартальных планов" :
+#	var usekvkurs, "Квартальный курс", target=condition, group=_ГП_ВРЕМЯ, altvalue=KVKURS, type=bool : false
+#	col PLAN, "План I кв {0}", period=303, forperiods="251,252,253,254", format=_INT
+	col PLAN, "План I кв {0}", period=303, format=_INT, condition="KVPLAN"
+	col PLAN, "План I пг {0}", customCode="PLAN6", period=306, forperiods=252, format=_INT, condition="not KVKURS"
+	col PLANKV, "План I пг {0}", customCode="PLAN6KV", period=306, forperiods=252, format=_INT, condition="KVKURS", formula="@PLAN.P303? + @DELTAKV.P306? "
+	col PLAN, "План 9 мес. {0}", customCode="PLAN9", period=309, forperiods=253, format=_INT, condition="not KVKURS"
+	col PLANKV, "План 9 мес. {0}", customCode="PLAN9KV", period=309, forperiods=253, format=_INT, condition="KVKURS", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? "
+			
+	col PLAN, "План II кв {0}", formula=" @PLAN.P306? - @PLAN.P303? ", forperiods="252,253,254", fixed, format=_INT, condition="not KVKURS and KVPLAN"
+	col PLAN, "План III кв {0}", formula=" @PLAN.P309? - @PLAN.P306? ", forperiods="253,254", fixed, format=_INT, condition="not KVKURS and KVPLAN"
+	col PLAN, "План IV кв {0}", formula=" @PLAN.P301? - @PLAN.P309? ", forperiods=254, fixed, format=_INT, condition="not KVKURS and KVPLAN"
+
+	col PLAN, "План II кв {0}", formula=" @PLAN.P306? - @PLAN.P303? ", forperiods=252, fixed, format=_INT, condition="not KVKURS and not KVPLAN"
+	col PLAN, "План III кв {0}", formula=" @PLAN.P309? - @PLAN.P306? ", forperiods=253, fixed, format=_INT, condition="not KVKURS and not KVPLAN"
+	col PLAN, "План IV кв {0}", formula=" @PLAN.P301? - @PLAN.P309? ", forperiods=254, fixed, format=_INT, condition="not KVKURS and not KVPLAN"
+	
+	col PLAN, "План II кв {0}", formula=" @DELTAKV.P306? ", forperiods=252, fixed, format=_INT, condition="KVKURS"
+	col PLAN, "План III кв {0}", formula=" @DELTAKV.P309? ", forperiods=253, fixed, format=_INT, condition="KVKURS"
+	col PLAN, "План IV кв {0}", formula=" @DELTAKV.P301? ", forperiods=254, fixed, format=_INT, condition="KVKURS"
+
+
+#====================================================================================
+#Плановый отчет по налогам
+#------------------------------------------------------------------------------------
+subset cs_nalog_report_plan, "Плановый отчет по налогам" :
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-12, condition="Y12"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-11, condition="Y11"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-10, condition="Y10"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-9, condition="Y9"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-8, condition="Y8"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-7, condition="Y7"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-6, condition="Y6"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-5, condition="Y5"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-4, condition="Y4"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-3, condition="Y3"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-2, condition="Y2"
+	col PLAN, "ТПФП {0}", customCode=PLANPRED, period=301, condition="not KVKURS and PLANPRED and PLAN and not USEKORRTPFP", forperiods="251,252,253,254,3512", year = -1, fixed, format=_INT
+	col PLAN1, "ТПФП {0} с уч. корр.", customCode=PLANPRED, period=301, condition="not KVKURS and PLANPRED and PLAN and USEKORRTPFP ", forperiods="251,252,253,254,3512", year = -1, fixed, format=_INT, formula=" f.If ( pathin('m200250'), { ( $t110100@PLAN.P301? + $t110100@PLANC.P(31,32,33,34)? ) / ( $t110300@PLAN.P301? + $t110300@PLANC.P(31,32,33,34)? ) * 1000 / 12 }, { @PLAN.P301? + @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? } ) "
+	col PLANKV, "ТПФП {0}", customCode=PLANPRED1, period=301, condition="KVKURS and PLANPRED and PLAN", year=-1, forperiods="251,252,253,254,3512", format=_INT, formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? + @DELTAKV.P301?"
+
+	col PLANCSNG, "в т.ч. корр. ТПФП {0}", year = -1, forperiods="251,252,253,254,3512", condition="PLANPRED and PLAN and USEKORRTPFP and SHOWKORRTPFP", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", fixed, format=_INT
+	col PLANCSNG, "Корр. к ТПФП {0}", year = -1, forperiods="251,252,253,254,3512", condition="PLANPRED and PLAN and not USEKORRTPFP and SHOWKORRTPFP", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", fixed, format=_INT
+
+	import cs_ozhid_god
+#	col PLAN, "Ожидаемое {0}", customCode=FACTOZHID, year = -1, period=401, condition="PREDYEAR", forperiods="301,251,3512", validation="validate-int-cell-number", format=_INT
+	col Б1, "Факт {0}", customCode=FACTOZHID, year = -1, period=4, fixed, condition="PREDYEAR and FACT", forperiods="252,253,254", format=_INT
+
+
+	col PLAN, "ТПФП {0} утв.", period=301, forperiods="303,306,309", format=_INT, condition="PLAN"
+
+	col PLAN, "План {2} {0}", period=303, forperiods="301,251,252,253,254", condition="P1 and PLAN", format=_INT
+	col PLAN, "План {2} {0}", period=306, forperiods="301,251,252,253,254", condition="P2 and PLAN", format=_INT
+	col PLAN, "ТПФП {2} {0}", period=309, forperiods="301,251,252,253,254", condition="P3 and PLAN", format=_INT
+
+#	col PLAN, "Проект {2} {0}",  forperiods=_TEKPLANPERIODS, format=_INT, condition="PLAN"
+	col PLAN, "ТПФП {0}",  customCode=PLANTEK, forperiods="301,251,252,253,254,3512", format=_INT, condition="PLAN"
+	col PLAN, "План {2} {0}",  customCode=PLANKVART, forperiods="303,306,309", format=_INT, condition="PLAN"
+#	col OTKL, "Откл-е {2} от утв. ТПФП", forperiods=_TEKPLANPERIODS, format=_INT, formulatype="stack-value", formula="-,1,2", condition="PLAN"
+
+	col OTKL1, "Откл-е от ТПФП {0}", forperiods="251,252,253,254,3512", year = -1, format=_INT, formula=" @PLANTEK? - @PLANPRED? ", condition="not KVKURS and PLANPRED and OTKL and PLAN and USEKORRTPFP"
+	col OTKL2, "Откл-е от ТПФП {0}", forperiods="251,252,253,254,3512", year = -1, format=_INT, formula=" @PLANTEK? - @PLANPRED? ", condition="not KVKURS and PLANPRED and OTKL and PLAN and not USEKORRTPFP"
+	col OTKL3, "Откл-е от ТПФП {0}", forperiods="251,252,253,254,3512", year = -1, format=_INT, formula=" @PLANTEK? - @PLANPRED1? ", condition="KVKURS and PLANPRED and OTKL and PLAN"
+	col OTKL, "Откл-е от ожид. {3}", forperiods="251,252,253,254,3512", format=_INT, formula=" @PLANTEK? - @FACTOZHID? ", condition="OTKL and PREDYEAR and PLAN and ( OZHID or FACT ) "
+
+#====================================================================================
+#Плановый отчет по налогам (устаревший)
+#------------------------------------------------------------------------------------
+subset cs_nalog_report_plan_old, "Плановый отчет по налогам (устаревший)" :
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-6, condition="Y6"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-5, condition="Y5"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-4, condition="Y4"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-3, condition="Y3"
+	col Pd, _FACT, format=_INT, forperiods="251,252,253,254,301", period=4, year=-2, condition="Y2"
+	col PLAN, "ТПФП {0}", period=301, forperiods=_TEKPLANPERIODS, year = -1, fixed, format=_INT
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="251,3512", validation="validate-int-cell-number", format=_INT
+	col Pd_korr, "в т.ч. перерасчет за пред. годы", year = -1, period=401, forperiods="251,3512", validation="validate-int-cell-number", format=_INT
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="301", fixed, format=_INT
+	col Pd_korr, "в т.ч. перерасчет за пред. годы", year = -1, period=401, forperiods="301", fixed, format=_INT
+	col Pd, "Факт {0}", year = -1, period=4, fixed, forperiods="252,253,254", format=_INT
+	col Pd_korr, "в т.ч. перерасчет за пред. годы", year = -1, period=4, fixed, forperiods="252,253,254", format=_INT
+
+#	col PLAN, "ТПФП {0} утв.", period=301, forperiods=_TEKPLANPERIODS, fixed, format=_INT
+	col PLAN, "ТПФП {0}",  forperiods=_TEKPLANPERIODS, validation="validate-int-cell-number", format=_INT
+	col PLAN, "План {2} {0}",  forperiods="303,306,309", validation="validate-int-cell-number", format=_INT
+
+	col OTKL, "Откл-е от ТПФП {0}", forperiods=_TEKPLANPERIODS, year = -1, format=_INT, formulatype="stack-value", formula="-,1,4"
+	col OTKL, "Откл-е от ожид. {0}", forperiods=_TEKPLANPERIODS, year = -1, format=_INT, formulatype="stack-value", formula="-,2,4"
+
+#	col PLAN, "План I кв {0}", period=303, forperiods=251, validation="validate-int-cell-number", format=_INT
+#	col PLAN, "План I пг {0}", period=306, forperiods=252, validation="validate-int-cell-number", format=_INT
+#	col PLAN, "План 9 мес. {0}", period=309, forperiods=253, validation="validate-int-cell-number", format=_INT
+
+	col PLANKV, "План II кв {0}", forperiods=306, formula=" @PLAN.P306? - @PLAN.P303? ", fixed, format=_INT
+	col PLANKV, "План III кв {0}", forperiods=309, formula=" @PLAN.P309? - @PLAN.P306? ", fixed, format=_INT
+#	col PLANKV, "План IV кв {0}", forperiods=254, formula=" @PLAN.P301? - @PLAN.P309? ", fixed, format=_INT
+
+
+#====================================================================================
+#Плановая форма по коррективу
+#------------------------------------------------------------------------------------
+subset cs_korr_form, "Плановая форма по коррективу" :
+	col PLAN, "ТПФП {0} верс. 1", period=251, forperiods="31,32,33,34", fixed, format=_INT
+	col PLANC, "Корр. на 1.04.{0}", period="31" , forperiods="32,33,34", fixed, format=_INT
+	col PLANC, "Корр. за I кв {0}", period="31" , forperiods="31", format=_INT
+
+	col PLANC, "Корр. за II кв {0}", period="32" , forperiods="32", validation="validate-int-cell-number", format=_INT
+	col PLANC, "Корр. за II кв {0}", period="32" , forperiods="31,33,34", fixed, format=_INT
+	col PLANCSNG, "Корр с н.г. на 30.06.{0}", forperiods="31,32,33,34", formula=" @PLANC.P(31,32)? ", fixed, format=_INT
+
+	col PLANC, "Корр. за III кв {0}", period="33", forperiods="33", validation="validate-int-cell-number", format=_INT
+	col PLANC, "Корр. за III кв {0}", period="33", forperiods="31,32,34", fixed, format=_INT
+	col PLANCSNG, "Корр. с н.г. на 30.09.{0}", forperiods="31,32,33,34", formula=" @PLANC.P(31,32,33)? ", fixed, format=_INT
+
+	col PLANC, "Корр. за IV кв {0}", period="34", forperiods="34", validation="validate-int-cell-number", format=_INT
+	col PLANC, "Корр. за IV кв {0}", period="34", forperiods="31,32,33", fixed, format=_INT
+	col PLANCSNG, "Корр. с н.г. на 31.12.{0}", forperiods="31,32,33,34", formula=" @PLANC.P(31,32,33,34)? ", fixed, format=_INT
+
+	col PLANCORRECTED, "Утвержд. ТПФП {0}", period=301, forperiods="31,32,33,34", fixed, format=_INT
+	col PLANCORRECTED, "ТПФП {0} с уч. корр.", forperiods="31,32,33,34", formula=" @PLAN.P251? + @PLANC.P(31,32,33,34)? ", fixed, format=_INT
+
+	col CONTRIZM, "[контр. кор. 2 кв. {0}] = 0", forperiods="32,33,34", formula=" @PLAN.P251? - @PLAN.P252? + @PLANC.P32? ", fixed, format=_INT
+	col CONTRIZM, "[контр. кор. 3 кв. {0}] = 0", forperiods="32,33,34", formula=" @PLAN.P252? - @PLAN.P253? + @PLANC.P33? ", fixed, format=_INT
+	col CONTRIZM, "[контр. кор. 4 кв. {0}] = 0", forperiods="32,33,34", formula=" @PLAN.P253? - @PLAN.P254? + @PLANC.P34? ", fixed, format=_INT
+
+
+#====================================================================================
+#Плановая форма по коррективу (по труду)
+#------------------------------------------------------------------------------------
+subset cs_korr_form_trud, "Плановая форма по коррективу (по труду)" :
+	col PLANC, "Корр. 1 ТПФП {0}", matrixid="KORR31", period="31" , condition="KORRTRUD", forperiods="33", format=_INT, editforrole="HOLDUNDERWRITER,ADMIN", auto, fixed
+	col PLANC, "в т.ч. на I кв {0}", matrixid="KORR311", period="311" , condition="KORRTRUD", forperiods="33", format=_INT
+	col PLANC, "в т.ч. на II кв {0}", matrixid="KORR312", period="312" , condition="KORRTRUD", forperiods="33", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", matrixid="KORR313", period="313" , condition="KORRTRUD", forperiods="33", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", matrixid="KORR314", period="314" , condition="KORRTRUD", forperiods="33", format=_INT
+	col CONTRIZM, "[Корр.1 - сум. кв. корр.] = 0", condition="KORRTRUD",  matrixformula="KORR31,-KORR311,-KORR312,-KORR313,-KORR314", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P31? - @PLANC.P311? - @PLANC.P312? - @PLANC.P313? - @PLANC.P314? ", fixed, format=_INT
+
+	col PLANC, "Корр. 2 ТПФП {0}", matrixid="KORR32", period="32" , condition="KORRTRUD", forperiods="33", format=_INT, editforrole="HOLDUNDERWRITER,ADMIN", auto, fixed
+	col PLANC, "в т.ч. на I кв {0}", matrixid="KORR322", period="321" , condition="KORRTRUD", forperiods="33", format=_INT, forrole="HOLDUNDERWRITER,ADMIN"
+	col PLANC, "в т.ч. на II кв {0}", matrixid="KORR322", period="322" , condition="KORRTRUD", forperiods="33", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", matrixid="KORR323", period="323" , condition="KORRTRUD", forperiods="33", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", matrixid="KORR324", period="324", condition="KORRTRUD", forperiods="33", format=_INT
+	col CONTRIZM, "[Корр.2  - сум. кв. корр.] = 0", condition="KORRTRUD", matrixformula="KORR32,-KORR322,-KORR323,-KORR324", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P32? - @PLANC.P321? - @PLANC.P322? - @PLANC.P323? - @PLANC.P324? ", fixed, format=_INT
+
+#====================================================================================
+#Плановая форма по коррективу (новая)
+#------------------------------------------------------------------------------------
+subset cs_korr_form_1, "Плановая форма по коррективу (новая)" :
+	col PLAN, "Утвержд. ТПФП {0}", period=301, forperiods="31,32,33,34", fixed, format=_INT
+
+#	col PLAN, "ТПФП {0} верс. 1", matrixid="PLAN251", period=251, forperiods="31", fixed, format=_INT
+#	col PLAN, "ТПФП {0} верс. 2", matrixid="PLAN252", period=252, forperiods="32", fixed, format=_INT
+#	col PLAN, "ТПФП {0} верс. 3", matrixid="PLAN253", period=253, forperiods="33", fixed, format=_INT
+#	col PLAN, "ТПФП {0} верс. 4", matrixid="PLAN254", period=254, forperiods="34", fixed, format=_INT
+
+	col PLANC, "Корр. 1 ТПФП {0}", matrixid="KORR31", period="31" , forperiods="31", format=_INT, editforrole="HOLDUNDERWRITER,ADMIN", auto, fixed
+	col PLANC, "в т.ч. на I кв {0}", matrixid="KORR311", period="311" , forperiods="31", format=_INT
+	col PLANC, "в т.ч. на II кв {0}", matrixid="KORR312", period="312" , forperiods="31", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", matrixid="KORR313", period="313" , forperiods="31", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", matrixid="KORR314", period="314" , forperiods="31", format=_INT
+	col CONTRIZM, "[Корр.1 - сум. кв. корр.] = 0", matrixformula="KORR31,-KORR311,-KORR312,-KORR313,-KORR314", matrixformulatype="sum", forperiods="31", formula=" @PLANC.P31? - @PLANC.P311? - @PLANC.P312? - @PLANC.P313? - @PLANC.P314? ", fixed, format=_INT
+
+	col PLANC, "Корр. 2 ТПФП {0}", matrixid="KORR32", period="32" , forperiods="32", format=_INT, editforrole="HOLDUNDERWRITER,ADMIN", auto, fixed
+	col PLANC, "в т.ч. на I кв {0}", matrixid="KORR321", period="321" , forperiods="32", format=_INT, forrole="ADMIN"
+	col PLANC, "в т.ч. на II кв {0}", matrixid="KORR322", period="322" , forperiods="32", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", matrixid="KORR323", period="323" , forperiods="32", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", matrixid="KORR324", period="324" , forperiods="32", format=_INT
+	col CONTRIZM, "[Корр.2  - сум. кв. корр.] = 0", matrixformula="KORR32,-KORR322,-KORR323,-KORR324", matrixformulatype="sum", forperiods="32", formula=" @PLANC.P32? - @PLANC.P321? - @PLANC.P322? - @PLANC.P323? - @PLANC.P324? ", fixed, format=_INT
+
+	col PLANC, "Корр. 3 ТПФП {0}", matrixid="KORR33", period="33" , forperiods="33", format=_INT, editforrole="HOLDUNDERWRITER,ADMIN", auto, fixed
+	col PLANC, "в т.ч. на I кв {0}", matrixid="KORR331", period="331" , forperiods="33", format=_INT, forrole="ADMIN"
+	col PLANC, "в т.ч. на II кв {0}", matrixid="KORR332", period="332" , forperiods="33", format=_INT, forrole="ADMIN"
+	col PLANC, "в т.ч. на III кв {0}", matrixid="KORR333", period="333" , forperiods="33", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", matrixid="KORR334", period="334" , forperiods="33", format=_INT
+	col CONTRIZM, "[Корр.3 - сум. кв. корр.] = 0", matrixformula="KORR33,-KORR333,-KORR334", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P33? - @PLANC.P331? - @PLANC.P332? - @PLANC.P333? - @PLANC.P334? ", fixed, format=_INT
+
+	col PLANC, "Корр. 4 ТПФП {0}", matrixid="KORR34", period="34" , forperiods="34", format=_INT, editforrole="HOLDUNDERWRITER,ADMIN", auto, fixed
+#	col PLANC, "в т.ч. на I кв {0}", matrixid="KORR341", period="341" , forperiods="34", format=_INT
+#	col PLANC, "в т.ч. на II кв {0}", matrixid="KORR342", period="342" , forperiods="34", format=_INT
+#	col PLANC, "в т.ч. на III кв {0}", matrixid="KORR343", period="343" , forperiods="34", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", matrixid="KORR344", period="344" , forperiods="34", format=_INT
+	col CONTRIZM, "[Корр.4 - сум. кв. корр.] = 0",  matrixformula="KORR34,-KORR344", matrixformulatype="sum", forperiods="34", formula=" @PLANC.P34? - @PLANC.P341? - @PLANC.P342? - @PLANC.P343? - @PLANC.P344? ", fixed, format=_INT
+
+	col PLANCSNG, "Сумма годовых корр-вов {0}", matrixformula="KORR31", matrixformulatype="sum", forperiods="31", formula=" @PLANC.P31? ", fixed, format=_INT
+	col PLANCSNG1, "в т.ч. на I кв {0}", matrixformula="KORR311", matrixformulatype="sum", forperiods="31", formula=" @PLANC.P311? ", fixed, format=_INT
+	col PLANCSNG2, "в т.ч. на II кв {0}", matrixformula="KORR312", matrixformulatype="sum", forperiods="31", formula=" @PLANC.P312? ", fixed, format=_INT
+	col PLANCSNG3, "в т.ч. на III кв {0}", matrixformula="KORR313", matrixformulatype="sum", forperiods="31", formula=" @PLANC.P313? ", fixed, format=_INT
+	col PLANCSNG4, "в т.ч. на IV кв {0}", matrixformula="KORR314", matrixformulatype="sum", forperiods="31", formula=" @PLANC.P314? ", fixed, format=_INT
+
+	col PLANCSNG, "Сумма годовых корр-вов {0}", matrixformula="KORR31,KORR32", matrixformulatype="sum", forperiods="32", formula=" @PLANC.P31? + @PLANC.P32? ", fixed, format=_INT
+	col PLANCSNG1, "в т.ч. на I кв {0}", matrixformula="KORR311,KORR321", matrixformulatype="sum", forperiods="32", formula=" @PLANC.P311? + @PLANC.P321? ", fixed, format=_INT
+	col PLANCSNG2, "в т.ч. на II кв {0}", matrixformula="KORR312,KORR322", matrixformulatype="sum", forperiods="32", formula=" @PLANC.P312? + @PLANC.P322? ", fixed, format=_INT
+	col PLANCSNG3, "в т.ч. на III кв {0}", matrixformula="KORR313,KORR323", matrixformulatype="sum", forperiods="32", formula=" @PLANC.P313? + @PLANC.P323? ", fixed, format=_INT
+	col PLANCSNG4, "в т.ч. на IV кв {0}", matrixformula="KORR314,KORR324", matrixformulatype="sum", forperiods="32", formula=" @PLANC.P314? + @PLANC.P324? ", fixed, format=_INT
+
+#	col PLANCSNG, "Сумма годовых корр-вов {0}", matrixformula="KORR31,KORR32,KORR33", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? ", fixed, format=_INT
+#	col PLANCSNG1, "в т.ч. на I кв {0}", matrixformula="KORR311,KORR321,KORR331", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P311? + @PLANC.P321? + @PLANC.P331? ", fixed, format=_INT
+#	col PLANCSNG2, "в т.ч. на II кв {0}", matrixformula="KORR312,KORR322,KORR332", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P312? + @PLANC.P322? + @PLANC.P332? ", fixed, format=_INT
+#	col PLANCSNG3, "в т.ч. на III кв {0}", matrixformula="KORR313,KORR323,KORR333", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P313? + @PLANC.P323? + @PLANC.P333? ", fixed, format=_INT
+#	col PLANCSNG4, "в т.ч. на IV кв {0}", matrixformula="KORR314,KORR324,KORR334", matrixformulatype="sum", forperiods="33", formula=" @PLANC.P314? + @PLANC.P324? + @PLANC.P334? ", fixed, format=_INT
+
+	col PLANCSNG, "Сумма годовых корр-вов {0}", matrixformula="KORR31,KORR32,KORR33,KORR34", matrixformulatype="sum", forperiods="34", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", fixed, format=_INT
+	col PLANCSNG1, "в т.ч. на I кв {0}", matrixformula="KORR311,KORR321,KORR331,KORR341", matrixformulatype="sum", forperiods="34", formula=" @PLANC.P311? + @PLANC.P321? + @PLANC.P331? + @PLANC.P341? ", fixed, format=_INT
+	col PLANCSNG2, "в т.ч. на II кв {0}", matrixformula="KORR312,KORR322,KORR332,KORR342", matrixformulatype="sum", forperiods="34", formula=" @PLANC.P312? + @PLANC.P322? + @PLANC.P332? + @PLANC.P342? ", fixed, format=_INT
+	col PLANCSNG3, "в т.ч. на III кв {0}", matrixformula="KORR313,KORR323,KORR333,KORR343", matrixformulatype="sum", forperiods="34", formula=" @PLANC.P313? + @PLANC.P323? + @PLANC.P333? + @PLANC.P343? ", fixed, format=_INT
+	col PLANCSNG4, "в т.ч. на IV кв {0}", matrixformula="KORR314,KORR324,KORR334,KORR344", matrixformulatype="sum", forperiods="34", formula=" @PLANC.P314? + @PLANC.P324? + @PLANC.P334? + @PLANC.P344? ", fixed, format=_INT
+
+#	col PLAN, "ТПФП {0} верс.1 c уч. корр.", matrixformula="PLAN251,KORR31", matrixformulatype="sum", forperiods="31", formula=" @PLAN.P251? + @PLANC.P31? ", fixed, format=_INT
+#	col PLAN, "ТПФП {0} верс.2 c уч. корр.", matrixformula="PLAN252,KORR31,KORR32", matrixformulatype="sum", forperiods="32", formula=" @PLAN.P252? + @PLANC.P31? + @PLANC.P32? ", fixed, format=_INT
+#	col PLAN, "ТПФП {0} верс.3 c уч. корр.", matrixformula="PLAN253,KORR31,KORR32,KORR33", matrixformulatype="sum", forperiods="33", formula=" @PLAN.P253? + @PLANC.P31? + @PLANC.P32? + @PLANC.P33? ", fixed, format=_INT
+#	col PLAN, "ТПФП {0} верс.4 c уч. корр.", matrixformula="PLAN254,KORR31,KORR32,KORR33,KORR34", matrixformulatype="sum", forperiods="34", formula=" @PLAN.P254? + @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", fixed, format=_INT
+
+#	col "0COMMENT", "Комментарий"
+	col PLANC, "" , period="31", visible=false
+	col PLANC, "" , period="32", visible=false
+	col PLANC, "" , period="33", visible=false
+	col PLANC, "" , period="34", visible=false
+	
+	col PLANC, "" , period="311", visible=false
+	col PLANC, "" , period="312", visible=false
+	col PLANC, "" , period="313", visible=false
+	col PLANC, "" , period="314", visible=false
+	
+	col PLANC, "" , period="321", visible=false
+	col PLANC, "" , period="322", visible=false
+	col PLANC, "" , period="323", visible=false
+	col PLANC, "" , period="324", visible=false
+	
+	col PLANC, "" , period="331", visible=false
+	col PLANC, "" , period="332", visible=false
+	col PLANC, "" , period="333", visible=false
+	col PLANC, "" , period="334", visible=false
+	
+	col PLANC, "" , period="341", visible=false
+	col PLANC, "" , period="342", visible=false
+	col PLANC, "" , period="343", visible=false
+	col PLANC, "" , period="344", visible=false
+	
+	col PLAN, "" , period="251", visible=false
+	col PLAN, "" , period="252", visible=false
+	col PLAN, "" , period="253", visible=false
+	col PLAN, "" , period="254", visible=false
+
+#====================================================================================
+#Сводный отчет по коррективу 
+#------------------------------------------------------------------------------------
+subset cs_korr_svod, "Сводный отчет по коррективу " :
+	col PLAN, "Первонач. ТПФП #{{y}}", period=251, format=_INT
+	col PLANC, "Кор. #{{p}} {0}", period=31, format=_INT
+	col PLANC, "Кор. #{{p}} {0}",  period=32, format=_INT
+	col PLANC, "Кор. #{{p}} {0}",  period=33, format=_INT
+	col PLANC, "Кор. #{{p}} {0}", period=34, format=_INT
+	col PLAN, "Утв. ТПФП #{{y}}", period=301, format=_INT
+
+#====================================================================================
+#Отчет предприятия по корретиву
+#------------------------------------------------------------------------------------
+subset cs_korr_report, "Отчет предприятия по корретиву" :
+	col PLAN, "Первонач. ТПФП #{{y}}", period=251, format=_INT
+	col PLANC, "Кор. #{{p}} {0}", period=31, format=_INT
+	col PLANC, "Кор. #{{p}} {0}",  period=32, format=_INT
+	col PLANC, "Кор. #{{p}} {0}",  period=33, format=_INT
+	col PLANC, "Кор. #{{p}} {0}", period=34, format=_INT
+	col PLAN, "Утв. ТПФП #{{y}}", period=301, format=_INT
+
+
+#====================================================================================
+#Отчет предприятия по корретиву (новый)
+#------------------------------------------------------------------------------------
+subset cs_korr_report_1, "Отчет предприятия по корретиву (новый)" :
+	col PLAN, "ТПФП {0} верс. 1", period=251, forperiods="31,32,33,34", fixed, format=_INT
+
+	col PLANC, "Корр. 1 ТПФП {0}", period="31" , forperiods="31", format=_INT
+	col PLANC, "в т.ч. на I кв {0}", period="311" , forperiods="31", format=_INT
+	col PLANC, "в т.ч. на II кв {0}", period="312" , forperiods="31", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", period="313" , forperiods="31", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", period="314" , forperiods="31", format=_INT
+
+	col PLANC, "Корр. 2 ТПФП {0}", period="32" , forperiods="32", format=_INT
+	col PLANC, "в т.ч. на I кв {0}", period="321" , forperiods="32", format=_INT
+	col PLANC, "в т.ч. на II кв {0}", period="322" , forperiods="32", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", period="323" , forperiods="32", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", period="324" , forperiods="32", format=_INT
+
+	col PLANC, "Корр. 3 ТПФП {0}", period="33" , forperiods="33", format=_INT
+	col PLANC, "в т.ч. на I кв {0}", period="331" , forperiods="33", format=_INT
+	col PLANC, "в т.ч. на II кв {0}", period="332" , forperiods="33", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", period="333" , forperiods="33", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", period="334" , forperiods="33", format=_INT
+
+	col PLANC, "Корр. 4 ТПФП {0}", period="34" , forperiods="34", format=_INT
+	col PLANC, "в т.ч. на I кв {0}", period="341" , forperiods="34", format=_INT
+	col PLANC, "в т.ч. на II кв {0}", period="342" , forperiods="34", format=_INT
+	col PLANC, "в т.ч. на III кв {0}", period="343" , forperiods="34", format=_INT
+	col PLANC, "в т.ч. на IV кв {0}", period="344" , forperiods="34", format=_INT
+
+#	col PLANCSNG, "Сумма годовых корр-вов {0}", forperiods="31,32,33,34", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", fixed, format=_INT
+	col PLANCSNG, "Сумма годовых корр-вов {0}", forperiods="31", formula=" @PLANC.P31? ", fixed, format=_INT
+	col PLANCSNG, "Сумма годовых корр-вов {0}", forperiods="32", formula=" @PLANC.P(31,32)? ", fixed, format=_INT
+	col PLANCSNG, "Сумма годовых корр-вов {0}", forperiods="33", formula=" @PLANC.P(31,32,33)? ", fixed, format=_INT
+	col PLANCSNG, "Сумма годовых корр-вов {0}", forperiods="34", formula=" @PLANC.P(31,32,33,34)? ", fixed, format=_INT
+
+	col PLANCORRECTED, "Утвержд. ТПФП {0}", period=301, forperiods="31,32,33,34", fixed, format=_INT
+
+

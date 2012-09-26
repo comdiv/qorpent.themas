@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration>Debug</Configuration>
+    <ProjectGuid>{FCC62E51-88AA-4542-A947-BCE82B55D2FA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Qorpent.Themas.Loader</RootNamespace>
+    <AssemblyName>Qorpent.Themas.Loader</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Abstracts\IColumnItemElement.cs" />
+    <Compile Include="Abstracts\IElementBasis.cs" />
+    <Compile Include="Abstracts\IFormLockDepend.cs" />
+    <Compile Include="Abstracts\IFormThemaItem.cs" />
+    <Compile Include="Abstracts\ILibraryLink.cs" />
+    <Compile Include="Abstracts\IObjItemElement.cs" />
+    <Compile Include="Abstracts\IReportThemaItem.cs" />
+    <Compile Include="Abstracts\IRowItemElement.cs" />
+    <Compile Include="Abstracts\IThema.cs" />
+    <Compile Include="Abstracts\IThemaCollection.cs" />
+    <Compile Include="Abstracts\IThemaFactory.cs" />
+    <Compile Include="Abstracts\IThemaItem.cs" />
+    <Compile Include="Abstracts\IThemaItemElement.cs" />
+    <Compile Include="Abstracts\IThemaLink.cs" />
+    <Compile Include="Abstracts\IThemaLoader.cs" />
+    <Compile Include="Abstracts\IThemaSource.cs" />
+    <Compile Include="Abstracts\IUserThemaTreeBuilder.cs" />
+    <Compile Include="ExtensionPoints\IThemaLoaderExtension.cs" />
+    <Compile Include="Factory\BxlThemaSource.cs" />
+    <Compile Include="Factory\DirectThemaSource.cs" />
+    <Compile Include="Factory\FileThemaSource.cs" />
+    <Compile Include="Factory\IEntityResolver.cs" />
+    <Compile Include="Factory\ILoadXmlGenerator.cs" />
+    <Compile Include="Factory\IPeriodProvider.cs" />
+    <Compile Include="Factory\Loader.cs" />
+    <Compile Include="Factory\ThemaCollection.cs" />
+    <Compile Include="Factory\ThemaFactory.cs" />
+    <Compile Include="Factory\ThemaLoaderException.cs" />
+    <Compile Include="Factory\YearPeriodRecord.cs" />
+    <Compile Include="Model\ThemaItemContent\ColumnItemElement.cs" />
+    <Compile Include="Model\ThemaItemContent\FormLockDepend.cs" />
+    <Compile Include="Model\ThemaItemContent\LibraryLink.cs" />
+    <Compile Include="Model\ThemaItemContent\ObjItemElement.cs" />
+    <Compile Include="Model\ThemaItemContent\RowItemElement.cs" />
+    <Compile Include="Model\ThemaItemContent\ThemaItemElement.cs" />
+    <Compile Include="Model\ThemaItemContent\ThemaItemParameter.cs" />
+    <Compile Include="Model\ThemaItem\FormThemaItem.cs" />
+    <Compile Include="Model\ThemaItem\PeriodRedirectDefinition.cs" />
+    <Compile Include="Model\ThemaItem\ReportThemaItem.cs" />
+    <Compile Include="Model\ThemaItem\ThemaItem.cs" />
+    <Compile Include="Model\Thema\Thema.cs" />
+    <Compile Include="Model\Thema\ThemaLink.cs" />
+    <Compile Include="UI\UserThemaTree.cs" />
+    <Compile Include="UI\UserThemaTreeBuilder.cs" />
+    <Compile Include="UI\utTerminal.cs" />
+    <Compile Include="UI\utThemaGroup.cs" />
+    <Compile Include="UI\utThemaRoot.cs" />
+    <Compile Include="Wrap\ColumnItemElementWrapper.cs" />
+    <Compile Include="Wrap\FormThemaItemWrapper.cs" />
+    <Compile Include="Wrap\IColumnItemElementWrapper.cs" />
+    <Compile Include="Wrap\IFormThemaItemWrapper.cs" />
+    <Compile Include="Wrap\IGroupListContainer.cs" />
+    <Compile Include="Wrap\IObjItemElementWrapper.cs" />
+    <Compile Include="Wrap\IReportThemaItemWrapper.cs" />
+    <Compile Include="Wrap\IRowItemElementWrapper.cs" />
+    <Compile Include="Wrap\IThemaItemElementWrapper.cs" />
+    <Compile Include="Wrap\IThemaItemWrapper.cs" />
+    <Compile Include="Wrap\IThemaWrapper.cs" />
+    <Compile Include="Wrap\IThemaWrapperFactory.cs" />
+    <Compile Include="Wrap\ObjItemElementWrapper.cs" />
+    <Compile Include="Wrap\ParameterResolveLevel.cs" />
+    <Compile Include="Wrap\ParameterValue.cs" />
+    <Compile Include="Wrap\ReportThemaItemWrapper.cs" />
+    <Compile Include="Wrap\RowItemElementWrapper.cs" />
+    <Compile Include="Wrap\ThemaItemElementWrapper.cs" />
+    <Compile Include="Wrap\ThemaItemWrapper.cs" />
+    <Compile Include="Wrap\ThemaWrapper.cs" />
+    <Compile Include="Wrap\ThemaWrapperFactory.cs" />
+    <Compile Include="Wrap\WrapContext.cs" />
+    <Compile Include="ZetaIntegration\IZetaColumnIntermediate.cs" />
+    <Compile Include="ZetaIntegration\IZetaEntityIntermediate.cs" />
+    <Compile Include="ZetaIntegration\IZetaObjIntermediate.cs" />
+    <Compile Include="ZetaIntegration\IZetaRowIntermediate.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Wrap\Порядок загрузки параметров.txt" />
+  </ItemGroup>
+  <Import Project="..\commons\build.targets" />
+  <Import Project="*.import" />
+<ItemGroup><None Include="*.import" /><None Include="*.export" /></ItemGroup></Project>

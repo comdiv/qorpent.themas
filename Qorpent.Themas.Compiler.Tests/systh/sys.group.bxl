@@ -1,0 +1,64 @@
+﻿#все, что связано с группировкой
+thema group, abst=true :
+	layout=title
+	isgroup=true
+
+group analysisg, "Отчеты"
+group hold, "Холдинг"
+group testgrp, "Тест"
+group adv_reports , "Дополнительные отчеты"
+group adv_forms , "Дополнительные формы"
+group sys , "Система"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

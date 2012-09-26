@@ -1,0 +1,942 @@
+﻿####################################################################################
+##################                  Реальные темы                  #################
+####################################################################################
+
+
+
+#====================================================================================
+#Параметры фильтрации разделов
+#------------------------------------------------------------------------------------
+paramlib :
+	param sql_use_metal_filter, "Вид отчета", type=bool, radio=true, group=_ГП_ДЕРЕВО, idx=111 , defaultvalue=false :
+		listdefinition = """
+			false:Полный отчет |
+			true:По металлам
+		"""
+	param main_metal, "Основной метал", type=string, group=_ГП_ДЕРЕВО, idx=111 ,defaultvalue= 'cu' :
+		listdefinition = """
+			cu:Медь|
+			zn:Цинк|
+			pb:Свинец
+		"""
+	param sql_metal_filter_au, "Золото", type=bool, group=_ГП_ДЕРЕВО, idx=112 : false
+	param sql_metal_filter_ag, "Серебро", type=bool, group=_ГП_ДЕРЕВО, idx=113 : false
+	param sql_metal_filter_cu, "Медь", type=bool, group=_ГП_ДЕРЕВО, idx=114 : false
+	param sql_metal_filter_zn, "Цинк", type=bool, group=_ГП_ДЕРЕВО, idx=115 : false
+	param sql_metal_filter_pb, "Свинец", type=bool, group=_ГП_ДЕРЕВО, idx=116 : false
+	param sql_metal_filter_smt, "СМТ", type=bool, group=_ГП_ДЕРЕВО, idx=117 : false
+	param sql_metal_filter_sod, "Сод.", type=bool, group=_ГП_ДЕРЕВО, idx=118 : false
+	param sql_reverse , "Реверсия", type=bool, group = _ГП_ДЕРЕВО, idx = 120 : false
+	param sql_exclude_contragent , "Отключить контрагентов", type=bool, group = _ГП_ДЕРЕВО, idx = 130 : false
+	param biztran,  "Бизнес-процесс", group=_ГП_ДЕРЕВО , idx= 125 : ""
+	param raw_first , "Первичная группировка по товарам", group=_ГП_ДЕРЕВО, type=bool, idx = 130 : false
+	
+	
+#====================================================================================
+#Базовая форма по движению ценностей 
+#------------------------------------------------------------------------------------
+thema resource_balans_base, "Базовая форма по движению ресурсов", group="cost_grp", parent = "resource_balans", rootrow = 'm150', roleprefix=MTR, abst :
+	import assoieco
+	import forprdtest
+	usequickupdateA = false
+	usequickupdateB = false
+	usequickupdateC = false
+	activeC = false
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	lockA = "${code}A"
+	lockB = "${code}B"
+	mbtype = ""
+	selfform = "false"
+	tableviewA = "biztranform"
+	tableviewB = "biztranform"
+	sql_extensions = 'metal,'
+	biztran=""
+	reportset Aa :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+		ask main_metal : 'cu'
+		ask sql_use_metal_filter
+		ask sql_metal_filter_au 		
+		ask sql_metal_filter_ag 		
+		ask sql_metal_filter_cu 		
+		ask sql_metal_filter_zn 		
+		ask sql_metal_filter_pb 
+		ask sql_metal_filter_smt
+		ask sql_metal_filter_sod
+		ask sql_exclude_contragent
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+	reportset Ab :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usemes 
+		ask usesng : false
+		ask planfact : "FACT"
+		ask useotkl : false
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+	reportset Ba :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usesng : true
+		ask planfact : "PLAN"
+		ask sql_use_metal_filter
+		ask sql_metal_filter_au 		
+		ask sql_metal_filter_ag 		
+		ask sql_metal_filter_cu 		
+		ask sql_metal_filter_zn 		
+		ask sql_metal_filter_pb 	
+		ask sql_metal_filter_smt
+		ask sql_metal_filter_sod
+		ask sql_exclude_contragent
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true		
+		hide useotkl
+	reportset Bb :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_og : "OGCALC_CU"	
+		ask usesng : true
+		ask planfact : "PLAN"
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+
+#====================================================================================
+#Движение собственного сырья
+#------------------------------------------------------------------------------------
+resource_balans_base raw_move_sobst, "Движение собственного сырья",  group="cost_grp" :
+	forgroup=PRD_SIR
+	biztran = SIR1091
+	formset A :
+		useset cs_resourse_move
+		useset cs_resourse_move_kol_control
+		useset cs_resourse_move_summa_control
+	formset B :
+		useset cs_resourse_move_plan
+	reportsetex Aa :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ab :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ba :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+	reportsetex Bb :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+
+		
+#====================================================================================
+#Движение давальческого сырья
+#------------------------------------------------------------------------------------
+resource_balans_base raw_move_dav, "Движение давальческого сырья",  group="cost_grp" :
+	forgroup=PRD_SIR
+	biztran=SIR003
+	formset A :
+		useset cs_resourse_move_nat
+		useset cs_resourse_move_kol_control
+	formset B :
+		useset cs_resourse_move_nat_plan
+	reportsetex Aa :
+		use cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_nat_report
+	reportsetex Ab :
+		use cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_nat_report
+	reportsetex Ba :
+		use cond_type_pokaz : "KOL"
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+	reportsetex Bb :
+		use cond_type_pokaz : "KOL"
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+
+#====================================================================================
+#Сводный отчет по сырью (натура)
+#------------------------------------------------------------------------------------
+resource_balans_base raw_move_svod, "Сводный отчет по сырью (натура)",  group="cost_grp" :
+	forgroup=PRD_SIR
+	biztran="SIR003,SIR1091"
+	f_visibleA = false
+	f_visibleB = false
+	factiveA =false
+	factiveB =false
+	fl_visibleA = false
+	fl_visibleB = false
+	reportsetex Aa :
+		use cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_nat_report
+	reportsetex Ab :
+		use cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_nat_report
+	reportsetex Ba :
+		use cond_type_pokaz : "KOL"
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+	reportsetex Bb :
+		use cond_type_pokaz : "KOL"
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+
+#====================================================================================
+#Загрузка сырья в передел черновой меди
+#------------------------------------------------------------------------------------
+resource_balans_base rawinput_rawtype2, "Поступление сырья на передел ЧМ", role="BUDGET" :
+	forgroup=PRD_SIR
+	activeB = false
+	activeC = false
+	f_visibleA = false
+	factiveA =false
+	forgroup=CALC_CU
+	reportsetex Ab :
+		param userawtype, type=bool : true
+		use viewname : "raw2/rawinput_rt"
+		use generatorname : "raw2/rawinput_rt"
+	reportsetex Aa :
+		hide usemes
+		hide usesng
+		hide planfact
+		hide useotkl
+		hide maxlevel
+		ask raw_first
+		use viewname : "raw2/rawinput_rt"
+		use generatorname : "raw2/rawinput_rt"
+		var include_1092, "Включать отходы", type=bool, defaultValue=true
+
+#====================================================================================
+#Универсальный biztran - отчет движение
+#------------------------------------------------------------------------------------
+resource_balans_base biztran_uni, "Универсальный biztran-отчет",  group="cost_grp" :
+	forgroup=PRD_SIR
+	f_visibleA = false
+	f_visibleB = false
+	f_visibleC = false
+	rb_visibleA = false
+	rb_visibleB = false
+	reportsetex Aa :
+		ask sql_reverse
+		ask biztran
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ba :
+		ask sql_reverse
+		ask biztran
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+		
+#====================================================================================
+#Движение металлов в производстве
+#------------------------------------------------------------------------------------
+resource_balans_base prod, "Движение металлов в производстве",  group="cost_grp", roleprefix=COST, parent = "resource_prod":
+	forgroup=PRD_SIR
+	biztran = PROD20
+	tableviewA = "prodform"
+	tableviewB = "prodform"
+
+	formset A :
+		useset cs_bm_kcs
+	formset B :
+		useset cs_bm_kcs_plan
+	reportsetex Aa :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_bm_kcs
+	reportsetex Ab :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_bm_kcs
+	reportsetex Ba :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_bm_kcs_plan
+	reportsetex Bb :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_bm_kcs_plan
+
+subset cs_bm_kcs, "Баланс металлов - количество,цена,сумма" :
+	col BMKOL,"Кол-во {2} {0}"
+	col BMCENA1,"Цена {2} {0}", formula="@BMSUMMA? * 1000 / @BMKOL? "
+	col BMSUMMA,"Сумма {2} {0}"
+
+subset cs_bm_kcs_plan, "Баланс металлов - количество,цена,сумма (план)" :
+	col BMKOL,"Кол-во {2} {0}"
+	col BMCENA,"Цена {2} {0}"
+	col BMSUMMA1,"Сумма {2} {0}", formula="@BMKOL? * @BMCENA? / 1000 ", tag="/DOSUM/"
+
+#====================================================================================
+#Полуфабрикаты
+#------------------------------------------------------------------------------------
+resource_balans_base pf, "Полуфабрикаты (BUDGET)",  group="cost_grp", roleprefix=COST, parent = "resource_prod", role="BUDGET" :
+	biztran = PF21
+	formset A :
+		useset cs_resourse_move
+		useset cs_resourse_move_kol_control
+		useset cs_resourse_move_summa_control
+	formset B :
+		useset cs_resourse_move_plan
+	reportsetex Aa :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ab :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ba :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+	reportsetex Bb :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+
+#====================================================================================
+#Возвратные отходы
+#------------------------------------------------------------------------------------
+resource_balans_base vozvrat, "Возвратные отходы(BUDGET)",  group="cost_grp", roleprefix=COST, parent = "resource_prod", role="BUDGET" :
+	biztran = VOZVRAT
+	formset A :
+		useset cs_resourse_move
+		useset cs_resourse_move_kol_control
+		useset cs_resourse_move_summa_control
+	formset B :
+		useset cs_resourse_move_plan
+	reportsetex Aa :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ab :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ba :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+	reportsetex Bb :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+
+#====================================================================================
+#Склад
+#------------------------------------------------------------------------------------
+resource_balans_base sklad, "Склад продукции (BUDGET)",  group="cost_grp", roleprefix=SALE, parent = "resource_sale", role="BUDGET" :
+	biztran = SKLAD43
+	formset A :
+		useset cs_resourse_move
+		useset cs_resourse_move_kol_control
+		useset cs_resourse_move_summa_control
+	formset B :
+		useset cs_resourse_move_plan
+	reportsetex Aa :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ab :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_report
+	reportsetex Ba :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+	reportsetex Bb :
+		ask cond_type_pokaz
+		ask cond_group_pokaz
+		useset cs_resourse_move_plan_report
+
+#====================================================================================
+#Приобретение работ и услуг (BUDGET)
+#------------------------------------------------------------------------------------
+resource_balans_base uslugi, "Приобретение работ и услуг (BUDGET)",  group="cost_grp", roleprefix=COST, parent = "resource_uslugi", role="BUDGET" :
+	biztran = USLUGI60
+	formset A :
+		useset cs_uslugi
+	formset B :
+		useset cs_uslugi_plan
+	reportsetex Aa :
+		ask cond_type_pokaz
+		useset cs_uslugi_report
+	reportsetex Ab :
+		ask cond_type_pokaz
+		useset cs_uslugi_report
+	reportsetex Ba :
+		ask cond_type_pokaz
+		useset cs_uslugi_plan_report
+	reportsetex Bb :
+		ask cond_type_pokaz
+		useset cs_uslugi_plan_report
+
+#====================================================================================
+#Движение металлов в производстве (ADMIN)
+#------------------------------------------------------------------------------------
+resource_balans_base balmet_proiz, "Движение металлов в производстве (ADMIN)",  group="cost_grp", roleprefix=COST, parent = "calcgroup", role="ADMIN" :
+	biztran = BALMET20
+	formset A :
+		useset cs_balmet
+	formset B :
+		useset cs_balmet
+	reportsetex Aa :
+		ask cond_type_pokaz
+		useset cs_balmet
+	reportsetex Ab :
+		ask cond_type_pokaz
+		useset cs_balmet
+	reportsetex Ba :
+		ask cond_type_pokaz
+		useset cs_balmet
+	reportsetex Bb :
+		ask cond_type_pokaz
+		useset cs_balmet
+
+
+
+#====================================================================================
+#Движение ресурсов
+#------------------------------------------------------------------------------------
+subset cs_resourse_move, "Движение ресурсов" :
+	col ONKOL, _КОЛ_НАЧ, matrixid="ONKOLM", format=_DEC3, forperiods="_ЯНВ"
+	col ONKOL, _КОЛ_НАЧ, matrixid="ONKOLM", format=_DEC3, auto, fixed, forperiods="_НЕ_ЯНВ"
+	col ONCENASQL, _ЦЕНА_НАЧ, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="CASE WHEN ISNULL(@ONKOLM,0)=0 THEN NULL ELSE @ONSUMMAM * 1000 / @ONKOLM END", matrixformulatype="sql", editable = false
+	col ONSUMMA, _СУММА_НАЧ, matrixid="ONSUMMAM", format=_INT, forperiods="_ЯНВ", validation="validate-int-cell-number"
+	col ONSUMMA, _СУММА_НАЧ, matrixid="ONSUMMAM", format=_INT, auto, fixed, forperiods="_НЕ_ЯНВ"
+
+	col PDKOL, _КОЛ_ПРИХОД, matrixid="PDKOLM", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col PDCENASQL, _ЦЕНА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ",matrixformula="CASE WHEN ISNULL(@PDKOLM,0)=0 THEN NULL ELSE @PDSUMMAM * 1000 / @PDKOLM END", matrixformulatype="sql", editable = false
+	col PDSUMMA, _СУММА_ПРИХОД, matrixid="PDSUMMAM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", validation="validate-int-cell-number"
+
+	col RDKOL, _КОЛ_РАСХОД, matrixid="RDKOLM", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col RDCENASQL, _ЦЕНА_РАСХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="CASE WHEN ISNULL(@RDKOLM,0)=0 THEN NULL ELSE @RDSUMMAM * 1000 / @RDKOLM END", matrixformulatype="sql", editable = false
+	col RDSUMMA, _СУММА_РАСХОД, matrixid="RDSUMMAM", format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="@ONKOLM + @PDKOLM - @RDKOLM", matrixformulatype="sql", editable = false
+	col OKCENASQL, _ЦЕНА_КОН, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="CASE WHEN ISNULL(@OKKOLM,0)=0 THEN NULL ELSE @OKSUMMAM * 1000 / @OKKOLM END", matrixformulatype="sql", editable = false
+	col OKSUMMASQL, _СУММА_КОН, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="@ONSUMMAM + @PDSUMMAM - @RDSUMMAM", matrixformulatype="sql", editable = false
+
+	#c начала года
+	col ONKOL, _КОЛ_НАЧ, matrixid="ONKOLS", format=_DEC3,  period=-503, forperiods="_МЕС_СНГ", fixed
+	col ONCENASQL, _ЦЕНА_НАЧ, format=_INT,  period=-503, forperiods="_МЕС_СНГ", matrixformula="CASE WHEN ISNULL(@ONKOLS,0)=0 THEN NULL ELSE @ONSUMMAS * 1000 / @ONKOLS END", matrixformulatype="sql", editable = false
+	col ONSUMMA, _СУММА_НАЧ, matrixid="ONSUMMAS", format=_INT,  period=-503, forperiods="_МЕС_СНГ", fixed
+
+	col PDKOL, _КОЛ_ПРИХОД, matirxid="PDKOLS", format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col PDCENASQL, _ЦЕНА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", matrixformula="CASE WHEN ISNULL(@PDKOLS,0)=0 THEN NULL ELSE @PDSUMMAS * 1000 / @PDKOLS END", matrixformulatype="sql", editable = false
+	col PDSUMMA, _СУММА_ПРИХОД, matrixid="PDSUMMAS", format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+
+	col RDKOL, _КОЛ_РАСХОД, matrixid="RDKOLS", format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col RDCENASQL, _ЦЕНА_РАСХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", matrixformula="CASE WHEN ISNULL(@RDKOLS,0)=0 THEN NULL ELSE @RDSUMMAS * 1000 / @RDKOLS END", matrixformulatype="sql", editable = false
+	col RDSUMMA, _СУММА_РАСХОД, matrixid="RDSUMMAS", format=_INT, period=-501, forperiods="_МЕС_СНГ", fixed
+
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3,  period=-205, forperiods="_МЕС_СНГ", matrixformula="@ONKOLS + @PDKOLS - @RDKOLS", matrixformulatype="sql", editable = false
+	col OKCENASQL, _ЦЕНА_КОН, format=_INT,  period=-205, forperiods="_МЕС_СНГ", matrixformula="CASE WHEN ISNULL(@OKKOLS,0)=0 THEN NULL ELSE @OKSUMMAS * 1000 / @OKKOLS END", matrixformulatype="sql", editable = false
+	col OKSUMMASQL, _СУММА_КОН, format=_INT,  period=-205, forperiods="_МЕС_СНГ", matrixformula="@ONSUMMAS + @PDSUMMAS - @RDSUMMAS", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Движение ресурсов (отчет)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_report, "Движение ресурсов (отчет)" :
+	useset cs_resourse_move_plan_report
+
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, matrixid="ONKOLM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and OSTN and BYMONTH"
+	col ONCENASQL, _ЦЕНА_НАЧ, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and CENA and OSTN and BYMONTH", matrixformula="CASE WHEN ISNULL(@ONKOLM,0)=0 THEN NULL ELSE @ONSUMMAM * 1000 / @ONKOLM END", matrixformulatype="sql", editable = false
+	col ONSUMMA, _СУММА_НАЧ, format=_INT, matrixid="ONSUMMAM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and SUMMA and OSTN and BYMONTH"
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, matrixid="PDKOLM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and PRIHOD and BYMONTH"
+	col PDCENASQL, _ЦЕНА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and CENA and PRIHOD and BYMONTH", matrixformula="CASE WHEN ISNULL(@PDKOLM,0)=0 THEN NULL ELSE @PDSUMMAM * 1000 / @PDKOLM END", matrixformulatype="sql", editable = false
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, matrixid="PDSUMMAM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and SUMMA and PRIHOD and BYMONTH"
+
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, matrixid="RDKOLM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and RASHOD and BYMONTH"
+	col RDCENASQL, _ЦЕНА_РАСХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and CENA and RASHOD and BYMONTH", matrixformula="CASE WHEN ISNULL(@RDKOLM,0)=0 THEN NULL ELSE @RDSUMMAM * 1000 / @RDKOLM END", matrixformulatype="sql", editable = false
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, matrixid="RDSUMMAM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and SUMMA and RASHOD and BYMONTH"
+
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, matrixid="OKKOLM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and OSTK and BYMONTH", matrixformula="@ONKOLM + @PDKOLM - @RDKOLM", matrixformulatype="sql", editable = false
+	col OKCENASQL, _ЦЕНА_КОН, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and CENA and OSTK and BYMONTH", matrixformula="CASE WHEN ISNULL(@OKKOLM,0)=0 THEN NULL ELSE @OKSUMMAM * 1000 / @OKKOLM END", matrixformulatype="sql", editable = false
+	col OKSUMMASQL, _СУММА_КОН, format=_INT, matrixid="OKSUMMAM", forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and SUMMA and OSTK and BYMONTH", matrixformula="@ONSUMMAM + @PDSUMMAM - @RDSUMMAM", matrixformulatype="sql", editable = false
+
+	#c начала года
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3,  matrixid="ONKOLS", period=-503, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTN and BYMONTH"
+	col ONCENASQL, _ЦЕНА_НАЧ, format=_INT,  period=-503, forperiods="_МЕС_СНГ", condition="FACT and CENA and OSTN and BYMONTH", matrixformula="CASE WHEN ISNULL(@ONKOLS,0)=0 THEN NULL ELSE @ONSUMMAS * 1000 / @ONKOLS END", matrixformulatype="sql", editable = false
+	col ONSUMMA, _СУММА_НАЧ, format=_INT,  matrixid="ONSUMMAS", period=-503, forperiods="_МЕС_СНГ", condition="FACT and SUMMA and OSTN and BYMONTH"
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, matrixid="PDKOLS", period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and PRIHOD and BYMONTH"
+	col PDCENASQL, _ЦЕНА_ПРИХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and CENA and PRIHOD and BYMONTH", matrixformula="CASE WHEN ISNULL(@PDKOLS,0)=0 THEN NULL ELSE @PDSUMMAS * 1000 / @PDKOLS END", matrixformulatype="sql", editable = false
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, matrixid="PDSUMMAS", period=-501, forperiods="_МЕС_СНГ", condition="FACT and SUMMA and PRIHOD and BYMONTH"
+
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, matrixid="RDKOLS", period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and RASHOD and BYMONTH"
+	col RDCENASQL, _ЦЕНА_РАСХОД, format=_INT, period=-501, forperiods="_МЕС_СНГ", condition="FACT and CENA and RASHOD and BYMONTH", matrixformula="CASE WHEN ISNULL(@RDKOLS,0)=0 THEN NULL ELSE @RDSUMMAS * 1000 / @RDKOLS END", matrixformulatype="sql", editable = false
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, matrixid="RDSUMMAS", period=-501, forperiods="_МЕС_СНГ", condition="FACT and SUMMA and RASHOD and BYMONTH"
+
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3,  matrixid="OKKOLS", period=-205, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTK and BYMONTH", matrixformula="@ONKOLS + @PDKOLS - @RDKOLS", matrixformulatype="sql", editable = false
+	col OKCENASQL, _ЦЕНА_КОН, format=_INT,  period=-205, forperiods="_МЕС_СНГ", condition="FACT and CENA and OSTK and BYMONTH", matrixformula="CASE WHEN ISNULL(@OKKOLS,0)=0 THEN NULL ELSE @OKSUMMAS * 1000 / @OKKOLS END", matrixformulatype="sql", editable = false
+	col OKSUMMASQL, _СУММА_КОН, format=_INT,  matrixid="OKSUMMAS", period=-205, forperiods="_МЕС_СНГ", condition="FACT and SUMMA and OSTK and BYMONTH", matrixformula="@ONSUMMAS + @PDSUMMAS - @RDSUMMAS", matrixformulatype="sql", editable = false
+
+	#c начала года
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, matrixid="ONKOLSM",  period=-503, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTN and СНГ"
+	col ONCENASQL, _ЦЕНА_НАЧ, format=_INT,  period=-503, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and OSTN and СНГ", matrixformula="CASE WHEN ISNULL(@ONKOLSM,0)=0 THEN NULL ELSE @ONSUMMASM * 1000 / @ONKOLSM END", matrixformulatype="sql", editable = false
+	col ONSUMMA, _СУММА_НАЧ, format=_INT,  matrixid="ONSUMMASM", period=-503, forperiods="_НЕ_ЯНВ", condition="FACT and SUMMA and OSTN and СНГ"
+
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, matrixid="PDKOLSM", period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and PRIHOD and СНГ"
+	col PDCENASQL, _ЦЕНА_ПРИХОД, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and PRIHOD and СНГ", matrixformula="CASE WHEN ISNULL(@PDKOLSM,0)=0 THEN NULL ELSE @PDSUMMASM * 1000 / @PDKOLSM END", matrixformulatype="sql", editable = false
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, matrixid="PDSUMMASM", period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and SUMMA and PRIHOD and СНГ"
+
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, matrixid="RDKOLSM", period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and RASHOD and СНГ"
+	col RDCENASQL, _ЦЕНА_РАСХОД, format=_INT, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and RASHOD and СНГ", matrixformula="CASE WHEN ISNULL(@RDKOLSM,0)=0 THEN NULL ELSE @RDSUMMASM * 1000 / @RDKOLSM END", matrixformulatype="sql", editable = false
+	col RDSUMMA, _СУММА_РАСХОД, format=_INT, matrixid="RDSUMMASM", period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and SUMMA and RASHOD and СНГ"
+
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3,  matrixid="OKKOLSM", period=-205, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTK and СНГ", matrixformula="@ONKOLSM + @PDKOLSM - @RDKOLSM", matrixformulatype="sql", editable = false
+	col OKCENASQL, _ЦЕНА_КОН, format=_INT,  period=-205, forperiods="_НЕ_ЯНВ", condition="FACT and CENA and OSTK and СНГ", matrixformula="CASE WHEN ISNULL(@OKKOLSM,0)=0 THEN NULL ELSE @OKSUMMASM * 1000 / @OKKOLSM END", matrixformulatype="sql", editable = false
+	col OKSUMMASQL, _СУММА_КОН, format=_INT,  matrixid="OKSUMMASM", period=-205, forperiods="_НЕ_ЯНВ", condition="FACT and SUMMA and OSTK and СНГ", matrixformula="@ONSUMMASM + @PDSUMMASM - @RDSUMMASM", matrixformulatype="sql", editable = false
+
+
+#====================================================================================
+#Движение ресурсов (план)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_plan, "Движение ресурсов (план)" :
+	col ONKOL, _КОЛ_НАЧ, matrixid="ONKOLP", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col ONCENA, _ЦЕНА_НАЧ, matrixid="ONCENAP", format=_INT, wavg=ONKOLP, forperiods="_PLAN_PERIOD"
+	col ONSUMMASQL, _СУММА_НАЧ, format=_INT, tag="/DOSUM/", forperiods="_PLAN_PERIOD", matrixformula="@ONKOLP * @ONCENAP / 1000", matrixformulatype="sql", editable = false
+
+	col PDKOL, _КОЛ_ПРИХОД, matrixid="PDKOLP", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col PDCENA, _ЦЕНА_ПРИХОД, matrixid="PDCENAP", format=_INT, wavg=PDKOLP, forperiods="_PLAN_PERIOD"
+	col PDSUMMASQL, _СУММА_ПРИХОД, format=_INT, tag="/DOSUM/", forperiods="_PLAN_PERIOD", matrixformula="@PDKOLP * @PDCENAP / 1000", matrixformulatype="sql", editable = false
+
+	col RDKOL, _КОЛ_РАСХОД, matrixid="RDKOLP", format=_DEC3, forperiods="_PLAN_PERIOD"
+	col RDCENASQL, _ЦЕНА_РАСХОД, format=_INT, forperiods="_PLAN_PERIOD", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP,0)=0 THEN NULL ELSE (@ONKOLP * @ONCENAP + @PDKOLP * @PDCENAP ) / ( @ONKOLP + @PDKOLP) END", matrixtotalformula="CASE WHEN ISNULL(@RDKOLP,0)=0 THEN NULL ELSE @RDSUMMAP / @RDKOLP * 1000 END", matrixformulatype="sql", editable = false
+	col RDSUMMASQL, _СУММА_РАСХОД, matrixid="RDSUMMAP", format=_INT, tag="/DOSUM/", forperiods="_PLAN_PERIOD", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP,0)=0 THEN NULL ELSE (@ONKOLP * @ONCENAP + @PDKOLP * @PDCENAP ) / ( @ONKOLP + @PDKOLP) * @RDKOLP / 1000 END", matrixformulatype="sql", editable = false
+
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, matrixid=OKKOLP, forperiods="_PLAN_PERIOD", matrixformula="@ONKOLP + @PDKOLP - @RDKOLP", matrixformulatype="sql", editable = false
+	col OKCENASQL, _ЦЕНА_КОН, format=_INT, forperiods="_PLAN_PERIOD", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP-@RDKOLP,0)=0 THEN NULL ELSE (@ONKOLP * @ONCENAP + @PDKOLP * @PDCENAP ) / ( @ONKOLP + @PDKOLP) END", matrixtotalformula="CASE WHEN ISNULL(@OKKOLP,0)=0 THEN NULL ELSE @OKSUMMAP / @OKKOLP * 1000 END", matrixformulatype="sql", editable = false
+	col OKSUMMASQL, _СУММА_КОН, format=_INT, tag="/DOSUM/", forperiods="_PLAN_PERIOD", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP,0)=0 THEN NULL ELSE (@ONKOLP * @ONCENAP + @PDKOLP * @PDCENAP ) / ( @ONKOLP + @PDKOLP) * (@ONKOLP + @PDKOLP - @RDKOLP) / 1000 END", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Движение ресурсов (план отчет)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_plan_report, "Движение ресурсов (план отчет)" :
+	col ONKOL, hide, matrixid="ONKOLP", period=-303, forperiods="1,2,3,4,303,306,309,301,251"
+	col ONCENA, hide, matrixid="ONCENAP", period=-303, forperiods="1,2,3,4,303,306,309,301,251"
+	col PDKOL, hide, matrixid="PDKOLP", period=-303, forperiods="1,2,3,4,303,306,309,301,251"
+	col PDCENA, hide, matrixid="PDCENAP", period=-303, forperiods="1,2,3,4,303,306,309,301,251"
+	col RDKOL, hide, matrixid="RDKOLP", period=-303, forperiods="1,2,3,4,303,306,309,301,251"
+	col OKKOLHIDE, hide, matrixid="OKKOLP", period=-303, forperiods="1,2,3,4,303,306,309,301,251", matrixformula="@ONKOLP+@PDKOLP-@RDKOLP", matrixformulatype="sql", editable = false
+
+	col ONKOL, "_КОЛ_НАЧ план", format=_DEC3, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and KOL and OSTN "
+	col ONCENA, "_ЦЕНА_НАЧ план", format=_INT, wavg=ONKOLP, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and CENA and OSTN "
+	col ONSUMMASQL, "_СУММА_НАЧ план", format=_INT, tag="/DOSUM/", period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and SUMMA and OSTN ", matrixformula="@ONKOLP * @ONCENAP / 1000", matrixformulatype="sql", editable = false
+
+	col PDKOL, "_КОЛ_ПРИХОД план", format=_DEC3, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and KOL and PRIHOD "
+	col PDCENA, "_ЦЕНА_ПРИХОД план", format=_INT, wavg=PDKOLP, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and CENA and PRIHOD "
+	col PDSUMMASQL, "_СУММА_ПРИХОД план", format=_INT, tag="/DOSUM/", period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and SUMMA and PRIHOD", matrixformula="@PDKOLP * @PDCENAP / 1000", matrixformulatype="sql", editable = false
+
+	col RDKOL, "_КОЛ_РАСХОД план", format=_DEC3, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and KOL and RASHOD "
+	col RDCENASQL, "_ЦЕНА_РАСХОД план", format=_INT, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and CENA and RASHOD ", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP,0)=0 THEN NULL ELSE (@ONKOLP*@ONCENAP+@PDKOLP*@PDCENAP) / (@ONKOLP+@PDKOLP) END", matrixtotalformula="CASE WHEN ISNULL(@RDKOLP,0)=0 THEN NULL ELSE @RDSUMMAP / @RDKOLP * 1000 END", matrixformulatype="sql", editable = false
+	col RDSUMMASQL, "_СУММА_РАСХОД план", matrixid="RDSUMMAP", format=_INT, tag="/DOSUM/", period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and SUMMA and RASHOD ", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP,0)=0 THEN NULL ELSE (@ONKOLP*@ONCENAP+@PDKOLP*@PDCENAP) / (@ONKOLP+@PDKOLP) * @RDKOLP / 1000 END", matrixformulatype="sql", editable = false
+
+	col OKKOLSQL, "_КОЛ_КОН план", format=_DEC3, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and KOL and OSTK ", matrixformula="@ONKOLP+@PDKOLP-@RDKOLP", matrixformulatype="sql", editable = false
+	col OKCENASQL, "_ЦЕНА_КОН план", format=_INT, period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and CENA and OSTK ", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP-@RDKOLP,0)=0 THEN NULL ELSE (@ONKOLP*@ONCENAP+@PDKOLP*@PDCENAP) / (@ONKOLP+@PDKOLP) END", matrixtotalformula="CASE WHEN ISNULL(@OKKOLP,0)=0 THEN NULL ELSE @OKSUMMAP / @OKKOLP * 1000 END", matrixformulatype="sql", editable = false
+	col OKSUMMASQL, "_СУММА_КОН план", matrixid="OKSUMMAP", format=_INT, tag="/DOSUM/", period=-303, forperiods="1,2,3,4,303,306,309,301,251", condition="PLAN and SUMMA and OSTK ", matrixformula="CASE WHEN ISNULL(@ONKOLP+@PDKOLP,0)=0 THEN NULL ELSE (@ONKOLP*@ONCENAP+@PDKOLP*@PDCENAP) / (@ONKOLP+@PDKOLP) * (@ONKOLP+@PDKOLP-@RDKOLP) / 1000 END", matrixformulatype="sql", editable = false
+
+	col DOGIZV, "Дог. извл-е, %", format=_DEC2, forperiods="_PLAN_PERIOD", condition="USLDOG"
+	col DOGCENA, "Цена переработки, %", format=_DEC2, forperiods="_PLAN_PERIOD", , condition="USLDOG"
+	col CENABASE, "Цена ЦБ, руб./гр", format=_DEC2, condition="USLDOG"
+
+#====================================================================================
+#Движение ресурсов (натура форма)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_nat, "Движение ресурсов (натура форма)" :
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, forperiods="_ЯНВ"
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, auto, fixed, forperiods="_НЕ_ЯНВ"
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="COL1+COL2-COL3;-3,-2,-1", matrixformulatype="sql", editable = false
+
+	#c начала года
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, period=-503, forperiods="_МЕС_СНГ", fixed
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", fixed
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, period=-205, forperiods="_МЕС_СНГ", matrixformula="COL1+COL2-COL3;-3,-2,-1", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Движение ресурсов (контроль кол-ва)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_kol_control, "Движение ресурсов (контроль кол-ва)" :
+	#за месяц:
+	col ONKOL, hide, format=_DEC3, period=11, forperiods="_НЕ_ЯНВ"
+	col PDKOL, hide, format=_DEC3, period=-502, forperiods="_НЕ_ЯНВ"
+	col RDKOL,  hide, format=_DEC3, period=-502, forperiods="_НЕ_ЯНВ"
+	col ONKOL,  hide, format=_DEC3, forperiods="_НЕ_ЯНВ"
+	col CONTROLSQL, "Контроль кол-ва {2} {0}", format=_DEC3, forperiods="_НЕ_ЯНВ", matrixformula="COL1+COL2-COL3-COL4;-4,-3,-2,-1", matrixformulatype="sql", editable = false :
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+
+#====================================================================================
+#Движение ресурсов (контроль сумм)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_summa_control, "Движение ресурсов (контроль сумм)" :
+	col ONSUMMA, hide, format=_DEC3, period=11, forperiods="_НЕ_ЯНВ"
+	col PDSUMMA, hide, format=_DEC3, period=-502, forperiods="_НЕ_ЯНВ"
+	col RDSUMMA, hide, format=_DEC3, period=-502, forperiods="_НЕ_ЯНВ"
+	col ONSUMMA, hide, format=_DEC3, forperiods="_НЕ_ЯНВ"
+	col CONTROLSQL, "Контроль сумм {2} {0}", format=_DEC3, forperiods="_НЕ_ЯНВ", matrixformula="COL1+COL2-COL3-COL4;-4,-3,-2,-1", matrixformulatype="sql", editable = false :
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+
+#====================================================================================
+#Движение ресурсов (натура отчет)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_nat_report, "Движение ресурсов (натура отчет)" :
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and OSTN and BYMONTH"
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and PRIHOD and BYMONTH"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and RASHOD and BYMONTH"
+
+	col ONKOL, hide, matrixid="ONKOLSQL", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and OSTK and BYMONTH"
+	col PDKOL, hide, matrixid="PDKOLSQL", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and OSTK and BYMONTH"
+	col RDKOL, hide, matrixid="RDKOLSQL", format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and OSTK and BYMONTH"
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ", condition="FACT and KOL and OSTK and BYMONTH", matrixformula="@ONKOLSQL+@PDKOLSQL-@RDKOLSQL", matrixformulatype="sql", editable = false
+
+	#c начала года
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, period=-503, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTN and BYMONTH"
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and PRIHOD and BYMONTH"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and RASHOD and BYMONTH"
+
+	col ONKOL, hide, matrixid="ONKOLSMSQL", format=_DEC3, period=-503, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTK and BYMONTH"
+	col PDKOL, hide, matrixid="PDKOLSMSQL", format=_DEC3, period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTK and BYMONTH"
+	col RDKOL, hide, matrixid="RDKOLSMSQL", format=_DEC3, period=-501, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTK and BYMONTH"
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, period=-205, forperiods="_МЕС_СНГ", condition="FACT and KOL and OSTK and BYMONTH", matrixformula="@ONKOLSMSQL+@PDKOLSMSQL-@RDKOLSMSQL", matrixformulatype="sql", editable = false
+
+	#c начала года
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, period=-503, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTN and СНГ"
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and PRIHOD and СНГ"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and RASHOD and СНГ"
+
+	col ONKOL, hide, matrixid="ONKOLSSQL", format=_DEC3, period=-503, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTK and СНГ"
+	col PDKOL, hide, matrixid="PDKOLSSQL", format=_DEC3, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTK and СНГ"
+	col RDKOL, hide, matrixid="RDKOLSSQL", format=_DEC3, period=-501, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTK and СНГ"
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, period=-205, forperiods="_НЕ_ЯНВ", condition="FACT and KOL and OSTK and СНГ", matrixformula="@ONKOLSSQL+@PDKOLSSQL-@RDKOLSSQL", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Движение ресурсов (план натура)
+#------------------------------------------------------------------------------------
+subset cs_resourse_move_nat_plan, "Движение ресурсов (план натура)" :
+	col ONKOL, _КОЛ_НАЧ, format=_DEC3, matrixid="ONKOLP", forperiods="_PLAN_PERIOD"
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, matrixid="PDKOLP", forperiods="_PLAN_PERIOD"
+	col RDKOL, _КОЛ_РАСХОД, format=_DEC3, matrixid="RDKOLP", forperiods="_PLAN_PERIOD"
+	col OKKOLSQL, _КОЛ_КОН, format=_DEC3, forperiods="_PLAN_PERIOD", matrixformula=" @ONKOLP+@PDKOLP-@RDKOLP", matrixformulatype="sql", editable = false
+	col DOGIZV, "Дог. извл-е, %", format=_DEC2, matrixid="DOGIZVP", forperiods="_PLAN_PERIOD", wavg=RDKOLP
+	col DOGCENA, "Цена переработки, %", format=_DEC2, matrixid="DOGCENAP", forperiods="_PLAN_PERIOD", wavg=RDKOLP
+	col CENABASE, "Цена ЦБ, руб./гр", format=_DEC2, matrixid="CENABASEP"
+	col DOGIZVSQL, "Кол-во металла", format=_INT, forperiods="_PLAN_PERIOD", matrixformula=" @RDKOLP * @DOGIZVP / 100 ", matrixformulatype="sql", editable = false
+	col DOGCENASQL, "Ст-ть переработки, т.р.", format=_INT, forperiods="_PLAN_PERIOD", matrixformula=" @RDKOLP * @DOGCENAP * @CENABASEP / 1000 ", matrixformulatype="sql", editable = false
+
+#====================================================================================
+#Приход ресурсов
+#------------------------------------------------------------------------------------
+subset cs_resourse_prihod, "Приход ресурсов" :
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col PDCENASQL, _ЦЕНА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", matrixformula="CASE COL2 WHEN 0 THEN NULL ELSE  COL1 * 1000 / COL2 END;1,-1", matrixformulatype="sql", editable = false
+	col PDSUMMA, _СУММА_ПРИХОД, format=_INT, forperiods="_ЯНВ,_НЕ_ЯНВ", validation="validate-int-cell-number"
+
+#====================================================================================
+#Приход ресурсов (план)
+#------------------------------------------------------------------------------------
+subset cs_resourse_prihod_plan, "Приход ресурсов (план)" :
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_PLAN_PERIOD"
+	col PDCENA, _ЦЕНА_ПРИХОД, format=_INT, forperiods="_PLAN_PERIOD"
+	col PDSUMMASQL, _СУММА_ПРИХОД, format=_INT, forperiods="_PLAN_PERIOD", matrixformula="COL1 * COL2 / 1000;-2,-1", matrixformulatype="sql", editable = false
+
+
+#====================================================================================
+#Приход ресурсов (натура)
+#------------------------------------------------------------------------------------
+subset cs_resourse_prihod_nat, "Приход ресурсов (натура)" :
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+#====================================================================================
+#Приход ресурсов (натура план)
+#------------------------------------------------------------------------------------
+subset cs_resourse_prihod_nat_plan, "Приход ресурсов (натура план)" :
+	col PDKOL, _КОЛ_ПРИХОД, format=_DEC3, forperiods="_PLAN_PERIOD"
+
+
+#====================================================================================
+#Услуги (форма)
+#------------------------------------------------------------------------------------
+subset cs_uslugi :
+	col KOL, "Кол-во {2} {0}", forperiods="_ТОЛЬКО_МЕС", format="#,###.###", controlpoint=true
+	col CENACALC, "Цена {2} {0}, руб./ед.", forperiods="_ТОЛЬКО_МЕС", format="#,###.##"
+	col SUMMA, "Сумма {2} {0}, т.р.", forperiods="_ТОЛЬКО_МЕС", validation="validate-int-cell-number", format=_INT, controlpoint=true
+
+	col KOL, "Кол-во {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.###", fixed
+	col CENACALC, "Цена {2} {0}, руб./ед.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.##"
+	col SUMMA, "Сумма {2} {0}, т.р.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format=_INT, fixed
+
+#====================================================================================
+#Услуги (форма план)
+#------------------------------------------------------------------------------------
+subset cs_uslugi_plan :
+	col KOL, "Кол-во {2} {0}", format="#,###.####"
+	col CENA, "Цена {2} {0}, руб./ед.", format="#,###.##"
+	col SUMMACALC, "Сумма {2} {0}, т.р.", format=_INT, fixed
+	
+
+#====================================================================================
+#Услуги (отчет)
+#------------------------------------------------------------------------------------
+subset cs_uslugi_report :
+	col KOL, "Кол-во {2} {0}", forperiods="_ТОЛЬКО_МЕС", format="#,###.###", controlpoint=true
+	col CENACALC, "Цена {2} {0}, руб./ед.", forperiods="_ТОЛЬКО_МЕС", format="#,###.##"
+	col SUMMA, "Сумма {2} {0}, т.р.", forperiods="_ТОЛЬКО_МЕС", validation="validate-int-cell-number", format=_INT, controlpoint=true
+
+	col KOL, "Кол-во {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.###", fixed
+	col CENACALC, "Цена {2} {0}, руб./ед.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.##"
+	col SUMMA, "Сумма {2} {0}, т.р.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format=_INT, fixed
+	
+
+#====================================================================================
+#Услуги (отчет план)
+#------------------------------------------------------------------------------------
+subset cs_uslugi_plan_report :
+	col KOLED, "Норматив {2} {0}", format="#,###.####"
+	col CENA, "Цена {2} {0}, руб./ед.", format="#,###.##"
+	col SUMMACALC, "Сумма {2} {0}, т.р.", format=_INT, fixed
+	
+
+#====================================================================================
+#Баланс металлов (форма)
+#------------------------------------------------------------------------------------
+subset cs_balmet :
+	col KOL, "Кол-во {2} {0}", forperiods="_ТОЛЬКО_МЕС", format="#,###.###", controlpoint=true
+	col CENACALC, "Цена {2} {0}, руб./ед.", forperiods="_ТОЛЬКО_МЕС", format="#,###.##"
+	col SUMMA, "Сумма {2} {0}, т.р.", forperiods="_ТОЛЬКО_МЕС", validation="validate-int-cell-number", format=_INT, controlpoint=true
+
+	col KOL, "Кол-во {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.###", fixed
+	col CENACALC, "Цена {2} {0}, руб./ед.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.##"
+	col SUMMA, "Сумма {2} {0}, т.р.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format=_INT, fixed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

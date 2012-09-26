@@ -1,0 +1,98 @@
+﻿#отчет об ответственных по группам бизнес-процессов
+assoireport responsibility, "Ответственные по предприятию по группам", group=sys, role=HOLDANALYTIC :
+	out Aa, "Отчет об ответственных по предприятию по группам", type=configure :
+		use svod
+		use viewname
+		use generatorname
+		ask year
+		ask period
+		ask currentObject
+		ask main_font
+		
+		ask custom_title
+		ask column_width
+		ask offline_data
+		ask print_orientation
+		ask print_margine
+		ask numberscale
+		ask numberformat
+		ask filteringgroup
+		ask column_width :200
+		ask olap
+		ask zoneToRow
+		ask cacheMode
+		ask dropzeroes : false
+		param showhashheader, type=bool : false
+		var groupselectorplanfact,"План/Факт", target="condition", listdefinition="""
+			PLAN,FACT : Все |
+			FACT : Факт |
+			PLAN : План 
+		""" ,defaultValue="PLAN,FACT"
+		var groupselector,"Группа", target="condition", listdefinition="""
+			ALLGRP : Все |
+			FINGRP : Финансы |
+			ECOGRP : Экономика |
+			TRUDGRP : Персонал |
+			SOCGRP : Соц. сфера |
+			PROIZGRP : Производство			
+		""", defaultValue="ALLGRP"
+		col F, "Факт",  formulatype="py_eval" , formula="responsibility.Get(rowd,obj,cold)", customview="report/std/responsibilitycell", style="text-align:center;white-space:normal;", condition="FACT"
+		col P, "План",  formulatype="py_eval" , formula="responsibility.Get(rowd,obj,cold)", customview="report/std/responsibilitycell", style="text-align:center;white-space:normal;", condition="PLAN"
+		row fin_grp ,"Финансы", condition="FINGRP or ALLGRP"
+		row eco_grp, "Экономика", condition="ECOGRP or ALLGRP"
+		row trud_grp, "Персонал", condition="TRUDGRP or ALLGRP"
+		row soc_grp, "Соц. сфера", condition="SOCGRP or ALLGRP"
+		row proiz_grp, "Производство", condition="PROIZGRP or ALLGRP"
+		object type="myorgs", id="myorgs_2", code="myorgs_sum_split" , formula=orgs
+		useext responsibility
+		param groupbydivs, defaultValue = 1 : "1"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

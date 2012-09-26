@@ -1,0 +1,180 @@
+﻿####################################################################################
+##################                  Реальные темы                  #################
+####################################################################################
+
+
+
+#====================================================================================
+#Базовая форма по финансовым вложениям
+#------------------------------------------------------------------------------------
+thema finact_base, "Базовая форма по финансовым вложениям", group="fin_grp", parent = "balans2011", rootrow = "s140", roleprefix=FIN, abst :
+	import assoieco
+	import forprdtest
+	usequickupdateA = false
+	usequickupdateB = false
+	usequickupdateC = false
+	activeB = false
+	activeC = false
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	lockA = "${code}A"
+	lockB = "${code}B"
+	mbtype = ""
+	selfform = "false"
+	biztran=""
+	reportset Aa :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		ask usemes 
+		ask usesng : false
+		ask useotkl : false
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+	reportset Ab :
+		use viewname : "biztran/default"
+		use generatorname : "biztran/default"
+		ask usemes 
+		ask usesng : false
+		ask useotkl : false
+		ask dropzeroes : true
+		var dropresults, "Удалять избыточные подитоги" : true
+
+
+#====================================================================================
+#Движение собственного сырья
+#------------------------------------------------------------------------------------
+finact_base finact, "Расшифровка финансовых вложений (Прил. № 4 СФО)" :
+	import fordesign
+	import kvart
+	configview = "/fv/themaconfig"
+	formset A :
+		useset cs_finact2011
+	reportsetex Aa :
+		useset cs_finact_report
+	reportsetex Ab :
+		useset cs_finact_report
+
+
+#====================================================================================
+#Финансовые вложения (форма) для ввода за 2011 год
+#------------------------------------------------------------------------------------
+subset cs_finact2011, "Финансовые вложения (форма)" :
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="4", year=-1, validation="validate-int-cell-number", controlpoint=true
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="4", validation="validate-int-cell-number", controlpoint=true
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="4", validation="validate-int-cell-number", controlpoint=true
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="4", validation="validate-int-cell-number", controlpoint=true
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="4",  validation="validate-int-cell-number", fixed, controlpoint=true
+
+
+#====================================================================================
+#Финансовые вложения (форма)
+#------------------------------------------------------------------------------------
+subset cs_finact, "Финансовые вложения (форма)" :
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="1", year=-1, condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="2,3,4", year=-1, fixed, condition="OST", validation="validate-int-cell-number", controlpoint=true
+
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="1", condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, fixed, condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, "_НА_НАЧАЛО (ADMIN)", period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, condition="OST", validation="validate-int-cell-number", controlpoint=true, forrole="ADMIN"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="NACH", validation="validate-int-cell-number", controlpoint=true
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OPL", validation="validate-int-cell-number", controlpoint=true
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OST", validation="validate-int-cell-number", fixed, controlpoint=true
+
+
+#====================================================================================
+#Финансовые вложения (отчет)
+#------------------------------------------------------------------------------------
+subset cs_finact_report, "Финансовые вложения (отчет)" :
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="1", year=-1, condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="2,3,4", year=-1, fixed, condition="OST", validation="validate-int-cell-number", controlpoint=true
+
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="1", condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, fixed, condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, "_НА_НАЧАЛО (ADMIN)", period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, condition="OST", validation="validate-int-cell-number", controlpoint=true, forrole="ADMIN"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="NACH", validation="validate-int-cell-number", controlpoint=true
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OPL", validation="validate-int-cell-number", controlpoint=true
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OST", validation="validate-int-cell-number", fixed, controlpoint=true
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

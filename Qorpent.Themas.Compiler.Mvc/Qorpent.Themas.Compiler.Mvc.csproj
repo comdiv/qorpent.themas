@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration>Debug</Configuration>
+    <ProjectGuid>{5C5500A6-9390-4373-A2DC-C078629C204B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Qorpent.Themas.Compiler.Mvc</RootNamespace>
+    <AssemblyName>Qorpent.Themas.Compiler.Mvc</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CompileSingleAction.cs" />
+    <Compile Include="ThemaCompilerResultForQweb.cs" />
+  </ItemGroup>
+  <Import Project="..\commons\build.targets" />
+  <Import Project="*.import" />
+<ItemGroup><None Include="*.import" /><None Include="*.export" /></ItemGroup></Project>

@@ -1,0 +1,587 @@
+﻿####################################################################################
+###################                  Новые налоги                  #################
+####################################################################################
+
+thema nalroot, "Корень по налогам" ,  idx=200, abst :
+	import assoifin
+	
+	usefilials = true
+	fordetailA = true
+
+thema nalext, "Налоговое расширение", idx = 210, parent=nal,  abst :
+	import nalroot
+
+nalroot nal, "Налоги (новые)", parent=nalog_group :
+	import fordesign
+	activeB = false
+	activeC = false
+	fl_visibleA = false
+	rb_visibleA = false
+	configview = "nal_config"
+	formset A :
+		col STUB
+		param anyobject : true
+
+nalext nal_rate, "Нормативы распределения налогов" :
+	import fordesign
+	usetownfilter = true
+	layout_extension = "naloglist"
+	activeB = false
+	activeC = false
+	tableviewA = rates_table
+	fl_visibleA = false
+	rb_visibleA = false
+	usefilials = false
+	fordetailA = false
+	formset A :
+		col STUB
+		param anyobject : true
+		
+nalext nal_saldo, "Входящее сальдо по налогу" :
+	import fordesign
+	layout_extension = ""
+	activeB = false
+	activeC = false
+	tableviewA = saldo_table
+	fl_visibleA = false
+	rb_visibleA = false
+	formset A :
+		col STUB
+		param anyobject : true
+
+
+####################################################################################
+###################                 Рабочие налоги                 #################
+####################################################################################
+
+assoifin btnalog,  "Налоги по муниципалитетам (BUDGET)", role="DESIGNER", parent=nalog_group  :
+	tableviewA = btnalog
+	tableviewB = btnalog
+	usequickupdateA = false
+	usequickupdateB = false
+	formset _ФОРМА_ПО_ФАКТУ:
+		useset cs_nalog
+		useset cs_nalog_control_ost
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset cs_nalog_form_plan
+	reportsetex Aa :
+		use viewname : "nalog/default"
+		use generatorname : "nalog/default"
+		useset cs_nalog
+		useset cs_nalog_control_ost
+	reportsetex Ab :
+		use viewname : "nalog/default"
+		use generatorname : "nalog/default"
+		useset cs_nalog
+		useset cs_nalog_control_ost
+	reportsetex Ba :
+		use viewname : "nalog/default"
+		use generatorname : "nalog/default"
+		useset cs_nalog_form_plan
+	reportsetex Bb :
+		use viewname : "nalog/default"
+		use generatorname : "nalog/default"
+		useset cs_nalog_form_plan
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

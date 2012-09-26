@@ -1,0 +1,316 @@
+﻿####################################################################################
+###################                 Калькуляции                    #################
+####################################################################################
+
+#====================================================================================
+#Калькуляция
+#------------------------------------------------------------------------------------
+thema calcform, "Калькуляция", group="cost_grp", roleprefix="COST", parent="calcgroup", abst :
+	import assoifin
+	import measure
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_calc_form_fact
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		param showmeasure : true
+		ask planfact : "FACT"
+		ask usemes
+		ask usepredmes : false
+		ask usesng : false
+		ask usepredsng : false
+		ask cond_vid_pokaz
+		ask cond_type_pokaz
+#		ask useformmatrix : true
+		useset cs_calc_report_fact
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		param showmeasure : true
+		ask planfact : "FACT"
+		ask maxperpage : 0
+		ask dropzeroes : true
+		ask usemes
+		ask usepredmes : false
+		ask usesng : false
+		ask usepredsng : false
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_vid_pokaz
+		ask cond_type_pokaz
+#		ask useformmatrix : true
+		useset cs_calc_report_fact
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset cs_calc_form_plan
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		ask planfact : "PLAN"
+		ask usemes
+		ask usepredmes : false
+		ask usesng : false
+		ask usepredsng : false
+		ask cond_vid_pokaz
+		ask cond_type_pokaz
+#		ask useformmatrix : true
+		useset cs_calc_report_plan
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask planfact : "PLAN"
+		ask maxperpage : 0
+		ask dropzeroes : true
+		use usemes
+		use usepredmes : false
+		use usesng : false
+		use usepredsng : false
+		use useotkl : false
+		use cond_org_groups : "OG,OG_ORG"
+		use cond_div : "NODIV"
+		use cond_otrasl : "NOOTR"
+		use cond_reg : "NOREG"
+		ask cond_vid_pokaz
+		ask cond_type_pokaz
+#		ask useformmatrix : true
+		useset cs_calc_report_plan
+
+#====================================================================================
+#Колонки для фактической калькуляции (форма)
+#------------------------------------------------------------------------------------
+subset cs_calc_form_fact, "Калькуляция - факт (форма)" :
+	col KOLEDCALC, "Норматив {2} {0}", forperiods="_ТОЛЬКО_МЕС", format="#,###.####", usethema=true
+	col CENACALC, "Цена {2} {0}, руб./ед.", forperiods="_ТОЛЬКО_МЕС", format="#,###.##"
+	col SUMMAEDCALC, "Сумма на ед. {2} {0}, руб.", forperiods="_ТОЛЬКО_МЕС", format="#,###.#", usethema=true
+	col KOL, "Кол-во {2} {0}", forperiods="_ТОЛЬКО_МЕС", format="#,###.###", controlpoint=true
+	col SUMMA, "Сумма {2} {0}, т.р.", forperiods="_ТОЛЬКО_МЕС", validation="validate-int-cell-number", format=_INT, controlpoint=true
+
+	col KOLEDCALC,  "Норматив {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.####", usethema=true
+	col CENACALC, "Цена {2} {0}, руб./ед.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.##"
+	col SUMMAEDCALC, "Сумма на ед. {2} {0}, руб.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", usethema=true
+	col KOL, "Кол-во {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format="#,###.###", fixed
+	col SUMMA, "Сумма {2} {0}, т.р.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format=_INT, fixed
+
+
+#====================================================================================
+#Колонки для фактической калькуляции (отчет)
+#------------------------------------------------------------------------------------
+subset cs_calc_report_fact, "Калькуляция - факт (отчет)" :
+	#месячный план
+	col SSKOLEDPLAN, "Норматив {2} {0} план", matrixid="KOLEDPM", format="#,###.####", condition=" BYMONTH and PLAN and ED and KOL", usethema=true
+	col SSCENAPLAN, "Цена {2} {0}, руб./ед. план", matrixid="CENAPM", format="#,###.##", condition=" BYMONTH and PLAN and ED and CENA", usethema=true
+	col SSSUMMAEDPLAN, "Сумма на ед. {2} {0}, руб. план", matrixid="SUMMAEDPM", format="#,###.#", condition=" BYMONTH and PLAN and ED and SUMMA", usethema=true
+	col SSKOLPLAN, "Кол-во {2} {0} план", matrixid="KOLPM", format="#,###.#", condition=" BYMONTH and PLAN and VSEGO and KOL", usethema=true
+	col SSSUMMAPLAN, "Сумма {2} {0}, т.р. план", matrixid="SUMMAPM", format=_INT, condition=" BYMONTH and PLAN and VSEGO and SUMMA", usethema=true
+
+	#факт предыдущего месяца
+	col KOLEDCALC, "Норматив {2} {0}", forperiods="_ТОЛЬКО_МЕС", period=-101, condition="BYMONTH and FACT and ED and KOL and PRED", format="#,###.####", usethema=true
+	col CENACALC, "Цена {2} {0}", forperiods="_ТОЛЬКО_МЕС", period=-101, condition="BYMONTH and FACT and ED and CENA and PRED", format="#,###.##"
+	col SUMMAEDCALC, "Сумма на ед. {2} {0}", forperiods="_ТОЛЬКО_МЕС", period=-101, condition="BYMONTH and FACT and ED and SUMMA and PRED", format="#,###.#", usethema=true
+	col KOL, "Кол-во {2} {0}", forperiods="_ТОЛЬКО_МЕС", period=-101, condition="BYMONTH and FACT and VSEGO and KOL and PRED", format="#,###.#"
+	col SUMMA, "Сумма {2} {0}, т.р.", forperiods="_ТОЛЬКО_МЕС", period=-101, condition="BYMONTH and FACT and VSEGO and SUMMA and PRED", format=_INT
+
+	#Факт текущего месяца	
+	col KOLEDCALC, "Норматив {2} {0}", matrixid="KOLEDFM", forperiods="_ТОЛЬКО_МЕС", condition="BYMONTH and FACT and ED and KOL", format="#,###.####", usethema=true
+	col CENACALC, "Цена {2} {0}", matrixid="CENAFM", forperiods="_ТОЛЬКО_МЕС", condition="BYMONTH and FACT and ED and CENA", format="#,###.##"
+	col SUMMAEDCALC, "Сумма на ед. {2} {0}", matrixid="SUMMAEDFM", forperiods="_ТОЛЬКО_МЕС", condition="BYMONTH and FACT and ED and SUMMA", format="#,###.#", usethema=true
+	col KOL, "Кол-во {2} {0}", matrixid="KOLFM", forperiods="_ТОЛЬКО_МЕС", condition="BYMONTH and FACT and VSEGO and KOL", format="#,###.#"
+	col SUMMA, "Сумма {2} {0}, т.р.", matrixid="SUMMAFM", forperiods="_ТОЛЬКО_МЕС", condition="BYMONTH and FACT and VSEGO and SUMMA", format=_INT
+
+	#Отклонения факта текущего месяца от плана
+	col OTKLKOLEDM, "Норматив {2} {0} откл. от плана", forperiods="_ТОЛЬКО_МЕС", formula=" @KOLEDCALC? - @SSKOLEDPLAN? ", matrixformula="KOLEDFM,-KOLEDPM", matrixformulatype="sum", condition="BYMONTH and FACT and ED and KOL and PLAN and OTKL", format="#,###.####"
+	col OTKLCENACALCM, "Цена {2} {0} откл. от плана", forperiods="_ТОЛЬКО_МЕС", formula=" @CENACALC? - @SSCENAPLAN? ", matrixformula="CENAFM,-CENAPM", matrixformulatype="sum", condition="BYMONTH and FACT and ED and CENA and PLAN and OTKL", format="#,###.##"
+	col OTKLSUMMAEDCALCM, "Сумма на ед. {2} {0} откл. от плана", forperiods="_ТОЛЬКО_МЕС", formula=" @SUMMAEDCALC? - @SSSUMMAEDPLAN? ", matrixformula="SUMMAEDFM,-SUMMAEDPM", matrixformulatype="sum", condition="BYMONTH and FACT and ED and SUMMA and PLAN and OTKL", format="#,###.#"
+	col OTKLKOLM, "Кол-во {2} {0} откл. от плана", forperiods="_ТОЛЬКО_МЕС", formula=" @KOL? - @SSKOLPLAN? ", matrixformula="KOLFM,-KOLPM", matrixformulatype="sum", condition="BYMONTH and FACT and VSEGO and KOL and PLAN and OTKL", format="#,###.#"
+	col OTKLSUMMAM, "Сумма {2} {0}, т.р. откл. от плана", forperiods="_ТОЛЬКО_МЕС", formula=" @SUMMA? - @SSSUMMAPLAN? ", matrixformula="SUMMAFM,-SUMMAPM", matrixformulatype="sum", condition="BYMONTH and FACT and VSEGO and SUMMA and PLAN and OTKL", format=_INT
+
+	#Факт предыдущего года с н.г.
+	col KOLEDCALC,  "Норматив {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", year=-1, condition="СНГ and FACT and ED and KOL and PREDYEAR", format="#,###.####", usethema=true
+	col CENACALC, "Цена {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", year=-1, condition="СНГ and FACT and ED and CENA and PREDYEAR", format="#,###.##"
+	col SUMMAEDCALC, "Сумма на ед. {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", year=-1, condition="СНГ and FACT and ED and SUMMA and PREDYEAR", format="#,###.#", usethema=true
+	col KOL, "Кол-во {2} {0}", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", year=-1, condition="СНГ and FACT and VSEGO and KOL and PREDYEAR", format="#,###.#"
+	col SUMMA, "Сумма {2} {0}, т.р.", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", year=-1, condition="СНГ and FACT and VSEGO and SUMMA and PREDYEAR", format=_INT, fixed
+
+	#План текущего периода с н.г.
+	col SSKOLEDPLANSNG, "Норматив {2} {0} план", matrixid="KOLEDPS", period=_СУММЕСЯЦ, format="#,###.####", condition=" СНГ and PLAN and ED and KOL", usethema=true
+	col SSCENAPLANSNG, "Цена {2} {0}, руб./ед. план", matrixid="CENAPS", period=_СУММЕСЯЦ, format="#,###.##", condition=" СНГ and PLAN and ED and CENA", usethema=true
+	col SSSUMMAEDPLANSNG, "Сумма на ед. {2} {0}, руб. план", matrixid="SUMMAEDPS", period=_СУММЕСЯЦ, format="#,###.#", condition=" СНГ and PLAN and ED and SUMMA", usethema=true
+	col SSKOLPLANSNG, "Кол-во {2} {0} план", matrixid="KOLPS", format="#,###.#", period=_СУММЕСЯЦ, condition=" СНГ and PLAN and VSEGO and KOL", usethema=true
+	col SSSUMMAPLANSNG, "Сумма {2} {0}, т.р. план", matrixid="SUMMAPS", period=_СУММЕСЯЦ, format=_INT, condition=" СНГ and PLAN and VSEGO and SUMMA", usethema=true
+
+	#Факт текущего периода с н.г.
+	col KOLEDCALC,  "Норматив {2} {0}", matrixid="KOLEDFS", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="СНГ and FACT and ED and KOL", format="#,###.####", usethema=true
+	col CENACALC, "Цена {2} {0}", matrixid="CENAFS", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="СНГ and FACT and ED and CENA", format="#,###.##"
+	col SUMMAEDCALC, "Сумма на ед. {2} {0}", matrixid="SUMMAEDFS", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="СНГ and FACT and ED and SUMMA", format="#,###.#", usethema=true
+	col KOL, "Кол-во {2} {0}", matrixid="KOLFS", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="СНГ and FACT and VSEGO and KOL", format="#,###.#"
+	col SUMMA, "Сумма {2} {0}, т.р.", matrixid="SUMMAFS", period=-501, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="СНГ and FACT and VSEGO and SUMMA", format=_INT, fixed
+
+	#Отклонения факта текущего месяца от плана
+	col OTKLKOLEDS, "Норматив {2} {0} откл. от плана", period=_СУММЕСЯЦ, formula=" @KOLEDCALC.P-501? - @SSKOLEDPLANSNG? ", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", matrixformula="KOLEDFS,-KOLEDPS", matrixformulatype="sum", condition="СНГ and FACT and ED and KOL and PLAN and OTKL", format="#,###.####"
+	col OTKLCENACALCS, "Цена {2} {0} откл. от плана",  period=_СУММЕСЯЦ, formula=" @CENACALC.P-501? - @SSCENAPLANSNG? ", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", matrixformula="CENAFS,-CENAPS", matrixformulatype="sum", condition="СНГ and FACT and ED and CENA and PLAN and OTKL", format="#,###.##"
+	col OTKLSUMMAEDCALCS, "Сумма на ед. {2} {0} откл. от плана", period=_СУММЕСЯЦ,  formula=" @SUMMAEDCALC.P-501? - @SSSUMMAEDPLANSNG? ", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", matrixformula="KOLEDFS,-KOLEDPS", matrixformulatype="sum", condition="СНГ and FACT and ED and SUMMA and PLAN and OTKL", format="#,###.#"
+	col OTKLKOLS, "Кол-во {2} {0} откл. от плана", period=_СУММЕСЯЦ,  formula=" @KOL.P-501? - @SSKOLPLANSNG? ", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", matrixformula="KOLFS,-KOLPS", matrixformulatype="sum", condition="СНГ and FACT and VSEGO and KOL and PLAN and OTKL", format="#,###.#"
+	col OTKLSUMMAS, "Сумма {2} {0}, т.р. откл. от плана", period=_СУММЕСЯЦ,  formula=" @SUMMA.P-501? - @SSSUMMAPLANSNG? ", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", matrixformula="SUMMAFS,-SUMMAPS", matrixformulatype="sum", condition="СНГ and FACT and VSEGO and SUMMA and PLAN and OTKL", format=_INT
+
+#====================================================================================
+#Колонки для формы по плановой калькуляции
+#------------------------------------------------------------------------------------
+subset cs_calc_form_plan, "Калькуляции - план (форма)" :
+	col KOLED, "Норматив {2} {0}", format="#,###.####"
+	col CENA, "Цена {2} {0}, руб./ед.", format="#,###.##"
+	col FIXKOL, "Пост. кол-во {2} {0}",format="#,###.#"
+	col FIXCOST, "Пост. затр. {2} {0}, т.р.", format=_INT
+	col SSKOLEDPLANSNG, "Норматив {2} {0} план", format="#,###.####", usethema=true, fixed
+	col SSCENAPLANSNG, "Цена {2} {0}, руб./ед. план", format="#,###.##", usethema=true, fixed
+	col SSSUMMAEDPLANSNG, "Сумма на ед. {2} {0}, руб. план", format="#,###.#", usethema=true, fixed
+	col SSKOLPLANSNG, "Кол-во {2} {0} план", format="#,###.#", usethema=true, fixed
+	col SSSUMMAPLANSNG, "Сумма {2} {0}, т.р. план", format=_INT, usethema=true, fixed
+
+
+#====================================================================================
+#Колонки для отчета по плановой калькуляции
+#------------------------------------------------------------------------------------
+subset cs_calc_report_plan, "Калькуляция - план (отчет)" :
+	col SSKOLEDPLANSNG, "Норматив {2} {0} план", format="#,###.####", condition=" PLAN and ED and KOL", usethema=true
+	col SSCENAPLANSNG, "Цена {2} {0}, руб./ед. план", format="#,###.##", condition=" PLAN and ED and CENA", usethema=true
+	col SSSUMMAEDPLANSNG, "Сумма на ед. {2} {0}, руб. план", format="#,###.#", condition=" PLAN and ED and SUMMA", usethema=true
+	col SSKOLPLANSNG, "Кол-во {2} {0} план", format="#,###.#", condition=" PLAN and VSEGO and KOL", usethema=true
+	col SSSUMMAPLANSNG, "Сумма {2} {0}, т.р. план", format=_INT, condition=" PLAN and VSEGO and SUMMA", usethema=true
+
+#====================================================================================
+#Калькуляция концентрата
+#------------------------------------------------------------------------------------
+calcform calc_konz,  "Калькуляция концентрата", rootrow=z112 :
+	import fordesign
+	import month_for_kvart
+	ob_sk_fact="m140120"
+	CALC_OP="m140120"
+	CALC_TP="z1125000"
+	CALC_RP="z1126000"
+	forgroup=CALC_KONZ
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGCALC_KONZ"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGCALC_KONZ"	
+
+#====================================================================================
+#Калькуляция цинка
+#------------------------------------------------------------------------------------
+calcform calc_zink,  "Калькуляция цинка", rootrow=z250 :
+	import forprdtest
+	import month_for_kvart
+	ob_sk_fact="m1403811"
+	CALC_OP="z2504000"
+	CALC_TP="z2505000"
+	CALC_RP="z2506000"
+	OBPROIZ = "z2504000"
+	forgroup=CALC_ZN
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGCALC_ZN"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGCALC_ZN"	
+
+#====================================================================================
+#Калькуляция свинца
+#------------------------------------------------------------------------------------
+calcform calc_pb,  "Калькуляция свинца", rootrow=z260 :
+	import forprdtest
+	import month_for_kvart
+	ob_sk_fact="m140375"
+	CALC_OP="z2604000"
+	CALC_TP="z2605000"
+	CALC_RP="z2606000"
+	forgroup=CALC_PB
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGCALC_PB"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGCALC_PB"	
+
+#====================================================================================
+#Калькуляция серной кислоты
+#------------------------------------------------------------------------------------
+calcform calc_sernkisl,  "Калькуляция серной кислоты", rootrow=z210 :
+	import forprdtest
+	import month_for_kvart
+	ob_sk_fact="m140351"
+	CALC_OP="z210400"
+	CALC_TP="z2105000"
+	CALC_RP="z2106000"
+	OBPROIZ = "m140351"
+	forgroup=SERNKISL
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGSERNKISL"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGSERNKISL"	
+
+#====================================================================================
+#Калькуляция черновой меди
+#------------------------------------------------------------------------------------
+calcform calc_chernmed,  "Калькуляция черновой меди", rootrow=z130 :
+	import month_for_kvart
+	import forprdtest
+	ob_sk_fact="m140311"
+	CALC_OP="m140311"
+	CALC_TP="z1305000"
+	CALC_RP="z1306000"
+	forgroup=CALC_CU
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGCALC_CU"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGCALC_CU"	
+
+#====================================================================================
+#Калькуляция проката цветных металлов
+#------------------------------------------------------------------------------------
+calcform calc_ocm,  "Калькуляция проката цветных металлов", rootrow=z410 :
+	import forprdtest
+	import month_for_kvart
+	ob_sk_fact="m140851"
+	CALC_OP="m140851"
+	CALC_TP="z4105000"
+	CALC_RP="z4106000"
+	forgroup=CALC_OCM
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGCALC_OCM"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGCALC_OCM"	
+
+#====================================================================================
+#Калькуляция слитков
+#------------------------------------------------------------------------------------
+calcform calc_slitki,  "Калькуляция слитков", rootrow=z420 :
+	import forprdtest
+	import month_for_kvart
+	ob_sk_fact="m140860"
+	CALC_OP="z4203000"
+	CALC_TP="z4205000"
+	CALC_RP="z4206000"
+	forgroup=CALC_OCM
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGCALC_OCM"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGCALC_OCM"	
+
+#====================================================================================
+#Калькуляция энергоресурсов
+#------------------------------------------------------------------------------------
+calcform calc_energo,  "Калькуляция энергоресурсов", rootrow=z510 :
+	import forprdtest
+	import month_for_kvart
+	ob_sk_fact="m140860"
+	CALC_OP="m140860"
+	CALC_TP="z5105000"
+	CALC_RP="z5106000"
+	forgroup=CALC_ENERGO
+	activeC = false
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		use cond_og : "OGCALC_ENERGO"	
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		use cond_og : "OGCALC_ENERGO"	
+
+
+
+

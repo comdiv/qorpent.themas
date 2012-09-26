@@ -1,0 +1,539 @@
+﻿####################################################################################
+##################                  Производство                   #################
+####################################################################################
+
+#====================================================================================
+#Объемы производства по филиалам
+#------------------------------------------------------------------------------------
+proizv obproizf, "Объемы производства (форма № 1)", rootrow=m140, roleprefix=OBPROIZ:
+	import measure
+#	import month_for_kvart
+	usequickupdateA = false #отключение быстрого сохранения
+	usequickupdateB = false
+	usequickupdateC = false
+#	useformmatrixA = true
+#	useformmatrixB = true
+#	useformmatrixC = true
+#	activeC = false
+	defaultscheduledelta="10"
+	planactive=true
+	plancomment= "данные по плану вводятся помесячно"
+	usefilials = true
+	detailfavoriteA = true
+	tableviewA = "filiallist"
+	detailfavoriteB = true
+	tableviewB = "filiallist"
+	detailfavoriteC = true
+	tableviewC = "filiallist"
+	rbnameA = "Объемы производства"
+	ranameA = "Объемы производства продукции предприятий, входящих в группу УГМК"
+	rbnameB = "Объемы производства"
+	ranameB = "Объемы производства продукции предприятий, входящих в группу УГМК"
+
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_obproizf_form 
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		param hide_head_valuta : 1
+		ask planfact
+		ask useoperplan
+		ask zdf
+		ask usepredmes
+		ask kolgod6
+		ask kolmes
+		ask maxperpage : 1
+		ask usepredsng
+#		var predgod, "Предыдущий год", target=condition, group=_ГП_ВРЕМЯ, altvalue=PREDGOD, type=bool : true
+		var row1, "Строка для развертки 1", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row1n, "Подпись строки 1", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row2, "Строка для развертки 2", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row2n, "Подпись строки 2", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row3, "Строка для развертки 3", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row3n, "Подпись строки 3", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		useset cs_obproizf_report	
+		row "$row1","$row1n"
+		row "$row2","$row2n"
+		row "$row3","$row3n"
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		param hide_head_valuta : 1
+		use und_buh 
+		use und_plan 
+		use und_teh_dir
+		use dropzeroes : true
+		use maxperpage : 1
+		use name_width : 450
+		use column_width : 80
+		ask planfact
+		ask useoperplan
+		ask usepredsng
+#		param table_width, type = int : 750
+#		param number_width, type = int : 40
+		ask use_qrf
+		ask qrf_col
+		ask qrf_year
+		ask qrf_period : -1
+		param page_break : false
+		param favorite_only , type=bool : true
+		object type="org", id="$currentObject", code="main_org_sp", formula="sp:cls:FILIAL"
+		useset cs_obproizf_report
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		param hide_head_valuta : 1
+		use und_buh
+		use und_plan
+		use und_teh_dir
+		use dropzeroes : true
+		use maxperpage : 1
+		use name_width : 180
+		use column_width : 80
+		param table_width, type = int : 750
+		param number_width, type = int : 40
+		param fullreportplace, target=condition, defaultvalue="FULLREPORT"
+		param page_break : false
+#		param periodstring : "ТПФП 2011"
+		param favorite_only , type=bool : true
+		object type="org", id="$currentObject", code="main_org_sp", formula="sp:cls:FILIAL"
+		use dropzeroes : true
+		use usefullreport : true
+		useset cs_plan_report_obproiz
+	formset _ФОРМА_ПО_ПЛАНУ :
+		useset cs_plan_form_obproiz
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask planfact 
+		ask usefullreport
+		ask kolgod6
+		ask maxperpage : 1
+		var row1, "Строка для развертки 1", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row1n, "Подпись строки 1", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row2, "Строка для развертки 2", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row2n, "Подпись строки 2", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row3, "Строка для развертки 3", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		var row3n, "Подпись строки 3", group=_ГП_ДЕРЕВО, tab=_TAB_FMT
+		param hide_head_valuta : 1
+		use name_width : 400
+		useset cs_plan_report_obproiz
+		row "$row1","$row1n"
+		row "$row2","$row2n"
+		row "$row3","$row3n"
+		
+#====================================================================================
+#Объемы производства по филиалам - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport obproizf_copr, "Объемы производства (форма № 1)", roleprefix=OBPROIZ, rootrow=m140:
+	import measure
+	import month_for_kvart
+	activeC = false
+	defaultscheduledelta="10"
+	planactive=true
+	plancomment= "данные по плану вводятся помесячно"
+	usefilials = true
+	detailfavoriteA = true
+	tableviewA = "filiallist"
+	detailfavoriteB = true
+	tableviewB = "filiallist"
+	rbnameA = "Объемы производства"
+	ranameA = "Объемы производства продукции предприятий, входящих в группу УГМК"
+	rbnameB = "Объемы производства"
+	ranameB = "Объемы производства продукции предприятий, входящих в группу УГМК"
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		param hide_head_valuta : 1
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask planfact
+		ask useoperplan
+		ask zdf
+		ask kolmes
+		ask maxperpage : 1
+		ask rowtype : "-m140720, -mUSP140110, -mUSP140120,-mUSP140310"
+		var predgod, "Предыдущий год", target=condition, group=_ГП_ВРЕМЯ, altvalue=PREDGOD, type=bool : true
+		var row1, "Строка для развертки 1", group=_ГП_ДЕРЕВО
+		var row1n, "Подпись строки 1", group=_ГП_ДЕРЕВО
+		var row2, "Строка для развертки 2", group=_ГП_ДЕРЕВО
+		var row2n, "Подпись строки 2", group=_ГП_ДЕРЕВО
+		var row3, "Строка для развертки 3", group=_ГП_ДЕРЕВО
+		var row3n, "Подпись строки 3", group=_ГП_ДЕРЕВО
+		useset cs_obproizf_report	
+		row "$row1","$row1n"
+		row "$row2","$row2n"
+		row "$row3","$row3n"
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask usefullreport
+		ask kolgod6
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+		var row1, "Строка для развертки 1", group=_ГП_ДЕРЕВО
+		var row1n, "Подпись строки 1", group=_ГП_ДЕРЕВО
+		var row2, "Строка для развертки 2", group=_ГП_ДЕРЕВО
+		var row2n, "Подпись строки 2", group=_ГП_ДЕРЕВО
+		var row3, "Строка для развертки 3", group=_ГП_ДЕРЕВО
+		var row3n, "Подпись строки 3", group=_ГП_ДЕРЕВО
+		param hide_head_valuta : 1
+		ask name_width : 400
+		ask rowtype : "-m140720, -mUSP140110, -mUSP140120"
+		useset cs_plan_report_obproiz
+		row "$row1","$row1n"
+		row "$row2","$row2n"
+		row "$row3","$row3n"
+		
+#====================================================================================
+#Объемы производства по филиалам - корпоративная отчетность
+#------------------------------------------------------------------------------------
+corpreport obproizf_fas, "Объемы производства (ФАС)", parent=fasreportgroup, roleprefix=OBPROIZ, rootrow=m140:
+	import measure
+	import month_for_kvart
+	activeC = false
+	defaultscheduledelta="10"
+	planactive=true
+	plancomment= "данные по плану вводятся помесячно"
+	usefilials = true
+	detailfavoriteA = true
+	tableviewA = "filiallist"
+	detailfavoriteB = true
+	tableviewB = "filiallist"
+	rbnameA = "Объемы производства"
+	ranameA = "Объемы производства продукции предприятий, входящих в группу УГМК"
+	rbnameB = "Объемы производства"
+	ranameB = "Объемы производства продукции предприятий, входящих в группу УГМК"
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	f_libB = ""
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		param hide_head_valuta : 1
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask planfact
+		ask useoperplan
+		ask zdf
+		ask kolmes
+		ask maxperpage : 1
+		ask rowtype : "-m140720, -mUSP140110, -mUSP140120,-mUSP140310"
+		var predgod, "Предыдущий год", target=condition, group=_ГП_ВРЕМЯ, altvalue=PREDGOD, type=bool : true
+		var row1, "Строка для развертки 1", group=_ГП_ДЕРЕВО
+		var row1n, "Подпись строки 1", group=_ГП_ДЕРЕВО
+		var row2, "Строка для развертки 2", group=_ГП_ДЕРЕВО
+		var row2n, "Подпись строки 2", group=_ГП_ДЕРЕВО
+		var row3, "Строка для развертки 3", group=_ГП_ДЕРЕВО
+		var row3n, "Подпись строки 3", group=_ГП_ДЕРЕВО
+		row "$row1","$row1n"
+		row "$row2","$row2n"
+		row "$row3","$row3n"
+		useset cs_obproizf_report	
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask usefullreport
+		ask kolgod6
+		ask showcontrolpoints : false
+		ask cond_org_groups : "H_ORG,!H"
+		ask maxperpage : 1
+		var row1, "Строка для развертки 1", group=_ГП_ДЕРЕВО
+		var row1n, "Подпись строки 1", group=_ГП_ДЕРЕВО
+		var row2, "Строка для развертки 2", group=_ГП_ДЕРЕВО
+		var row2n, "Подпись строки 2", group=_ГП_ДЕРЕВО
+		var row3, "Строка для развертки 3", group=_ГП_ДЕРЕВО
+		var row3n, "Подпись строки 3", group=_ГП_ДЕРЕВО
+		param hide_head_valuta : 1
+		ask name_width : 400
+		ask rowtype : "-m140720, -mUSP140110, -mUSP140120"
+		row "$row1","$row1n"
+		row "$row2","$row2n"
+		row "$row3","$row3n"
+		useset cs_plan_report_obproiz
+		
+#====================================================================================
+#Контроль квартальных планов по объемам производства
+#------------------------------------------------------------------------------------
+proizv obproizf_control, "Контроль квартальных планов по объемам производства", rootrow=m140, roleprefix=OBPROIZ, parent=obproizf :
+	import measure
+	needresponsibility = false
+	defaultscheduledelta="10"
+	planactive=true
+	plancomment= "данные по плану вводятся помесячно"
+	factiveA = false
+	factiveB = false
+	factiveC = false
+	usefilials = true
+	detailfavoriteA = true
+	tableviewA = "filiallist"
+	detailfavoriteB = true
+	tableviewB = "filiallist"
+	detailfavoriteC = true
+	tableviewC = "filiallist"
+	rbnameA = "Объемы производства"
+	ranameA = "Объемы производства продукции предприятий, входящих в группу УГМК"
+	rbnameB = "Объемы производства"
+	ranameB = "Объемы производства продукции предприятий, входящих в группу УГМК"
+
+	ra_lib2A = ""
+	rb_lib2A = ""
+	ra_lib2B = ""
+	rb_lib2B = ""
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		param hide_head_valuta : 1
+#		use und_buh
+#		use und_plan
+		use dropzeroes : true
+		use maxperpage : 1
+		use name_width : 300
+		use column_width : 80
+		param table_width, type = int : 800
+		param number_width, type = int : 40
+		param fullreportplace, target=condition, defaultvalue="FULLREPORT"
+		param page_break : false
+		param periodstring : "ТПФП 2011"
+		param favorite_only , type=bool : true
+		object type="org", id="$currentObject", code="main_org_sp", formula="sp:cls:FILIAL"
+		use dropzeroes : true
+		use usefullreport : true
+		useset cs_plan_obproiz_control
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ПЛАНУ :
+		ask usefullreport
+		var row1, "Строка для развертки 1", group=_ГП_ДЕРЕВО
+		var row1n, "Подпись строки 1", group=_ГП_ДЕРЕВО
+		var row2, "Строка для развертки 2", group=_ГП_ДЕРЕВО
+		var row2n, "Подпись строки 2", group=_ГП_ДЕРЕВО
+		var row3, "Строка для развертки 3", group=_ГП_ДЕРЕВО
+		var row3n, "Подпись строки 3", group=_ГП_ДЕРЕВО
+		param hide_head_valuta : 1
+		use name_width : 400
+		useset cs_plan_obproiz_control
+		row "$row1","$row1n"
+		row "$row2","$row2n"
+		row "$row3","$row3n"
+
+#====================================================================================
+#Производство (ожидаемое)
+#------------------------------------------------------------------------------------
+subset cs_obproizf_ozhid_calc, "Производство (ожидаемое)" :
+	col PLAN, _ПЛАН, period=303, forperiods=403, format=_DEC2, fixed
+	col PLAN, _ПЛАН, period=306, forperiods=406, format=_DEC2, fixed
+	col PLAN, _ПЛАН, period=309, forperiods=409, format=_DEC2, fixed
+
+	col "0KF", _ФАКТ, period=22, forperiods=403, format=_DEC2, fixed
+	col PLAN13, _ПЛАН, period=13, forperiods=403, format=_DEC2, formula=" @PLAN.P303? / 3 "
+	col OZHID1, "Ожид. {2} {0} (расчетно)", forperiods=403, formula=" @0KF.P22? + @PLAN.P303? / 3 "
+
+	col "0KF", _ФАКТ, period=25, forperiods=406, format=_DEC2, fixed
+	col PLAN16, _ПЛАН, period=16, forperiods=406, format=_DEC2, formula=" ( @PLAN.P306? - @PLAN.P303? ) / 3 "
+	col OZHID2, "Ожид. {2} {0} (расчетно)", forperiods=406, formula=" @0KF.P25? +  ( @PLAN.P306? - @PLAN.P303? ) / 3 "
+
+	col "0KF", _ФАКТ, period=28, forperiods=409, format=_DEC2, fixed
+	col PLAN19, _ПЛАН, period=19, forperiods=409, format=_DEC2, formula=" ( @PLAN.P309? - @PLAN.P306? ) / 3 "
+	col OZHID3, "Ожид. {2} {0} (расчетно)", forperiods=409, formula=" @0KF.P28? + ( @PLAN.P309? - @PLAN.P306? ) / 3 "
+
+#====================================================================================
+#Объемы производства (периодические планы)
+#------------------------------------------------------------------------------------
+subset cs_obproizf_plan, "Производство (план)" :
+	col PLANSNG1, "_PLAN (период.)", period="_СУММЕСЯЦ", forperiods="1,11,12,13"
+	col PLANSNG2, "_PLAN (период.)", period="_СУММЕСЯЦ", forperiods="2,14,15,16"
+	col PLANSNG3, "_PLAN (период.)", period="_СУММЕСЯЦ", forperiods="3,17,18,19"
+	col PLANSNG4, "_PLAN (период.)", period="_СУММЕСЯЦ", forperiods="4,110, 111,112"
+
+#====================================================================================
+#Объемы производства (периодические планы)
+#------------------------------------------------------------------------------------
+subset cs_obproizf_plan_otkl, "Производство (план)" :
+	col OTKL1, "Уточн. период. плана {2} {0}", period="_СУММЕСЯЦ", forperiods="1,11,12,13", formula=" @0KP.P@_СУММЕСЯЦ? - @PLANSNG1? "
+	col OTKL2, "Уточн. период. плана {2} {0}", period="_СУММЕСЯЦ", forperiods="2,14,15,16", formula=" @0KP.P@_СУММЕСЯЦ? - @PLANSNG2? "
+	col OTKL3, "Уточн. период. плана {2} {0}", period="_СУММЕСЯЦ", forperiods="3,17,18,19", formula=" @0KP.P@_СУММЕСЯЦ? - @PLANSNG3? "
+	col OTKL4, "Уточн. период. плана {2} {0}", period="_СУММЕСЯЦ", forperiods="4,110, 111,112", formula=" @0KP.P@_СУММЕСЯЦ? - @PLANSNG4? "
+
+#====================================================================================
+#Объемы производства (форма)
+#------------------------------------------------------------------------------------
+subset cs_obproizf_form, "Производство  (форма)" :
+	col PLAN, _TPFP, format=_DEC2, fixed, period="301"
+	import cs_obproizf_ozhid_calc
+	col "0KP", "_PLAN (опер.)", matrixid="PLANMES", format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col "0KF", _FACT, matrixid="TEKMES", format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col OTKLABS, "_ОТКЛПЛАН (опер.)", matrixformula="TEKMES,-PLANMES", matrixformulatype="sum", forperiods="_ЯНВ,_НЕ_ЯНВ", format=_DEC2, formula=" @0KF? - @0KP? ", fixed
+
+	col OTKLOTN, "Выполн. плана {2} {0} (опер.), %", matrixformula="TEKMES,-PLANMES", matrixformulatype="proc", forperiods="_ЯНВ,_НЕ_ЯНВ", format=_DEC1, formula=" @0KF? / @0KP? * 100", fixed:
+		checkrule action="<", value="100", cellstyle=";color :red;"
+		checkrule action=">=", value="100", cellstyle=";color :green;"
+
+
+	col "0KF", "Ожид. {2} {0}", format=_DEC2, forperiods="403,406,409"
+
+	import cs_obproizf_plan
+
+	col "0KP", "_PLAN (опер.)", matrixid="PLANSNG", format=_DEC2, period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, forgroup="!PR_KVART"
+	col "0KF", _FACT, matrixid="TEKSNG", format=_DEC2, period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, forgroup="!PR_KVART"
+
+	col "0KP", "_PLAN (опер.)", matrixid="PLANSNG", format=_DEC2, period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", forgroup="PR_KVART"
+	col "0KF", _FACT, matrixid="TEKSNG", format=_DEC2, period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", forgroup="PR_KVART"
+
+	col OTKLABS, "_ОТКЛПЛАН (опер.)", period="_СУММЕСЯЦ", matrixformula="TEKSNG,-PLANSNG", matrixformulatype="sum", forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format=_DEC2, formula=" @0KF? - @0KP? ", fixed
+	col OTKLOTN, "Выполн. плана {2} {0} (опер.), %", period="_СУММЕСЯЦ", matrixformula="TEKSNG,-PLANSNG", matrixformulatype="proc", forperiods="_НЕ_ЯНВ,_МЕС_СНГ", format=_DEC1, formula=" @0KF? / @0KP? * 100", fixed:
+		checkrule action="<", value="100", cellstyle=";color :red;"
+		checkrule action=">=", value="100", cellstyle=";color :green;"
+
+	import cs_obproizf_plan_otkl
+
+	col Ok1, "Контроль оборотов План [=0]", forperiods=_НЕ_ЯНВ, formula="@0KP.P@_ПРЕД_СУММЕСЯЦ? + @0KP? - @0KP.P@_СУММЕСЯЦ? + @KOL.P@_ПРЕД_СУММЕСЯЦ? + @KOL? - @KOL.P@_СУММЕСЯЦ?" 
+	col Ok2, "Контроль оборотов Факт [=0]", forperiods=_НЕ_ЯНВ, formula="@0KF.P@_ПРЕД_СУММЕСЯЦ? + @0KF? - @0KF.P@_СУММЕСЯЦ? + @KOL.P@_ПРЕД_СУММЕСЯЦ? + @KOL? - @KOL.P@_СУММЕСЯЦ?" 
+	
+	col OZHIDCALCOTKL1, "Откл. ожид. от расчетного", forperiods="403", formula=" @0KF.P406? - ( @0KF.P22? + @PLAN.P303? / 3 ) ", format=_DEC2
+	col OZHIDPLANOTKL2, "Откл. ожид. от плана", forperiods="403", formula=" @0KF.P403? - @PLAN.P303? ", format=_DEC2
+	col OZHIDCALCOTKL3, "Откл. ожид. от расчетного", forperiods="406", formula=" @0KF.P406? - ( @0KF.P25? +  ( @PLAN.P306? - @PLAN.P303? ) / 3 ) ", format=_DEC2
+	col OZHIDPLANOTKL4, "Откл. ожид. от плана", forperiods="406", formula=" @0KF.P406? - @PLAN.P306? ", format=_DEC2
+	col OZHIDCALCOTKL5, "Откл. ожид. от расчетного", forperiods="409", formula=" @0KF.P406? - ( @0KF.P28? + ( @PLAN.P309? - @PLAN.P306? ) / 3 ) ", format=_DEC2
+	col OZHIDPLANOTKL6, "Откл. ожид. от плана", forperiods="409", formula=" @0KF.P409? - @PLAN.P309? ", format=_DEC2
+
+
+#====================================================================================
+#Колонки для отчета по объемам производства
+#------------------------------------------------------------------------------------
+subset cs_obproizf_report, "Производство (отчет)" :
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-12, condition="FACT and Y12"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-11, condition="FACT and Y11"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-10, condition="FACT and Y10"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-9, condition="FACT and Y9"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-8, condition="FACT and Y8"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-7, condition="FACT and Y7"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-6, condition="FACT and Y6"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-5, condition="FACT and Y5"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-4, condition="FACT and Y4"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-3, condition="FACT and Y3"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-2, condition="FACT and Y2"
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, condition="FACT and Y1"
+	col "0KFOTKL", "Откл. _FACT от пред. года", format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, formula=" @0KF? - @0KF.Y-1? ", condition="FACT and Y2 and OTKL"
+
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-112, condition="PRED and FACT and M12 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-111, condition="PRED and FACT and M11 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-110, condition="PRED and FACT and M10 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-109, condition="PRED and FACT and M9 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-108, condition="PRED and FACT and M8 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-107, condition="PRED and FACT and M7 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-106, condition="PRED and FACT and M6 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-105, condition="PRED and FACT and M5 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-104, condition="PRED and FACT and M4 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-103, condition="PRED and FACT and M3 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-102, condition="PRED and FACT and M2 "
+	col "0KF", _FACT, format=_DEC2, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-101, condition="PRED and FACT and M1 "
+
+	col "0KF", _FACT, format=_DEC2, period=_СУММЕСЯЦ, year=-1, condition="PREDYEAR", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ"
+	col "0KF", _FACT, format=_DEC2, customCode="PREDFACT", format=_DEC2, period=1, year=-1, forperiods="403"
+	col "0KF", _FACT, format=_DEC2, customCode="PREDFACT", format=_DEC2, period=2, year=-1, forperiods="406"
+	col "0KF", _FACT, format=_DEC2, customCode="PREDFACT", format=_DEC2, period=3, year=-1, forperiods="409"
+
+
+	col PLAN, _TPFP, format=_DEC2, fixed, period="301" , condition="PLAN"
+	col "0KP", "_PLAN (опер.)", format=_DEC2, condition="PLAN and OPERPLAN", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col "0KF", _FACT, format=_DEC2, condition="FACT", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col otkl1, "_OTKLPLAN (опер.)", format=_DEC2, formulatype="stack-value", formula="-,1,2", condition="PLAN and FACT and OTKL and OPERPLAN", forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col PLAN, _PLAN, format=_DEC2, period=303, forperiods="1,403", condition="PLAN"
+	col PLAN, _PLAN, format=_DEC2, period=306, forperiods="2,406", condition="PLAN"
+	col PLAN, _PLAN, format=_DEC2, period=309, forperiods="3,409", condition="PLAN"
+
+	col "0KP", "_PLAN (опер.)", format=_DEC2, period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="PLAN and OPERPLAN"
+	col "0KF", _FACT, format=_DEC2, period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="FACT"
+	
+	col otkl21, "_OTKLPLAN", format=_DEC2, period= _СУММЕСЯЦ, formula=" @0KF.P@_СУММЕСЯЦ? - @PLAN.P303? ",  forperiods="1",  condition="PLAN and FACT and OTKL"
+	col otkl22, "_OTKLPLAN", format=_DEC2, period= _СУММЕСЯЦ, formula=" @0KF.P@_СУММЕСЯЦ? - @PLAN.P306? ",  forperiods="2",  condition="PLAN and FACT and OTKL"
+	col otkl23, "_OTKLPLAN", format=_DEC2, period= _СУММЕСЯЦ, formula=" @0KF.P@_СУММЕСЯЦ? - @PLAN.P309? ",  forperiods="3",  condition="PLAN and FACT and OTKL"
+	
+	col otkl3, "_OTKLPLAN (опер.)", format=_DEC2, period= _СУММЕСЯЦ, formula=" @0KF.P@_СУММЕСЯЦ? - @0KP.P@_СУММЕСЯЦ? ",  forperiods="_НЕ_ЯНВ,_МЕС_СНГ",  condition="PLAN and FACT and OTKL and OPERPLAN"
+	col otkl4, _OTKLFACT_PG, format=_DEC2, period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", formula=" @0KF.P@_СУММЕСЯЦ? - @0KF.Y-1.P@_СУММЕСЯЦ? ", condition="OTKL"
+
+	col "0KF", "Ожид. {2} {0}", customCode="OZHID", format=_DEC2, forperiods="403,406,409"
+	col otkl5, _OTKLPLAN, format=_DEC2, formula=" @OZHID? - @PLAN? ",forperiods="403,406,409"
+	col otkl6, _OTKLFACT, format=_DEC2, year=-1, formula=" @OZHID? - @PREDFACT? ",forperiods="403,406,409"
+
+#====================================================================================
+#Колонки для контроля плана по объемам производства
+#------------------------------------------------------------------------------------
+subset cs_plan_obproiz_control, "Производство  (план)" :
+	col PLAN, "Период. план {2} {0}", customCode="TPFP303", format="#,0.0", fixed, period="303", forperiods="251,252,253,254"
+	col "0KP", "Опер. план {2} {0}", customCode="PLAN1", format="#,0.0", fixed, period="1", forperiods="251,252,253,254"
+	col OTKL1, "Откл-е", format="#,0.0", fixed, formula=" @PLAN1? - @TPFP303? ", forperiods="251,252,253,254"
+
+	col PLAN, "Период. план {2} {0}", customCode="TPFP306", format="#,0.0", fixed, period="306", forperiods="252,253,254"
+	col "0KP", "Опер. план {2} {0}", customCode="PLAN2", format="#,0.0", fixed, period="2", forperiods="252,253,254"
+	col OTKL2, "Откл-е", format="#,0.0", fixed, formula=" @PLAN2? - @TPFP306? ", forperiods="252,253,254"
+
+	col PLAN, "Период. план {2} {0}", customCode="TPFP309", format="#,0.0", fixed, period="309", forperiods="253,254"
+	col "0KP", "Опер. план {2} {0}", customCode="PLAN3", format="#,0.0", fixed, period="3", forperiods="253,254"
+	col OTKL3, "Откл-е", format="#,0.0", fixed, formula=" @PLAN3? - @TPFP309? ", forperiods="253,254"
+
+	col PLAN, "Период. план {2} {0}", customCode="TPFP301", format="#,0.0", fixed, period="301", forperiods="254"
+	col "0KP", "Опер. план {2} {0}", customCode="PLAN4", format="#,0.0", fixed, period="4", forperiods="254"
+	col OTKL4, "Откл-е", format="#,0.0", fixed, formula=" @PLAN4? - @TPFP301? ", forperiods="254"
+
+#====================================================================================
+#Объемы производства (форма)
+#------------------------------------------------------------------------------------
+subset cs_plan_form_obproiz, "Объемы производства (форма)" :
+#	useset cs_ozhid_god
+
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="251", format=_DEC2, controlpoint=true
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="301", fixed, format=_DEC2
+	col Б1, "Факт {0}", year = -1, period=4, fixed, forperiods="252,253,254", format=_DEC2
+
+	col PLAN, "ТПФП {0} утв.", period=301, forperiods="251,252,253,254,303,306,309", fixed, format=_DEC2
+	col PLAN, "ТПФП {2} {0}",  forperiods="251,252,253,254,303,306,309", format=_DEC2, controlpoint=true
+	col PLAN, "ТПФП {2} {0}",  forperiods="301", fixed, format=_DEC2
+
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="251", formula=" @PLAN.P251? - @PLAN.P301? ", fixed, format=_DEC2
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="252", formula=" @PLAN.P252? - @PLAN.P301? ", fixed, format=_DEC2
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="253", formula=" @PLAN.P253? - @PLAN.P301? ", fixed, format=_DEC2
+	col PLANCONTR, "Откл. от утв. ТПФП", forperiods="254", formula=" @PLAN.P254? - @PLAN.P301? ", fixed, format=_DEC2
+
+	col PLANKV, "План II кв {0}", forperiods=306, formula=" @PLAN.P306? - @PLAN.P303? ", fixed, format=_DEC2
+	col PLANKV, "План III кв {0}", forperiods=309, formula=" @PLAN.P309? - @PLAN.P306? ", fixed, format=_DEC2
+#	col PLANKV, "План IV кв {0}", forperiods=254, formula=" @PLAN.P301? - @PLAN.P309? ", fixed, format=_DEC2
+
+#====================================================================================
+#Плановый отчет по производству
+#------------------------------------------------------------------------------------
+subset cs_plan_report_obproiz, "Плановый отчет по производству" :
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-12, condition="Y12"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-11, condition="Y11"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-10, condition="Y10"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-9, condition="Y9"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-8, condition="Y8"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-7, condition="Y7"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-6, condition="Y6"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-5, condition="Y5"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-4, condition="Y4"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-3, condition="Y3"
+	col "0KF", _FACT, format=_DEC2, forperiods="251,252,253,254", period=4, year=-2, condition="Y2"
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="301,251,3512", format=_DEC2, condition="Y2 and not FULLREPORT"
+	col PLAN, "ТПФП {0}", customCode=PLANPRED, period=301, forperiods=_TEKPLANPERIODS, year = -1, fixed, format=_DEC2, condition="FULLREPORT", ormula=" @PLAN.P301? + @PLANC.P(31,32,33,34)? ",
+
+#	col PLANCSNG, "Корр. ТПФП {0}", year = -1, forperiods=_TEKPLANPERIODS, condition="FULLREPORT", formula=" @PLANC.P(31,32,33,34)? ", fixed, format=_DEC2
+
+	col PLAN, "Ожидаемое {0}", year = -1, period=401, forperiods="301,251,3512", format=_DEC2, condition="FULLREPORT"
+	col Б1, "Факт {0}", year = -1, period=4, fixed, forperiods="252,253,254", format=_DEC2, condition="FULLREPORT"
+
+#	col PLAN, "ТПФП {0} утв.", period=301, forperiods=_ALLPLANPERIODS, fixed, format=_DEC2
+#	col PLAN, "Проект {2} {0}",  forperiods=_TEKPLANPERIODS, format=_DEC2
+	col PLAN, "ТПФП {0}", customCode=PLANTEK, forperiods=_ALLPLANPERIODS, format=_DEC2
+	col PLAN, "План {2} {0}", customCode=PLANTEK, forperiods="303,306,309", format=_DEC2
+#	col OTKL, "Откл-е {2} от утв. ТПФП", forperiods=_TEKPLANPERIODS, format=_DEC2, formulatype="stack-value", formula="-,1,2"
+
+#	col OTKL, "Откл-е от ТПФП {0}", forperiods=_TEKPLANPERIODS, year = -1, format=_DEC2, formulatype="stack-value", formula="-,1,4"
+	col OTKL, "Откл-е от ТПФП {0}", forperiods=_TEKPLANPERIODS, year = -1, format=_DEC2, formula=" @PLANTEK? - @PLANPRED? ", condition="FULLREPORT"
+	col OTKL, "Откл-е от ожид. {0}", forperiods=_TEKPLANPERIODS, year = -1, format=_DEC2, formulatype="stack-value", formula="-,2,3", condition="FULLREPORT"
+
+
+#	col PLAN, "План I кв {0}", period=303, forperiods=251, validation="validate-int-cell-number", format=_DEC2
+#	col PLAN, "План I пг {0}", period=306, forperiods=252, validation="validate-int-cell-number", format=_DEC2
+#	col PLAN, "План 9 мес. {0}", period=309, forperiods=253, validation="validate-int-cell-number", format=_DEC2
+			
+	col PLAN, "План II кв {0}", formula=" @PLAN.P306? - @PLAN.P303? ", forperiods=306, fixed, format=_DEC2
+	col PLAN, "План III кв {0}", formula=" @PLAN.P309? - @PLAN.P306? ", forperiods=309, fixed, format=_DEC2
+#	col PLAN, "План IV кв {0}", formula=" @PLAN.P301? - @PLAN.P309? ", forperiods=254, fixed, format=_DEC2
+

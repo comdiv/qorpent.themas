@@ -1,0 +1,502 @@
+﻿#Системная библиотека параметров
+global _ГП_ВРЕМЯ, "Группа отчетных параметров - время" : "30. Отчетные периоды"
+global _ГП_СВОД, "Сводные параметры" : "35. Сводные параметры"
+global _ГП_ДЕРЕВО : "40. Настройка строк и колонок" 
+global _ГП_ОБЪЕКТЫ : "50. Группировка и фильтрация" 
+global _ГП_ПОДПИСИ : "55. Подписи и утверждения" 
+global _ГП_ОЛАП : "60. Настройки OLAP" 
+global _ГП_ГРАФ : "70. Настройки графика" 
+global _ГП_ФОРМАТ : "75. Форматирование таблицы"
+global _ГП_ПЕЧАТЬ : "77. Печать"
+global _ГП_СИСТЕМА : "80. Общие системные настройки" 
+global _ГП_ВАЛЮТА : "85. Валюта" 
+global _ГП_СПЕЦ : "90. Специальные настройки"
+global _TAB_DEF : "00. Основные"
+global _TAB_FMT : "10. Формат"
+global _TAB_PRN : "12. Печать"
+global _TAB_UND : "14. Подписи"
+global _TAB_TBL : "16. Таблица"
+global _TAB_SYS : "20. Система"
+param svod, "Сводный", type=bool, tab=_TAB_SYS, group=_ГП_ОЛАП: true
+param outercodes, "Использовать внешний код", tab=_TAB_FMT, type=bool, group=_ГП_ДЕРЕВО : true
+param viewname, "Вид для отрисовки (не менять без понимания!)", tab=_TAB_SYS, group=_ГП_СИСТЕМА : "std/std"
+param generatorname, "Вид генератора (не менять без понимания!)",tab=_TAB_SYS, group=_ГП_СИСТЕМА : "std/std"
+param useexteval, "Использовать новый расчетчик",tab=_TAB_SYS, group=_ГП_СИСТЕМА, type=bool : true
+param usenewdrs, "Использовать новый вывод первичных значений",tab=_TAB_SYS, group=_ГП_СИСТЕМА, type=bool : true
+	
+param useformmatrix, "Использовать матрицы",tab=_TAB_SYS, group=_ГП_СИСТЕМА, type=bool : false
+param evaluateblackboxes, "Вычислять 'черные ящики' в матрице",tab=_TAB_SYS, group=_ГП_СИСТЕМА, type=bool : false
+param applynoprimaryonmatrix, "Использовать формулы из матрицы",tab=_TAB_SYS, group=_ГП_СИСТЕМА, type=bool : false
+param hideOwn, "Скрывать расширяемые строки", tab=_TAB_FMT, type=bool, group=_ГП_ДЕРЕВО : true
+param collapsespecials, "Сворачивать расширяемые разделы", tab=_TAB_FMT, type=bool, group=_ГП_ДЕРЕВО : false
+param year, Год, type=int, idx=10, group=_ГП_ВРЕМЯ :
+	defaultvalue = 0
+	listdefinition="""
+		0 : Текущий |
+		-1 : Предыдущий  |
+		СПИСОКГОДОВ
+	"""
+param period, Период, type=int, idx=11, listdefinition=_СПИСОК_ПЕРИОДОВ, group=_ГП_ВРЕМЯ : "ТЕКУЩИЙПЕРИОД"
+param maxperpage, "Кол-во объектов на листе",group=_ГП_ПЕЧАТЬ, type=int, listdefinition="0:Авто|500:Все на 1|1|2|3|4|5|6|7|8|9|10"  : 1
+param maxlevel, "Уровень детализации", idx=28, type=int, group=_ГП_ДЕРЕВО, radio=true, listdefinition="-1:Все|0|1|2|3"  : -1
+param numberscale, "Разрядность", type=int, group=_ГП_ВАЛЮТА, radio=true, listdefinition="1:1|1000|1000000"  : 1
+param numberformat, "Общий формат чисел", group=_ГП_ВАЛЮТА : "#,#"
+param dropzeroes, "Скрывать нулевые строки", idx=21, type=bool, group=_ГП_ДЕРЕВО, idx="20", radio=true, listdefinition="true:Скрывать|false:Показывать"  : false
+param hidespecialnulls,  "Всегда скрывать нулевые спец. строки", type=bool, group=_ГП_ДЕРЕВО, idx="21", tab=_TAB_FMT, radio=true, listdefinition="true:Скрывать|false:Показывать"  : false
+param needemptysubtables, "Показывать пустые таблицы", type=bool, group=_ГП_ДЕРЕВО, tab=_TAB_FMT,idx="22",  radio=true, listdefinition="true:Скрывать|false:Показывать"  : false
+
+param useactualdate, "Использовать актуальность предприятий", type=bool, group=_ГП_СИСТЕМА, tab=_TAB_SYS,idx="22",  radio=true, listdefinition="true:Использовать|false:Не использовать"  : true
+	
+param cacheMode, "Предварительно расчитанные данные", tab=_TAB_SYS, group=_ГП_СИСТЕМА, listdefinition="""
+	None:Не использовать|Read:Использовать|ReadWrite:Использовать и записывать (где нет)|ExclusiveWrite:Перезаписать
+""" : "None"
+param checkpoint, "Контрольная точка", tab=_TAB_SYS, group=_ГП_СИСТЕМА
+	
+param cond_otch_periods, "Отчетные периоды",  group=_ГП_ВРЕМЯ, target=condition, listdefinition= _ТПСНГ : "СНГ, !PRED, BYMONTH"
+	
+param und_dir , "Утверждение директором предприятия", group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool: true
+param und_soc_dir , "Утверждение директором по соц. вопросам", group=_ГП_ПОДПИСИ, tab=_TAB_UND,type=bool: true
+param und_kom_dir , "Утверждение коммерческим директором",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool: true
+param und_inv_dir , "Утверждение директором по инвестициям",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool: true
+param und_rud_dir , "Утверждение директором по горному производству",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool: true
+param und_teh_dir , "Утверждение техническим директором",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool: true
+
+param und_gdir , "Подпись ген. директора",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool  : true
+param und_kdir , "Подпись ком. директора",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool  : true
+param und_buh , "Подпись гл. бухгалтера",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool  : true
+param und_rud , "Подпись дир. по гор. пр-ву",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool  : true
+param und_teh , "Подпись тех. директора",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool  : true
+param und_plan , "Подпись начальника ПЭО",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool : true
+param und_soc , "Подпись ответственного за соц. сферу ",group=_ГП_ПОДПИСИ, tab=_TAB_UND, type=bool  : true
+param und_trud , "Подпись трудовика",group=_ГП_ПОДПИСИ, tab=_TAB_UND,type=bool  : true
+param und_redirect ,"Перенеаправление подписи (ИД предприятия)", group=_ГП_ПОДПИСИ, tab=_TAB_UND,type=int  :
+	listdefinition=  """
+	0 : Текущее предприятие |
+	357 : УГМК-Холдинг |
+	1047 : УГМК-Сталь |
+	1046 : УГМК-ОЦМ |
+	1836 : Холдинг Кабельный альянс |
+	1092 : Управляющая портовая компания |
+	527: УГМК-Агро |
+	1054 : УГМК-Телеком
+	"""
+	defaultvalue=0
+	
+param totalobjectname, "Заголовок суммового объекта", tab=_TAB_FMT, group=_ГП_ОБЪЕКТЫ : "Всего"
+param useobjectalias, "Использовать псевдонимы объектов", type=bool, role=BUDGET, tab=_TAB_FMT, group=_ГП_ОБЪЕКТЫ : false
+param throwexceptions, "Прерывать отчет в случае ошибки", type=bool , tab=_TAB_SYS, group=_ГП_СИСТЕМА : false
+param only_current_admin, "Свод или текущее", idx=10, group=_ГП_ОБЪЕКТЫ, role="HOLDANALYTIC,REMOVE", target=condition, radio:
+	listdefinition=  """
+	НЕ_ТЕКУЩЕЕПРЕДПРИЯТИЕ,НЕ_МОИПРЕДПРИЯТИЯ: Свод |
+	ТЕКУЩЕЕПРЕДПРИЯТИЕ : Текущее |
+	ВСЕМОИПРЕДПРИЯТИЯ: Все мои |
+	ТОЛЬКОВСЕГО : Только всего
+	"""
+	defaultvalue="НЕ_ТЕКУЩЕЕПРЕДПРИЯТИЕ,НЕ_МОИПРЕДПРИЯТИЯ"
+	
+param only_current_strict, "Текущее или все свои предприятия (дивизионы)", idx=10, group=_ГП_ОБЪЕКТЫ, role="HOLDANALYTIC,STRICT,REMOVE", target=condition, radio:
+	listdefinition=  """
+	ТЕКУЩЕЕПРЕДПРИЯТИЕ:  Текущее |
+	ВСЕМОИПРЕДПРИЯТИЯ,ВСЕМОИПРЕДПРИЯТИЯРАЗБИВКА: Все мои |
+	ВСЕМОИПРЕДПРИЯТИЯ: Только всего 
+	"""
+	defaultvalue=ТЕКУЩЕЕПРЕДПРИЯТИЕ
+		
+	
+param showroots, "Показывать корневые строки", type=bool, group=_ГП_ДЕРЕВО, tab=_TAB_FMT : false
+param userowalias, "Использовать псевдонимы строк", type=bool, group=_ГП_ДЕРЕВО, tab=_TAB_FMT : false
+param colgroup, "Группа колонок", listdefinition= """
+	:По умолчанию|
+	CHECKVALUTA:Проверка валют
+"""	: ""
+param showcontrolpoints, "Показывать контрольные точки", type=bool, group=_ГП_ДЕРЕВО, tab=_TAB_FMT : false
+param cond_org_groups, "Группировка предприятий", idx=14, role=HOLDANALYTIC, group=_ГП_ОБЪЕКТЫ, target=condition, listdefinition= _ГРУППИРОВКАПРЕДПРИЯТИЙ : "_ГРУППИРОВКА_ПО_УМОЛЧАНИЮ"
+param cond_otrasl , "Отрасли" , target=condition, idx=21, role=HOLDANALYTIC, group=_ГП_ОБЪЕКТЫ,listdefinition=_СПИСОК_ОТРАСЛЕЙ : "_ОТРАСЛИ_ПО_УМОЛЧАНИЮ"
+param cond_div , "Дивизионы" , target=condition , idx=20, role=HOLDANALYTIC, group=_ГП_ОБЪЕКТЫ, listdefinition=_СПИСОК_ДИВИЗИОНОВ : "_ДИВИЗИОНЫ_ПО_УМОЛЧАНИЮ"
+param cond_reg , "Регионы" , target=condition, idx=22, role=HOLDANALYTIC, group=_ГП_ОБЪЕКТЫ, listdefinition=_СПИСОК_РЕГИОНОВ : "_РЕГИОНЫ_ПО_УМОЛЧАНИЮ"	
+param cofl_cnt , "Фильтр по странам" , role=HOLDANALYTIC, group=_ГП_ОБЪЕКТЫ,target=countryfilter, listdefinition=_СПИСОК_СТРАН : "_СТРАНЫ_ПО_УМОЛЧАНИЮ"
+param cond_og , "Группы" , target=condition, idx=23, role=HOLDANALYTIC, group=_ГП_ОБЪЕКТЫ, listdefinition=_СПИСОК_ГРУПП : "_ГРУППЫ_ПО_УМОЛЧАНИЮ"	
+param zdf_data, "Наличие данных", idx=30, group=_ГП_ОБЪЕКТЫ, tab=_TAB_FMT, target=objectfilter, listdefinition=_СПИСОК_ФИЛЬТРАДАННЫХ : "" #"_ФИЛЬТРДАННЫХ_ПО_УМОЛЧАНИЮ"
+param zdf, "Фильтр по наличию данных", group=_ГП_ОБЪЕКТЫ, target=objectfilter
+#param zdf_block, "Блокировка данных", idx=31, group=_ГП_ОБЪЕКТЫ, tab=_TAB_FMT, target=objectfilter, listdefinition=_СПИСОК_ФИЛЬТРАБЛОКИРОВКИ : ""
+param filteringgroup, "Фильтрующая группа", idx=11, group=_ГП_ОБЪЕКТЫ, listdefinition=_ЛД_СПИСОК_ГРУПП
+param filteringgroupcorr, "Корректор фильт. группы", idx=12, group=_ГП_ОБЪЕКТЫ
+param detailtypefilter, "Фильтр типов младших объектов", idx=13, group=_ГП_ОБЪЕКТЫ, tab=_TAB_FMT
+param dataleaseroot, "Класс определения кэширования данных", group=_ГП_СИСТЕМА : "Comdiv.Zeta.Model.IZetaCell, Comdiv.Zeta.Model"
+param customreport, "Пользовтаельское расширение", isarea=true, group=_ГП_СИСТЕМА : ""
+param datalease,"HQL запрос данных для определения кэша", group=_ГП_СИСТЕМА : "select max(cell.Version) from MainDataRow where Org = $currentObject"
+param currentObject, "Предприятие", group=_ГП_ОБЪЕКТЫ
+param olap,"Построение отчета в OLAP-режиме",type=bool , group=_ГП_ОЛАП, tab=_TAB_SYS: true
+param zoneToRow,"Разворот предприятий в OLAP отчете по вертикали",type=bool, group=_ГП_ОЛАП, tab=_TAB_SYS : true
+param rowtype, "Представление отдельных строк в отчете", group=_ГП_ДЕРЕВО, tab=_TAB_FMT, isarea=true : ""
+param objtype, "Представление отдельных объектов отчете", group=_ГП_ОБЪЕКТЫ, tab=_TAB_FMT, isarea=true : ""
+	
+#параметры отображения доп кодов и ИД
+param showobjectids,"Показывать ИД объектов",type=bool ,  tab=_TAB_SYS: false
+param showrowcodes, "Показывть коды строк",type=bool ,  tab=_TAB_SYS: false
+	
+#новая фильтрация
+param cof_cnt, "Подключение фильтра по странам", target=customobjectfilters, group=_ГП_ОБЪЕКТЫ : "Comdiv.Zeta.Report.CountryFilter; Comdiv.Zeta.Web"
+	
+#параметры графических отчетов
+param g_algorithm , "Алгоритм" , listdefinition="Dot|Circo|Neato|Twopi|Fdp" : "Dot"
+#параметры для графического отчета оргструктуры
+param os_cnt,	"Показывать страны", type=bool : false
+param os_reg,	"Показывать регионы", type=bool : true
+param os_point,	"Показывать города", type=bool : false
+param os_role, 	"Показывать отрасли", type=bool : true
+param os_hold, 	"Показывать холдинги", type=bool : false
+param os_group, "Показывать группы", type=bool : false
+param os_orgf,  "Фильтр предприятий"
+param os_orgr,  "Фильтр регионов"
+param os_orgo,  "Фильтр отраслей"
+param os_keo,	"Показывать не связанные предприятия", type=bool : true
+param os_kez, 	"Показывать не связанные контейнеры", type=bool : false
+	
+param showvalutacourseheader, "Показывать курсы валют в шапке", type=bool , group= _ГП_ВАЛЮТА : false 
+param invaluta , "Входная валюта для шапки", group= _ГП_ВАЛЮТА :
+	listdefinition = """
+		:Не указана|
+		RUB:Рубль|
+		USD:Доллары США|
+		EUR:Евро|
+		RSD:Сербский динар|
+		CZK:Чешская крона|
+		KZT:Казахский тенге|
+		GBP:Фунт стерлингов|
+	"""
+	
+param out_valuta , "Расчет в валюте", group= _ГП_ВАЛЮТА :
+	listdefinition = """
+		RUB:Рубль|
+		USD:Доллары США|
+		EUR:Евро|
+		RSD:Сербский динар|
+		CZK:Чешская крона|
+		KZT:Казахский тенге|
+		GBP:Фунт стерлингов|
+		NONE:Игнорировать преобразования
+	"""
+param out_valuta_suffix , "Тип курса", group= _ГП_ВАЛЮТА :
+	listdefinition = """
+			: Принятый в компании|
+			pf: Спецкурс I кв 2011 (план по факту)|
+			pfk: Спецкурс I кв 2011 (план по факту 2)|
+			pfk2: Спецкурс II кв 2011 (план по факту)|
+			pfk3: Спецкурс III кв 2011 (план по факту)|
+			e : Официальный на конец периода (ЦБР)|
+			z : Средний курс за период (ЦБР)|
+			s : Спецкурс - 9 мес 2010|
+			pfk2010_4: Спецкурс 2010 (план по факту 12)
+	"""
+	
+#быстрая фильтрация строк по наличию данных
+param use_qrf, "Использовать быстрый фильтр строк", type=bool : true
+param qrf_col, "Колонка для быстрой фильтрации строк" : ""
+param qrf_year, "Год для быстрой фильтрации строк "  : 0
+param qrf_period, "Период для быстрой фильтрации строк" : 0
+	
+#Параметры для графиков
+param graphtype, "Тип графика", listdefinition=_ТИПЫГРАФИКОВ, defaultvalue=Column3D , group=_ГП_ГРАФ
+param graphtitle, "Заголовок", group=_ГП_ГРАФ : "${graphtitle}"
+param graphsubtitle, "Подзаголовок", group=_ГП_ГРАФ : ""
+param graphwidth, "Ширина" , group=_ГП_ГРАФ : "500"
+param graphheight, "Высота", group=_ГП_ГРАФ : "400"
+param graphxlabel, "Подпись оси X", group=_ГП_ГРАФ, idx=10 : "X"
+param graphylabel, "Подпись оси Y", group=_ГП_ГРАФ ,idx=20: "Y"
+param graphy2label, "Подпись оси Y (правая)", group=_ГП_ГРАФ, idx=30 : ""
+param axisymin, "Мин. знач. Y" , group=_ГП_ГРАФ, type=int : 0
+param axisymax, "Макс. знач. Y", group=_ГП_ГРАФ, type=int : 0
+param graphshowvalues, "Показывать сами значения", group=_ГП_ГРАФ , type=bool : false
+param graphroundededge, "Закругеленные столбцы", group=_ГП_ГРАФ , type=bool : false
+param graphbgcolor, "Цвет фона", group=_ГП_ГРАФ :
+	listdefinition = """
+		_ПАЛИТРАОСНОВНЫХЦВЕТОВ
+	"""
+param graphpalette, "Палитра" , listdefinition="1|2|3|4|5", radio, group=_ГП_ГРАФ
+param graphformatnumberscale, "Автошкалирование", type=bool, group=_ГП_ГРАФ : false
+param graphview, "Файл генератора отчета", group=_ГП_ГРАФ : "${datagenerator}"
+# Дополнительный контент
+param headerfile, "Дополнительная шапка отчета (файл)", group=_ГП_ФОРМАТ , tab=_TAB_TBL
+param footerfile, "Дополнительный подвал отчета (файл)", group=_ГП_ФОРМАТ , tab=_TAB_TBL
+# Форматирование таблиц
+param level_0_style , "Стиль 1 уровня" , group=_ГП_ФОРМАТ , tab=_TAB_TBL, iscss=true : "font-size:9pt;background-color:#ddffdd;padding-left:0px;font-weight:bold;padding-top:4px;padding-bottom:4px;"
+param level_1_style , "Стиль 2 уровня" , group=_ГП_ФОРМАТ , tab=_TAB_TBL, iscss=true : "font-size:9pt;background-color:#FFFFFF;padding-left:20px;"
+param level_2_style , "Стиль 3 уровня" , group=_ГП_ФОРМАТ , tab=_TAB_TBL, iscss=true : "font-size:8pt;background-color:#FFFFFF;padding-left:40px;border-top:none;border-bottom:none;"
+param level_3_style , "Стиль 4 уровня" , group=_ГП_ФОРМАТ , tab=_TAB_TBL, iscss=true : "font-size:8pt;background-color:#FFFFFF;padding-left:60px;border-top:none;border-bottom:none;"
+param level_4_style , "Стиль 5 уровня" , group=_ГП_ФОРМАТ , tab=_TAB_TBL, iscss=true : "font-size:8pt;background-color:#FFFFFF;padding-left:80px;border-top:none;border-bottom:none;"
+param main_font, "Основной шрифт", group = _ГП_ФОРМАТ , defaultvalue="Arial", tab=_TAB_TBL
+param ext_css, "Дополнительные стили", group = _ГП_ФОРМАТ, isarea = true, tab=_TAB_TBL
+param custom_title, "Пользовательский заголовок" , group = _ГП_ФОРМАТ , tab=_TAB_TBL
+param periodstring, "Представление периода в заголовке" , group = _ГП_ФОРМАТ , tab=_TAB_TBL
+param column_width , "Ширина колонок (в пикселах)", group = _ГП_ФОРМАТ, tab=_TAB_TBL, type=int : 80
+param name_width , "Ширина наименований (в пикселах)", group = _ГП_ФОРМАТ, tab=_TAB_TBL, type=int : 450
+param number_width , "Ширина номера (в пикселах)", group = _ГП_ФОРМАТ, type=int, tab=_TAB_TBL
+	
+param onlyMy, "Только свои строки (только если 1 предприятие!)", tab=_TAB_FMT, type=bool, group=_ГП_ДЕРЕВО : false
+	
+param offline_data , "Отчет для сохранения в файл", type=bool : false
+	
+#настройки печати
+param use_print_setup,"Исп-вать настройки принтера", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN, type=bool : true
+param print_orientation, "Ориентация", group=_ГП_ПЕЧАТЬ, listdefinition="""
+		kPortraitOrientation:Книжная|
+		kLandscapeOrientation:Альбомная
+	""", defaultvalue = "kPortraitOrientation"
+param print_margine , "Поля (по умолчанию), мм", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN , type=int : 10
+param print_margine_top , "Поле (верхнее), мм", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN , type=int : 0
+param print_margine_bottom , "Поле (нижнее), мм", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN , type=int : 0
+param print_margine_left , "Поле (левое), мм", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN , type=int : 0
+param print_margine_right , "Поле (правое), мм", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN , type=int : 0
+param print_scale , "Масштаб, %", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN , type=int : 70
+param print_ct_tl , "Колонтитул верхний левый", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN : "TITLE"
+param print_ct_tc , "Колонтитул верхний центр", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN : ""
+param print_ct_tr , "Колонтитул верхний правый", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN : "HASH NUMBER"
+param print_ct_fl , "Колонтитул нижний левый", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN : "TIME USR"
+param print_ct_fc , "Колонтитул нижний центр", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN : ""
+param print_ct_fr , "Колонтитул нижний правый", group=_ГП_ПЕЧАТЬ, tab=_TAB_PRN : "PAGES"
+	
+param formperiodset, "Набор периодов", target=condition, radio, group=_ГП_ВРЕМЯ :
+	listdefinition = """
+		kv1,kv2,kv3,kv4 : Все |
+		kv1 : I |
+		kv1,kv2 : I,II |
+		kv1,kv2,kv3 : I,II,III
+	"""
+	defaultvalue='kv1,kv2,kv3,kv4'
+	
+param formayearcount, "Кол-во годов", target=condition, group=_ГП_ВРЕМЯ :
+	listdefinition = """
+	yc1 : 1 |
+	yc1,yc2 : 2 |
+	yc1,yc2,yc3 : 3 |
+	yc1,yc2,yc3,yc4 : 4 |
+	yc1,yc2,yc3,yc4,yc5 : 5 |
+	yc1,yc2,yc3,yc4,yc5,yc6 : 6 |
+	yc1,yc2,yc3,yc4,yc5,yc6,yc7 : 7 |
+	yc1,yc2,yc3,yc4,yc5,yc6,yc7,yc8 : 8 |
+	yc1,yc2,yc3,yc4,yc5,yc6,yc7,yc8,yc9 : 9 |
+	yc1,yc2,yc3,yc4,yc5,yc6,yc7,yc8,yc9,yc10 : 10
+	"""
+	defaultvalue = "yc1"
+
+param summayear, "Сумма лет", target=condition, idx=27, group=_ГП_ВРЕМЯ, altvalue="SUMMAYEAR", type=bool : false
+		
+param useoneperiod, "По одному периоду", target=condition, type=bool, group=_ГП_ВРЕМЯ, altvalue ="ONLYONEPERIOD" : false
+		
+param formaperiods, "Тип периода", target=condition, radio , group=_ГП_ВРЕМЯ:
+	listdefinition = """
+	Погодам : Год |
+	Попериодам : Квартал (нак.) |
+	Покварталам : Квартал (форм.) |
+	ПокварталамнеФ: Квартал |
+	Помесяцам : Месяц |
+    Помесяцам,Помесяцамвсего : Месяц Σ |
+	МПогодам : Год Σ
+	"""
+	defaultvalue = "По годам"
+
+param usemes, "Текущий период", idx=20, target=condition, group=_ГП_ВРЕМЯ, altvalue=BYMONTH, type=bool : true
+param usesng, "С начала года", idx=21, target=condition, group=_ГП_ВРЕМЯ, altvalue=СНГ, type=bool : true
+param usepredmes, "Предыдущий месяц", idx=22, target=condition, group=_ГП_ВРЕМЯ, altvalue=PRED, type=bool : false
+param usepredsng, "Пред. период с н.г.", idx=25, target=condition, group=_ГП_ВРЕМЯ, altvalue=PREDYEAR, type=bool : true
+param useozhid, "Ожидаемое", target=condition, group=_ГП_ВРЕМЯ, altvalue=OZHID, type=bool : false
+param useotkl, "Отклонения", idx=31, target=condition, group=_ГП_ВРЕМЯ, altvalue=OTKL, type=bool : true
+param usekvartras, "Расшифровка по кварталам", target=condition, group=_ГП_ВРЕМЯ, altvalue=KVARTRAS, type=bool : false
+param useotkltype, "Тип отклонения", target=condition, group=_ГП_ВРЕМЯ, altvalue=OTKL, radio=true : 
+	listdefinition = "OTKLABS:Абсолютное|OTKLOTN:Относительное"
+	defaultvalue="OTKLABS"
+
+param usekvkurs, "Квартальный плановый курс", target=condition, group=_ГП_ВРЕМЯ, altvalue=KVKURS, type=bool : false
+param cond_nalog, "Показатели по налогам", target=condition, group=_ГП_ДЕРЕВО, listdefinition= _ОТЧЕТПОНАЛОГАМ : 
+	defaultvalue = "OST;NACH;OPL"
+param cond_voa, "Показатели по активам", target=condition, group=_ГП_ДЕРЕВО, listdefinition= _ОТЧЕТ_ПО_ВНЕОБ_АКТИВАМ : 
+	defaultvalue = "BALST,OSTST,AMST"
+param cond_conto, "Показатели отчета", target=condition, idx=33, group=_ГП_ДЕРЕВО, listdefinition= _ОТЧЕТПОСЧЕТУ : 
+	defaultvalue = "OST;NACH;OPL"
+param cond_conto_vnob, "в т.ч. вн. оборот", target=condition, idx=34, group=_ГП_ДЕРЕВО, altvalue=VNOB, type=bool : true
+param userazvsaldo, "Развернутое сальдо", target=condition, group=_ГП_ДЕРЕВО, altvalue=RAZVSALDO, type=bool : true
+param cond_dkz, "Вид задолженности", target=condition, group=_ГП_ДЕРЕВО, listdefinition= _ВИДЗАДОЛЖЕННОСТИ: 
+	defaultvalue = "DZ;KZ"
+
+param usetpfp, "Годовой ТПФП", idx=41, target=condition, group=_ГП_ВРЕМЯ, altvalue=USETPFP, type=bool : true
+param usekorrtpfp, "ТПФП с уч. корр.", idx=42, target=condition, group=_ГП_ВРЕМЯ, altvalue=USEKORRTPFP, type=bool : true
+param showkorrtpfp , "Показать корр. ТПФП", idx=43, target=condition, group=_ГП_ВРЕМЯ, altvalue=SHOWKORRTPFP, type=bool : true
+param useizmtpfp, "Изменения ТПФП", idx=44, target=condition, group=_ГП_ВРЕМЯ, altvalue=USEIZMTPFP, type=bool : false
+param usekorrnalog, "Перерасчеты за пред. годы", idx=45, target=condition, group=_ГП_ДЕРЕВО, altvalue=USEKORR, type=bool : true
+param useplan, "План текущего периода", idx=46, target=condition, group=_ГП_ВРЕМЯ, altvalue=PLAN, type=bool : true
+param useplanpred, "План предыдущего года", idx=47, target=condition, group=_ГП_ВРЕМЯ, altvalue=PLANPRED, type=bool : true
+param usekvplan, "Квартальные планы", idx=48, target=condition, group=_ГП_ВРЕМЯ, altvalue=KVPLAN, type=bool : true
+param useoperplan, "Оперативный план", idx=49, target=condition, group=_ГП_ВРЕМЯ, altvalue=OPERPLAN, type=bool : true
+
+param usealias, "Использовать превдонимы строк", type=bool, group=_ГП_ДЕРЕВО, idx="29", : false
+
+
+
+global _ПАЛИТРАОСНОВНЫХЦВЕТОВ : """
+	#FFFFFF : Белый |
+	#000000 : Черный |
+	#DDDDDD : Светло-серый |
+	#FFFF80 : Желтый |
+	#82CBFF : Свето-голубой
+"""
+	
+subset org_params :
+	use svod
+	use out_valuta : "RUB"
+	use out_valuta_suffix : ""
+	use maxperpage
+	use outercodes
+	ask dropzeroes : false
+	use viewname
+	use generatorname
+	use maxlevel
+	use hideOwn : false
+	use dataleaseroot
+	use datalease
+	ask currentObject
+	ask year
+	ask period
+	ask showroots : false
+	ask showcontrolpoints : false
+	ask level_0_style
+	ask level_1_style
+	ask level_2_style
+	ask level_3_style
+	ask level_4_style
+	ask main_font
+	ask ext_css
+	ask column_width
+	ask print_orientation
+	ask print_margine
+	ask print_ct_tl
+	ask print_ct_tc
+	ask print_ct_tr
+	ask print_ct_fl
+	ask print_ct_fc
+	ask print_ct_fr
+	ask useexteval
+	ask headerfile
+	ask footerfile
+	ask use_print_setup
+	ask print_scale
+	ask useotkl
+	ask usenewdrs ; true
+	param onlyMy , type=bool : true
+
+	
+subset svod_params	 :
+	ask showvalutacourseheader
+	ask invaluta
+	ask svod
+	ask outercodes
+	ask viewname
+	ask generatorname
+	ask hideOwn
+	ask collapsespecials
+	ask throwexceptions
+	ask out_valuta
+	ask out_valuta_suffix
+	ask checkpoint
+	ask hidespecialnulls
+	ask useexteval
+	ask usenewdrs
+	ask useactualdate
+	ask year
+	ask period
+	ask colgroup
+	ask showroots : false
+	ask showcontrolpoints : false
+	ask currentObject
+	ask only_current_admin
+	ask only_current_strict
+	ask level_0_style
+	ask level_1_style
+	ask level_2_style
+	ask level_3_style
+	ask level_4_style
+	ask main_font
+	ask ext_css
+	ask custom_title
+	ask column_width
+	ask offline_data
+	ask print_orientation
+	ask print_margine
+	ask print_margine_top
+	ask print_margine_bottom	
+	ask print_margine_left	
+	ask print_margine_right 	
+	ask useobjectalias
+	ask userowalias
+	ask headerfile
+	ask footerfile
+	ask useformmatrix
+	ask evaluateblackboxes
+	ask rowtype
+	ask applynoprimaryonmatrix
+	ask objtype
+	ask numberscale
+	ask numberformat
+	ask filteringgroup : "G1"
+	ask filteringgroupcorr
+	ask detailtypefilter
+	ask onlyMy
+	ask customreport
+	ask und_dir : false
+	ask und_soc_dir: false
+	ask und_kom_dir: false
+	ask und_rud_dir: false
+	ask und_teh_dir: false
+	ask und_inv_dir: false
+	ask periodstring
+	ask und_gdir: false
+	ask und_kdir : false
+	ask und_rud: false
+	ask und_teh: false
+	ask und_buh: false
+	ask und_plan: false
+	ask und_soc: false
+	ask und_trud: false
+	ask und_redirect
+	ask name_width
+	ask number_width
+	ask needemptysubtables
+	ask showobjectids
+	ask showrowcodes
+	ask totalobjectname
+	ask print_scale
+	ask print_ct_tl
+	ask print_ct_tc
+	ask print_ct_tr
+	ask print_ct_fl
+	ask print_ct_fc
+	ask print_ct_fr
+	ask use_print_setup
+	
+subset svod_ext_params :
+	ask maxperpage
+	ask maxlevel
+	ask dropzeroes
+	ask cacheMode
+	
+subset olap_params :
+	useset svod_params
+	ask olap
+	ask zoneToRow
+	ask zdf_data
+	ask cacheMode
+	ask dropzeroes : true
+	ask out_valuta
+	ask out_valuta_suffix
+	
+#====================================================================================
+#Переключение вывода плановых и фактических показателей в сводных отчетах
+#------------------------------------------------------------------------------------
+param planfact, "План/факт", idx=30, radio, target=condition, group=_ГП_ВРЕМЯ :
+	listdefinition = """
+		PLAN,FACT:План/Факт|
+		FACT:Факт|
+		PLAN:План |
+		OZHID,FACT:Ожид./Факт
+	"""
+	defaultvalue = "PLAN,FACT"

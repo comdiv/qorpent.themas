@@ -1,0 +1,144 @@
+﻿global x, X
+global Y, Yyy
+global A, ~Xa
+thema base1 abst=1 :
+	x = @code
+	y = @x
+	activeA = true
+	out A, AAA :
+		col A
+		col B
+
+register g1 "Qorpent.Themas.Compiler.Tests.StepTests.GeneratorsTest+SimpleGenerator,Qorpent.Themas.Compiler.Tests" compile
+register g2 "Qorpent.Themas.Compiler.Tests.StepTests.GeneratorsTest+CompileTimeGenerator,Qorpent.Themas.Compiler.Tests" compile
+register g3 "Qorpent.Themas.Compiler.Tests.StepTests.GeneratorsTest+NonExisted,Qorpent.Themas.Compiler.Tests" compile
+
+thema testxml :
+	role = ADMIN
+	out A :
+		useset ua
+	out B :
+		ask Z
+		call g2
+	extradata x :
+		a x=1
+			
+
+thema withgens :
+	call g1 x=2
+	out A :
+		call g2
+		call g3
+
+param Z : z
+param X : @x
+param Y : "${code}_${x}"
+param A : "VAL"
+
+subset ua :
+	col a  "${code}_${x}"
+	ask Z
+
+subset ub
+	useset ua
+	col b @x
+	use X : "${x}_${x}"
+
+subset nua :
+	col c
+subset nub :
+	useset nua
+	col d
+
+thema usubset :
+	x = 1
+	out A :
+		useset ub
+		useset notexisted
+		ask Y, p=1, c=@x
+		ask A, clear=1
+		ask NonExisted
+
+thema genericbase, abst=1 :
+	x. = 1
+	y. = 2
+	out _. , param=@y.
+		col A
+
+genericbase A, generic=1 :
+	y. = 3
+	z. = 4
+
+genericbase B, generic=1 :
+	y. = 4
+	z. = 5
+
+genericbase C, generic=1 :
+	y. = 5
+	z. = 6
+
+thema cleanuptest :
+	a = ""
+	b = "x"
+	c = false
+	d = true
+	e = 0
+	g = 1
+	
+
+thema importgen :
+	import A
+	import B
+	import C
+	activeA=true
+	activeB=true
+	activeC=true
+	outset B :
+		col B
+	outext C :
+		col C
+
+importgen Bonly :
+	activeA=false
+	activeC=false
+
+
+subset A :
+	col X
+	col Y
+subset B :
+	col A
+	col B
+paramlib :
+	param a, type=bool : true
+	param b, type=int : 34
+
+child2 child3 : #reverse test
+	x = 10
+
+
+thema lparent
+
+thema lchild1
+	parent lparent
+
+lchild1 lchild2
+	
+thema lchild3
+	x = lparent
+	parent @x, myval
+
+lchild1 lchild4
+	parent lchild1
+	this is extra data
+	
+if OPT1 :
+	thema opt1
+if !OPT1 :
+	thema not_opt1
+if OPT1|OPT2:
+	thema opt1_or_opt2
+if OPT1&OPT2:
+	thema opt1_and_opt2
+if OPT1&!OPT2
+	thema opt1_and_not_opt2

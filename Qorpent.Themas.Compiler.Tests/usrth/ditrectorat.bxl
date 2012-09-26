@@ -1,0 +1,67 @@
+﻿assoireport directorat , "Презентация для директората", role = DESIGNER, group=sys :
+	parts =  'views/report/mm/directorat.bxl'
+	out Aa, "Презентация для директората", type=configure
+		use viewname : "doc/default"
+		use generatorname : "doc/default"
+		var partselector, customview='/report/partselector_param', group=_ГП_ЧАСТИ
+		var overlayselector, customview='/report/overlayselector_param', group=_ГП_СЛОИ
+		var allstuff, "Все включено", type=bool, defaultvalue=true
+		var allparts, "Все части", type=bool, defaultvalue=true
+		var alloverlays, "Все слои", type=bool, defaultvalue=true
+		ask filteringgroup : G1
+		ask filteringgroupcorr : 1067
+		var paletteсolors,"Палитра", defaultvalue='6600FF,339933,009999,00FFFF,3333CC,CC3300,CCCC00,CC6600,006600,FFFF00,336600,FF3300,CCFF33,009933'
+		useext wiki
+		useext zetadosie
+
+assoireport directorat_ocm , "Презентация для ОЦМ", role = DESIGNER, group=sys :
+	parts =  'views/report/mm/directorat_ocm.bxl'
+	out Aa, "Презентация для ОЦМ", type=configure
+		use viewname : "doc/default"
+		use generatorname : "doc/default"
+		var partselector, customview='/report/partselector_param', group=_ГП_ЧАСТИ
+		var overlayselector, customview='/report/overlayselector_param', group=_ГП_СЛОИ
+		var allstuff, "Все включено", type=bool, defaultvalue=true
+		var allparts, "Все части", type=bool, defaultvalue=true
+		var alloverlays, "Все слои", type=bool, defaultvalue=true
+		ask filteringgroup : G1
+		ask filteringgroupcorr : 1067
+		var paletteсolors,"Палитра", defaultvalue='6600FF,339933,009999,00FFFF,3333CC,CC3300,CCCC00,CC6600,006600,FFFF00,336600,FF3300,CCFF33,009933'
+		useext wiki
+		useext zetadosie
+		
+global _ГП_ПРОТ : "70. Сведения о документе"
+
+		
+assoireport protocol , "Протокол предприятия", role = DESIGNER, group=sys :
+	parts =  'views/report/mm/protocol.bxl'
+	out Aa, "Протокол предприятия", type=configure
+	
+		ask currentObject
+		use viewname : "doc/default"
+		use generatorname : "protocol/default"
+		var partselector, customview='/report/partselector_param', group=_ГП_ЧАСТИ
+		var overlayselector, customview='/report/overlayselector_param', group=_ГП_СЛОИ
+		var allstuff, "Все включено", type=bool, defaultvalue=true
+		var allparts, "Все части", type=bool, defaultvalue=true
+		var alloverlays, "Все слои", type=bool, defaultvalue=true
+		
+		var uid, "Уникальный идентификатор"
+		
+		
+		var protocolnumber, "Номер протокола"
+		var protocoldate, "Дата протокола", type=date
+		
+		var reportyear, "Отчетный год", type=int
+		var reportfactperiod, "Отчетный фактический период", type=int
+		var reportplanperiod, "Отчетный плановый период", type=int
+		
+		var holdingunderwriters, idx="10", customview='/report/protocol/holdingunderwriters_parameter', tab=_TAB_UND
+		var allholdunderwriters, idx=20, "Все от холдинга", type=bool, tab=_TAB_UND, defaultvalue=true
+		var objunderwriters, idx=30 customview='/report/protocol/objunderwriters_parameter', tab=_TAB_UND
+		
+		
+		ask filteringgroup : G1
+		ask filteringgroupcorr : 1067
+		useext wiki
+		useext zetadosie

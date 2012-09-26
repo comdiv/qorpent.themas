@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration>Debug</Configuration>
+    <ProjectGuid>{BAEEF18A-25A8-434F-ACAB-82EA927670BE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Qorpent.Themas.Compiler</RootNamespace>
+    <AssemblyName>Qorpent.Themas.Compiler</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CompilerApp\CompilerConsoleApplication.cs" />
+    <Compile Include="EcoProcess\EcoProcessCollection.cs" />
+    <Compile Include="EcoProcess\EcoProcessException.cs" />
+    <Compile Include="EcoProcess\OrgNode.cs" />
+    <Compile Include="EcoProcess\OrgNodeCollection.cs" />
+    <Compile Include="EcoProcess\Process.cs" />
+    <Compile Include="EcoProcess\ProcessInRef.cs" />
+    <Compile Include="EcoProcess\ProcessThemaRef.cs" />
+    <Compile Include="EcoProcess\RoleMap.cs" />
+    <Compile Include="GeneratorDescriptor.cs" />
+    <Compile Include="IThemaCompilerSetup.cs" />
+    <Compile Include="IThemaCompilerStep.cs" />
+    <Compile Include="IThemaCompileTimeGenerator.cs" />
+    <Compile Include="IThemaXmlGenerator.cs" />
+    <Compile Include="Pipelines\ApplyEcoProcesses.cs" />
+    <Compile Include="Pipelines\CalculateParameters.cs" />
+    <Compile Include="Pipelines\CallGenerators.cs" />
+    <Compile Include="Pipelines\CheckLibraryResolution.cs" />
+    <Compile Include="Pipelines\CleanupParameters.cs" />
+    <Compile Include="Pipelines\CompileToXml.cs" />
+    <Compile Include="Pipelines\EcoCleanupElements.cs" />
+    <Compile Include="Pipelines\EcoCleanupParameters.cs" />
+    <Compile Include="Pipelines\EmbedExtraData.cs" />
+    <Compile Include="Pipelines\EmbedGlobals.cs" />
+    <Compile Include="Pipelines\EmbedItemParameters.cs" />
+    <Compile Include="Pipelines\EmbedParameters.cs" />
+    <Compile Include="Pipelines\EmbedSubsets.cs" />
+    <Compile Include="Pipelines\Empty.cs" />
+    <Compile Include="Pipelines\ExtractGlobals.cs" />
+    <Compile Include="Pipelines\ExtractLinkTypes.cs" />
+    <Compile Include="Pipelines\ExtractParameters.cs" />
+    <Compile Include="Pipelines\ExtractSubsets.cs" />
+    <Compile Include="Pipelines\ExtractThemaExtenders.cs" />
+    <Compile Include="Pipelines\ExtractThemaImports.cs" />
+    <Compile Include="Pipelines\ExtractThemaLinks.cs" />
+    <Compile Include="Pipelines\ExtractThemaParameters.cs" />
+    <Compile Include="Pipelines\ExtractThemas.cs" />
+    <Compile Include="Pipelines\ExtractThemaSelfItems.cs" />
+    <Compile Include="Pipelines\GenerateXml.cs" />
+    <Compile Include="Pipelines\ReadSourceData.cs" />
+    <Compile Include="Pipelines\ReadXmlData.cs" />
+    <Compile Include="Pipelines\RegisterGenerators.cs" />
+    <Compile Include="Pipelines\ReIncludeGlobalsToGlobals.cs" />
+    <Compile Include="Pipelines\RemoveNotUsedClusters.cs" />
+    <Compile Include="Pipelines\RemoveUnUsedThemas.cs" />
+    <Compile Include="Pipelines\ResolveConditionalCompilation.cs" />
+    <Compile Include="Pipelines\ResolveElements.cs" />
+    <Compile Include="Pipelines\ResolveElementsImport.cs" />
+    <Compile Include="Pipelines\ResolveLinks.cs" />
+    <Compile Include="Pipelines\ResolveParameters.cs" />
+    <Compile Include="Pipelines\SourceFileList.cs" />
+    <Compile Include="SingleContentProject.cs" />
+    <Compile Include="Steps\CalculateParametersStep.cs" />
+    <Compile Include="Steps\CallGeneratorsStep.cs" />
+    <Compile Include="Steps\CheckLibraryResolutionStep.cs" />
+    <Compile Include="Steps\CleanupParametersStep.cs" />
+    <Compile Include="Steps\EcoCleanupElementsStep.cs" />
+    <Compile Include="Steps\EcoCleanupParametersStep.cs" />
+    <Compile Include="Steps\EcoProcess\CheckEcoProcessIntegrity.cs" />
+    <Compile Include="Steps\EcoProcess\GenerateEcoProcessRoleMap.cs" />
+    <Compile Include="Steps\EcoProcess\GenerateEcoProcessThemaChanges.cs" />
+    <Compile Include="Steps\EcoProcess\PrepareEcoProcessIndexesStep.cs" />
+    <Compile Include="Steps\EmbedExtraDataStep.cs" />
+    <Compile Include="Steps\EmbedGlobalsStep.cs" />
+    <Compile Include="Steps\EmbedItemParametersStep.cs" />
+    <Compile Include="Steps\EmbedParametersStep.cs" />
+    <Compile Include="Steps\EmbedSubsetsStep.cs" />
+    <Compile Include="Steps\ExtractGlobalsStep.cs" />
+    <Compile Include="Steps\ExtractLinkTypesStep.cs" />
+    <Compile Include="Steps\ExtractParametersStep.cs" />
+    <Compile Include="Steps\ExtractSubsetsStep.cs" />
+    <Compile Include="Steps\ExtractThemaExtendersStep.cs" />
+    <Compile Include="Steps\ExtractThemaImportsStep.cs" />
+    <Compile Include="Steps\ExtractThemaLinksStep.cs" />
+    <Compile Include="Steps\ExtractThemaParametersStep.cs" />
+    <Compile Include="Steps\ExtractThemaSelfItemsStep.cs" />
+    <Compile Include="Steps\ExtractThemasStep.cs" />
+    <Compile Include="Steps\GenerateHtmlReportStep.cs" />
+    <Compile Include="Steps\GenerateXmlStep.cs" />
+    <Compile Include="Steps\HaveToBeProcessedWithGlobalsAnnotation.cs" />
+    <Compile Include="Steps\ReadSourceFileContentsStep.cs" />
+    <Compile Include="Steps\ReadSourceXmlContentsStep.cs" />
+    <Compile Include="Steps\RegisterGeneratorsStep.cs" />
+    <Compile Include="Steps\ReIncludeGlobalsToGlobalsStep.cs" />
+    <Compile Include="Steps\RemoveNotUsedClustersStep.cs" />
+    <Compile Include="Steps\RemoveUnUsedThemasStep.cs" />
+    <Compile Include="Steps\ResolveConditionalCompilationStep.cs" />
+    <Compile Include="Steps\ResolveElementsImportStep.cs" />
+    <Compile Include="Steps\ResolveElementsStep.cs" />
+    <Compile Include="Steps\ResolveLinksStep.cs" />
+    <Compile Include="Steps\ResolveParametersStep.cs" />
+    <Compile Include="Steps\SaveBxlFilesStep.cs" />
+    <Compile Include="Steps\SaveXmlFilesStep.cs" />
+    <Compile Include="Steps\SetupSourceFilesInValidOrderStep.cs" />
+    <Compile Include="Steps\UsedInWorkingThemaAnnotation.cs" />
+    <Compile Include="ThemaCompiler.cs" />
+    <Compile Include="ThemaCompilerContext.cs" />
+    <Compile Include="ThemaCompilerError.cs" />
+    <Compile Include="ThemaCompilerPipeline.cs" />
+    <Compile Include="ThemaCompilerStep.cs" />
+    <Compile Include="ThemaDescriptor.cs" />
+    <Compile Include="ThemaLink.cs" />
+    <Compile Include="ThemaLinkType.cs" />
+    <Compile Include="ThemaProject.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Doc\PipelineNotice.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <Import Project="..\commons\build.targets" />
+  <Import Project="*.import" />
+<ItemGroup><None Include="*.import" /><None Include="*.export" /></ItemGroup></Project>

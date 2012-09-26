@@ -1,0 +1,480 @@
+﻿####################################################################################
+###################                  Темы по труду                 #################
+####################################################################################
+
+#====================================================================================
+#Отчет по труду
+#------------------------------------------------------------------------------------
+global _NAME_TRUD : "Отчет по труду"
+assoieco trud, "Отчет по труду" :
+	import month_for_kvart
+	useformmatrixA = false
+	useformmatrixB = false
+	useformmatrixC = false
+	formnameA = _NAME_TRUD
+	ranameA = _NAME_TRUD
+	rbnameA = _NAME_TRUD
+	formnameB = _NAME_TRUD
+	ranameB = _NAME_TRUD
+	rbnameB = _NAME_TRUD
+	group="trud_grp" 
+#	planrow="t120" 
+	rootrow="t110" 
+	roleprefix="ZP" 
+	scheduledeltaA="15"
+	f_libC = ""
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_trud
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_plan : false
+		use und_buh
+		use und_trud
+		useset cs_trud
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_trud_form
+	formset _ФОРМА_ПО_КОРРЕКТИВУ :
+		useset cs_korr_form_trud
+		useset cs_korr_form_1
+	reportsetex _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ПЛАНУ :
+		use und_buh
+		use und_trud
+
+#====================================================================================
+#Отчет по труду (устаревший)
+#------------------------------------------------------------------------------------
+assoieco trud_old, "Отчет по труду (устаревший)ADMIN", parent=trud, role="ADMIN" :
+	import month_for_kvart
+	fl_visibleA = false
+	fl_visibleB = false
+	fl_visibleC = false
+	needresponsibility = false
+
+	useformmatrixA = false
+	useformmatrixB = false
+	useformmatrixC = false
+	formnameA = _NAME_TRUD
+	ranameA = _NAME_TRUD
+	rbnameA = _NAME_TRUD
+	formnameB = _NAME_TRUD
+	ranameB = _NAME_TRUD
+	rbnameB = _NAME_TRUD
+	group="trud_grp" 
+	planrow="t120" 
+	rootrow="t110" 
+	roleprefix="ZP" 
+	scheduledeltaA="15"
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		useset cs_trud
+	reportset _ОТЧЕТ_ПРЕДПРИЯТИЯ_ПО_ФАКТУ :
+		use und_plan : false
+		use und_buh
+		use und_trud
+		useset cs_trud
+	formset _ФОРМА_ПО_ФАКТУ :
+		useset cs_trud_form
+
+#====================================================================================
+#Труд
+#-----------------------------------------------------------------------------------
+thema trudgroup, "Отчеты по труду", group=trud_grp, roleprefix=ZP
+
+#====================================================================================
+#Абстрактный OLAP отчет по труду
+#------------------------------------------------------------------------------------
+thema olap_trud_abst, "Абстрактный OLAP отчет по труду" , parent=trudgroup, group=trud_grp, roleprefix=ZP, abst :
+	import assoieco
+	import singlereport
+	needresponsibility = false
+	rb_visibleA = false
+	report_visible_Ab = false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask olap : true
+		ask zoneToRow : true
+		ask ext_css :  "_STYLE_OLAP"
+		param otklon : false
+		param rowtype : false
+		param needemptysubtables : false
+		param showroots : false
+		param level_0_style : false
+		param level_1_style : false
+		param level_2_style : false
+		param level_3_style : false
+		param level_4_style : false
+		param und_dir : false
+		param und_soc_dir : false
+		param und_kom_dir : false
+		param und_inv_dir : false
+		param und_gdir : false
+		param und_buh : false
+		param und_plan : false
+		param und_ing : false
+		param und_soc : false
+		param und_trud : false
+		use ext_css : """[objtype=otr] td, [objtype=h] td, [objtype=og] td, [objtype=alldb] td{background-color:gray; color:white; font-size:10pt; font-weight:bold; }"""
+		use maxlevel: -1
+
+#====================================================================================
+#Базовый OLAP отчет по труду
+#------------------------------------------------------------------------------------
+thema olap_trud_report, "Базовый OLAP отчет по труду" , parent=trudgroup, group=trud_grp, roleprefix=ZP, abst :
+	import assoieco
+	import singlereport
+	needresponsibility = false
+	rb_visibleA = false
+	report_visible_Ab = false
+	reportset _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		ask olap : true
+		ask usekorrtpfp : true
+		ask showkorrtpfp: false
+		ask kolkorr : false
+		ask zoneToRow : true
+		ask ext_css :  "_STYLE_OLAP"
+		param otklon : false
+		param rowtype : false
+		param needemptysubtables : false
+		param showroots : false
+		param level_0_style : false
+		param level_1_style : false
+		param level_2_style : false
+		param level_3_style : false
+		param level_4_style : false
+		param und_dir : false
+		param und_soc_dir : false
+		param und_kom_dir : false
+		param und_inv_dir : false
+		param und_gdir : false
+		param und_buh : false
+		param und_plan : false
+		param und_ing : false
+		param und_soc : false
+		param und_trud : false
+		use ext_css : """[objtype=otr] td, [objtype=h] td, [objtype=og] td, [objtype=alldb] td{background-color:gray; color:white; font-size:10pt; font-weight:bold; }"""
+		use maxlevel: -1
+		useset cs_olap_trud
+
+#====================================================================================
+#Колонки труд (ожидаемое)
+#------------------------------------------------------------------------------------
+subset cs_trud_ozhid_calc, "Труд (ожидаемое)" :
+	col PLAN, _ПЛАН, period=251, forperiods="406", format=_INT, controlpoint=true
+	col PLAN, _ПЛАН, __matrixid="PLANSNG", period=303, forperiods="406", format=_DEC1, controlpoint=true
+	col PLAN, _ПЛАН, matrixid="PLANSNG", period=306, forperiods=406, format=_DEC1, controlpoint=true
+	col PLAN, _ПЛАН, __matrixid="PLANSNG", period=309, forperiods=409, format=_DEC1, controlpoint=true
+
+	col JOB, _ФАКТ, matrixid="FACTSNGCALC", period=22, forperiods=403, format=_INT, fixed
+	col PLANJOB, _ПЛАН, matrixid="PLANMESCALC", period=13, forperiods=403, format=_INT, formula=" @PLAN.P303? / 3 "
+	col JOB, _ФАКТ, matrixid="FACTSNGCALC", period=25, forperiods=406, format=_INT, fixed
+	col PLANJOB, _ПЛАН, matrixid="PLANMESCALC", period=16, forperiods=406, format=_INT, formula=" ( @PLAN.P306? - @PLAN.P303? ) / 3 "
+	col JOB, _ФАКТ, matrixid="FACTSNGCALC", period=28, forperiods=409, format=_INT, fixed
+	col PLANJOB, _ПЛАН, matrixid="PLANMESCALC", period=19, forperiods=409, format=_INT, formula=" ( @PLAN.P309? - @PLAN.P306? ) / 3 "
+
+	col OZHIDCALC, "Ожид. {2} {0} (расчетно)", matrixid="OZHIDCALC", matrixformula="FACTSNGCALC,PLANMESCALC", matrixformulatype="sum", forperiods="403,406,409", format=_INT
+
+#====================================================================================
+#Колонки для формы по труду
+#------------------------------------------------------------------------------------
+subset cs_trud_form, "Труд (форма)":
+	col JOB, _FACT, year=-1, fixed, period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", format=_INT
+	col JOB, _FACT, year=-1, fixed, period=1, forperiods=403, format=_INT
+	col JOB, _FACT, year=-1, fixed, period=2, forperiods=406, format=_INT
+	col JOB, _FACT, year=-1, fixed, period=3, forperiods=409, format=_INT
+	col PLAN, _TPFP, period=301, format=_INT, fixed
+	col PLANCVSEGO, "Корр. ТПФП {0}", period=301, forperiods="112,4", format=_INT, formula="@PLANC.P(31,32,33,34)?"
+	col TPFPKORR, "ТПФП {0} c уч. корр.", period=301, forperiods="112,4", format=_INT, formula="@PLAN.P301? + @PLANC.P(31,32,33,34)?"
+#	col PLAN, _TPFP, period=301, format=_INT, translaterows="t110100=t120100,t110200=t120150,t110300=t120200,t110600=t120300,t110400=t120400,t110500=t120500", fixed
+	import cs_trud_ozhid_calc
+	col JOBP, "Операт. план {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col PLAN, "_PLAN период.", period=309, forperiods="3", fixed
+
+	col JOB, _FACT, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col JOB, "Ожид. {2} {0}", forperiods="403,406,409"
+	col JOBP_1, _TEMPROSTA, format=_DEC1, formulatype="stack-value", formula="%,1,2", fixed, forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col JOBP, "Операт. план {2} {0}", period=_СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed
+	col JOB, _FACT, period=_СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed
+	col JOBRP_2, _TEMPROSTA, period=_СУММЕСЯЦ, format=_DEC1, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", formulatype="stack-value", formula="%,1,2", fixed
+	col OTKLPLANTPFT, "Откл-е плана {0} от ТПФП с уч. корр", period=_СУММЕСЯЦ, forperiods="112,4", format=_INT, formula="@JOBP.P4? - @PLAN.P301? - @PLANC.P31? - @PLANC.P32? - @PLANC.P33? - @PLANC.P34?"
+	col OZHIDCALCOTKL, "Откл. ожид. от расчетного", forperiods="403,406,409", matrixformula="TEKSNG,-OZHIDCALC", matrixformulatype="sum"
+	col OZHIDPLANOTKL, "Откл. ожид. от плана", forperiods="403,406,409", matrixformula="TEKSNG,-PLANSNG", matrixformulatype="sum"
+
+	col JOBP, "_PLAN (ADMIN)", period=_СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", forrole="ADMIN" 
+	col JOB, "_FACT (ADMIN)", period=_СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", forrole="ADMIN" 
+
+
+#====================================================================================
+#Колонки для отчета по труду
+#------------------------------------------------------------------------------------
+subset cs_trud, "Труд (отчет)":
+	col JOB, _FACT, year=-1, period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=_СУММЕСЯЦ, format=_INT
+	col JOB, _FACT, year=-1, period=1, forperiods="403", format=_INT
+	col JOB, _FACT, year=-1, period=2, forperiods="406", format=_INT
+	col JOB, _FACT, year=-1, period=3, forperiods="409", format=_INT
+
+	col PLAN, _TPFP, period=301, format=_INT, fixed
+	col PLANCVSEGO, "Корр. ТПФП {0}", period=301, forperiods="11,12,13,22,1", format=_INT, formula="@PLANC.P(31)?"
+	col PLANCVSEGO, "Корр. ТПФП {0}", period=301, forperiods="14,15,16,24,25,2", format=_INT, formula="@PLANC.P(31,32)?"
+	col PLANCVSEGO, "Корр. ТПФП {0}", period=301, forperiods="17,18,19,27,28,3", format=_INT, formula="@PLANC.P(31,32,33)?"
+	col PLANCVSEGO, "Корр. ТПФП {0}", period=301, forperiods="110,111,112,210,211,4", format=_INT, formula="@PLANC.P(31,32,33,34)?"
+
+	col TPFPKORR, "ТПФП {0} c уч. корр.", period=301, forperiods="11,12,13,22,1", format=_INT, formula="@PLAN.P301? + @PLANC.P(31)?"
+	col TPFPKORR, "ТПФП {0} c уч. корр.", period=301, forperiods="14,15,16,24,25,2", format=_INT, formula="@PLAN.P301? + @PLANC.P(31,32)?"
+	col TPFPKORR, "ТПФП {0} c уч. корр.", period=301, forperiods="17,18,19,27,28,3", format=_INT, formula="@PLAN.P301? + @PLANC.P(31,32,33)?"
+	col TPFPKORR, "ТПФП {0} c уч. корр.", period=301, forperiods="110,111,112,210,211,4", format=_INT, formula="@PLAN.P301? + @PLANC.P(31,32,33,34)?"
+
+#	col TPFPKORR, "ТПФП {0} c уч. корр.", period=301, forperiods="112,4", format=_INT, formula="@PLAN.P301? + @PLANC.P(31,32,33,34)?"
+#	col PLAN, _TPFP, period=301, translaterows="t110100=t120100,t110200=t120150,t110300=t120200,t110600=t120300,t110400=t120400,t110500=t120500", fixed, format=_INT
+#	col PLANC, "Корр. ТПФП за {2} {0}", forperiods="1,11,12,13,403", formula=" @PLANC.P31? ", translaterows="t110100=t120100,t110200=t120150,t110300=t120200,t110600=t120300,t110400=t120400,t110500=t120500", fixed, format=_INT
+#	col PLANC, "Корр. ТПФП за {2} {0}", forperiods="2,14,15,16,406", formula=" @PLANC.P31? + @PLANC.P32? ", translaterows="t110100=t120100,t110200=t120150,t110300=t120200,t110600=t120300,t110400=t120400,t110500=t120500", fixed, format=_INT
+#	col PLANC, "Корр. ТПФП за {2} {0}", forperiods="3,17,18,19,409", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? ", translaterows="t110100=t120100,t110200=t120150,t110300=t120200,t110600=t120300,t110400=t120400,t110500=t120500", fixed, format=_INT
+#	col PLANC, "Корр. ТПФП за {2} {0}", forperiods="4,110,111,112", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33?+ @PLANC.P34? ", translaterows="t110100=t120100,t110200=t120150,t110300=t120200,t110600=t120300,t110400=t120400,t110500=t120500", fixed, format=_INT
+
+	#временная схема	
+	col JOBP, "Операт. план {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ,1,2,4", format=_INT
+	col PLAN, _PLAN, period=309, forperiods="3", format=_INT
+
+	col JOB, _FACT, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", format=_INT
+	col JOBP_1, _TEMPROSTA, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", format=_DEC1, formulatype="stack-value", formula="%,1,2", fixed
+
+	col JOBP, "Операт. план {2} {0}", period=_СУММЕСЯЦ,  forperiods=_НЕ_ЯНВ, format=_INT
+	col JOB, _FACT, period=_СУММЕСЯЦ,  forperiods=_НЕ_ЯНВ, format=_INT
+
+	col JOBRP_2, _TEMPROSTA, period=_СУММЕСЯЦ, format=_DEC1, forperiods=_НЕ_ЯНВ, formulatype="stack-value", formula="%,1,2", fixed
+	col PLAN, _PLAN, period=303,  forperiods="403", format=_INT
+	col PLAN, _PLAN, period=306,  forperiods="406", format=_INT
+	col PLAN, _PLAN, period=309,  forperiods="409", format=_INT
+	col JOB, "Ожид. {2} {0}", forperiods="_ОЖИД_СНГ", format=_INT
+	col JOBRP_3, _TEMPROSTA, format=_DEC1, forperiods="_ОЖИД_СНГ", formulatype="stack-value", formula="%,1,2", fixed
+
+#====================================================================================
+#Колонки для фактического отчета по труду (OLAP)
+#------------------------------------------------------------------------------------
+subset cs_trud_olap, "Труд - факт (OLAP)" :
+	col JOBP, _PLAN, condition="BYMONTH"
+	col JOB, _FACT, condition="BYMONTH"
+	col JOBOTKL, "Откл.", formula="@JOB? - @JOBP?", condition="BYMONTH"
+	col JOBP, _PLAN, customCode="JOBPSNG", period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, condition="СНГ"
+	col JOB, _FACT, customCode="JOBSNG", period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, condition="СНГ"
+	col JOBOTKLSNG, "Откл.", formula="@JOBSNG? - @JOBPSNG?", forperiods=_НЕ_ЯНВ, condition="СНГ"
+
+#====================================================================================
+#Колонки для плана по труду (OLAP)
+#------------------------------------------------------------------------------------
+subset cs_trud_plan_olap, "Труд - план (OLAP)" :
+	col PLAN, _TPFP, period=301, forperiods="31,32,33,34"
+	col PLANC, "Корр. 1 {0}", period=31, forperiods="31,32,33,34"
+	col PLANC, "Корр. 2 {0}", period=32, forperiods="32,33,34"
+	col PLANC, "Корр. 3 {0}", period=33, forperiods="33,34"
+	col PLANC, "Корр. 4 {0}", period=34, forperiods="34"
+	col PLANIZM, "ТПФП с уч. корр.{0}", forperiods="31", formula=" @PLAN.P301? + @PLANC.P31? "
+	col PLANIZM, "ТПФП с уч. корр.{0}", forperiods="32", formula=" @PLAN.P301? + @PLANC.P31? + @PLANC.P32? "
+	col PLANIZM, "ТПФП с уч. корр.{0}", forperiods="33", formula=" @PLAN.P301? + @PLANC.P31? + @PLANC.P32? + @PLANC.P33?"
+	col PLANIZM, "ТПФП с уч. корр.{0}", forperiods="34", formula=" @PLAN.P301? + @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? "
+
+#====================================================================================
+#Колонки для отчета по труду (OLAP) - новый
+#------------------------------------------------------------------------------------
+subset cs_olap_trud, "Труд (OLAP) - новый":
+	var useplan, "Вывести планы", target=condition, group=_ГП_ВРЕМЯ, altvalue=PLAN, type=bool : true
+	var usepredyear, "Вывести предыдущий год", target=condition, group=_ГП_ВРЕМЯ, altvalue=PREDFACT, type=bool : true
+	var usepsng, "Показать с начала года", target=condition, group=_ГП_ВРЕМЯ, altvalue=SNG, type=bool : false
+	var useotkl, "Вывести отклонения", target=condition, group=_ГП_ВРЕМЯ, altvalue=OTKL, type=bool : true
+	var useotkltype, "Тип отклонения", target=condition, group=_ГП_ВРЕМЯ, altvalue=OTKL, radio=true : 
+		listdefinition = "OTKLABS:Абсолютное|OTKLOTN:Относительное"
+		defaultvalue="OTKLABS"
+
+	col JOB, "Факт {2} {0}", customCode="PREDFACT", condition="PREDFACT", year=-1, forperiods="_ТОЛЬКО_МЕС,1,2,3,4,21,22,24,25,27,28,210,211"
+	col JOBP, "План {2} {0}", customCode="PLANTEK", forperiods="_ТОЛЬКО_МЕС,1,2,21,22,24,25,27,28,210,211", format=_INT, condition="PLAN"
+	col PLAN, "План {2} {0}", period=309, customCode="PLANTEK", forperiods="3", format=_INT, condition=" PLAN"
+
+	col PLAN, "ТПФП {0} утв.", period=301, customCode="PLANTEK", forperiods="4", format=_INT, condition=" PLAN"
+	col PLANCP4V1, "Корр. ТПФП {0}", forperiods="4", format=_INT, formula="@PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34?", condition=" PLAN and SHOWKORRTPFP"
+	col PLANKORR, "ТПФП {0} с уч. корр.", period=301, customCode="PLANKORR", forperiods="4", format=_INT, condition=" PLAN and USEKORRTPFP"
+
+	col PLAN, "ТПФП {0}", customCode="PLANPRED", period=301, year=-1, forperiods="301,251,252,253,254", condition="PLAN and not USEKORRTPFP"
+	col PLANKORR, "ТПФП {0} с уч. корр.", customCode="PLANPRED", period=301, year=-1, forperiods="301,251,252,253,254", condition="PLAN and USEKORRTPFP "
+	col KORRPRED, "Корр. {0}", period=301, year=-1, forperiods="301,251,252,253,254", condition="PLAN and not USEKORRTPFP and SHOWKORRTPFP", formula=" @PLANC.P(31,32,33,34)? "
+	col KORRPRED, "в т.ч. корр. {0}", period=301, year=-1, forperiods="301,251,252,253,254", condition="PLAN and USEKORRTPFP and SHOWKORRTPFP", formula=" @PLANC.P(31,32,33,34)? "
+
+	col JOB, "Факт {2} {0}", customCode="FACT", forperiods="_ТОЛЬКО_МЕС,1,2,3,4,21,22,24,25,27,28,210,211"
+
+	col JOBP, "План {2} {0}", period=_СУММЕСЯЦ, customCode="PLANSNG", forperiods="_ТОЛЬКО_МЕС", format=_INT, condition=" SNG and PLAN"
+
+	col PLAN, "План {2} {0}", period=306, customCode="PLANSNG", forperiods="406", format=_INT, condition=" PLAN"
+
+	col JOB, "Факт {2} {0}", period=_СУММЕСЯЦ, customCode="FACTSNG", forperiods="_ТОЛЬКО_МЕС", condition="SNG"
+	col JOB, "Ожид. {2} {0}", customCode="FACTSNG", forperiods="_ОЖИД_СНГ"
+
+	col PLAN, "Ожид. {0}", customCode="OZHID", period=401, year=-1, forperiods="301,251,252,253,254", condition="PREDFACT"
+	col OTKLPLAN1, "Выполнение ТПФП {3}", formula=" @OZHID? - @PLANPRED? ", forperiods="301,251,252,253,254", condition="OTKL and PLAN and PREDFACT and OTKLABS and not USEKORRTPFP ", format=_INT
+	col OTKLPLAN2, "% выполн. ТПФП {3}", formula=" @OZHID? / @PLANPRED? * 100", forperiods="301,251,252,253,254", condition="OTKL and PLAN and PREDFACT and OTKLOTN and not USEKORRTPFP ", format=_DEC1
+	col OTKLPLAN3, "Выполнение ТПФП {3}", formula=" @OZHID? - @PLANPRED? ", forperiods="301,251,252,253,254", condition="OTKL and PLAN and PREDFACT and OTKLABS and USEKORRTPFP ", format=_INT
+	col OTKLPLAN4, "% выполн. ТПФП {3}", formula=" @OZHID? / @PLANPRED? * 100", forperiods="301,251,252,253,254", condition="OTKL and PLAN and PREDFACT and OTKLOTN and USEKORRTPFP ", format=_DEC1
+
+	col PLAN, "ТПФП {0}", customCode="PLANTEK", forperiods="301,251,252,253,254"
+	col PLANC1, "{2} {0}", period="31", forperiods="301,251,252,253,254", formula="@PLANC.P311? + @PLANC.P312? + @PLANC.P313? + @PLANC.P314?", condition="USEKORRTPFP and K1"
+	col PLANC2, "{2} {0}", period="32", forperiods="301,251,252,253,254", formula="@PLANC.P321? + @PLANC.P322? + @PLANC.P323? + @PLANC.P324?", condition="USEKORRTPFP and K2"
+	col PLANC3, "{2} {0}", period="33", forperiods="301,251,252,253,254", formula="@PLANC.P331? + @PLANC.P332? + @PLANC.P333? + @PLANC.P334?", condition="USEKORRTPFP and K3"
+	col PLANC4, "{2} {0}", period="34", forperiods="301,251,252,253,254", formula="", condition="USEKORRTPFP and K4"
+	
+	col PLANKORR1, "Уточн. 1 ТПФП {0}", forperiods="301,251,252,253,254", formula=" @PLAN? + @PLANC.P311? + @PLANC.P312? + @PLANC.P313? + @PLANC.P314?", condition="USEKORRTPFP and K1"
+	col PLANKORR2, "Уточн. 2 ТПФП {0}", forperiods="301,251,252,253,254", formula=" @PLAN? + @PLANC.P311? + @PLANC.P312? + @PLANC.P313? + @PLANC.P314? + @PLANC.P321? + @PLANC.P322? + @PLANC.P323? + @PLANC.P324? ", condition="USEKORRTPFP and K2"
+	col PLANKORR3, "Уточн. 3 ТПФП {0}", forperiods="301,251,252,253,254", formula=" @PLAN? + @PLANC.P311? + @PLANC.P312? + @PLANC.P313? + @PLANC.P314? + @PLANC.P321? + @PLANC.P322? + @PLANC.P323? + @PLANC.P324? + @PLANC.P331? + @PLANC.P332? + @PLANC.P333? + @PLANC.P334? ", condition="USEKORRTPFP and K3"
+	col PLANKORR4, "Уточн. 4 ТПФП {0}", forperiods="301,251,252,253,254", formula=" @PLAN? + @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34? ", condition="USEKORRTPFP and K4"
+
+	col OTKLFACT, "Откл. от факта {2} {3}", formula=" @FACT? - @PREDFACT? ", forperiods="_ТОЛЬКО_МЕС,1,2,3,4", condition="OTKL and PREDFACT and OTKLABS ", format=_INT
+	col OTKLPLAN5, "Откл. от плана {2} {0}", formula=" @FACT? - @PLANTEK? ", forperiods="_ТОЛЬКО_МЕС,1,2,3,4", condition="OTKL and PLAN and OTKLABS and not USEKORRTPFP", format=_INT
+	col OTKLPLAN6, "Откл. от плана {2} {0}", formula=" @FACT? - @PLANKORR? ", forperiods="_ТОЛЬКО_МЕС,1,2,3,4", condition="OTKL and PLAN and OTKLABS and USEKORRTPFP", format=_INT
+	col OTKLPLAN7, "Откл. от плана {2} {0}", formula=" @FACTSNG? - @PLANSNG? ",  period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС", condition="OTKL and PLAN and OTKLABS and SNG ", format=_INT
+	col OTKLPLAN8, "Откл. от ТПФП {3}", formula=" @PLANTEK? - @PLANPRED? ", forperiods="301,251,252,253,254", condition="OTKL and PLAN and OTKLABS ", format=_INT
+	col OTKLFACT, "Откл. от ожид. {3}", formula=" @PLANTEK? - @OZHID? ", forperiods="301,251,252,253,254", condition="OTKL and PREDFACT and OTKLABS ", format=_INT
+	col OTKLPLAN9, "Откл. от плана {2} {0}", formula=" @FACTSNG? - @PLANSNG? ",  forperiods="_ОЖИД_СНГ", condition="OTKL and PLAN and OTKLABS ", format=_INT
+	
+	col OTKLFACT, "% от факта {2} {3}", formula=" @FACT? / @PREDFACT? * 100 ", forperiods="_ТОЛЬКО_МЕС,1,2,3,4", condition="OTKL and PREDFACT and OTKLOTN ", format=_DEC1
+	col OTKLPLAN10, "% от плана {2} {0}", formula=" @FACT? / @PLANTEK? * 100 ", forperiods="_ТОЛЬКО_МЕС,1,2,3,4", condition="OTKL and PLAN and OTKLOTN and not USEKORRTPFP", format=_DEC1
+	col OTKLPLAN11, "% от плана {2} {0}", formula=" @FACT? / @PLANKORR? * 100 ", forperiods="_ТОЛЬКО_МЕС,1,2,3,4", condition="OTKL and PLAN and OTKLOTN and USEKORRTPFP", format=_DEC1
+	col OTKLPLAN12, "% от плана {2} {0}", formula=" @FACTSNG? / @PLANSNG? * 100 ",  period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС", condition="OTKL and PLAN and OTKLOTN and SNG", format=_DEC1
+	col OTKLPLAN13, "% от ТПФП {0}", formula=" @PLANTEK? / @PLANPRED? * 100", forperiods="301,251,252,253,254", condition="OTKL and PLAN and OTKLOTN ", format=_DEC1
+	col OTKLFACT, "% от ожид. {3}", formula=" @PLANTEK? / @OZHID? * 100", forperiods="301,251,252,253,254", condition="OTKL and PREDFACT and OTKLOTN ", format=_DEC1
+	col OTKLPLAN14, "% от плана {2} {0}", formula=" @FACTSNG? / @PLANSNG? * 100 ",  forperiods="_ОЖИД_СНГ", condition="OTKL and PLAN and OTKLOTN ", format=_DEC1
+
+
+
+#====================================================================================
+#Снижение численности персонала OLAP
+#------------------------------------------------------------------------------------
+olap_trud_abst trud_olap_count_pers, "Снижение численности персонала" :
+	ranameA = "Снижение численности персонала организаций УГМК"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		row t110600, "Численность персонала, чел."
+		col JOB, "На 31.12.{0}", customCode="NGOD", year=-1, period=112
+		col PLANPERV, "Первонач. план {0}", customCode="PLANPERV", forperiods="11,12,13,14,15,16,17,18,19,110,111,112,1,2,3,4", formula="$t120300@PLAN.P251? "
+		col PLANKORR1, "План с уч. корр-ва {0}", forperiods="11,12,13,1", formula=" $t120300@PLAN.P251? + $t120300@PLANC.P31? "
+		col PLANC1, "План по снижению числ-ти {0}", forperiods="11,12,13,1", formula=" $t120300@PLANC.P31? "
+		col PLANKORR2, "План с уч. корр-ва {0}", forperiods="14,15,16,2", formula=" $t120300@PLAN.P251? + $t120300@PLANC.P31? + $t120300@PLANC.P32? "
+		col PLANC2, "План по снижению числ-ти {0}", forperiods="14,15,16,2", formula=" $t120300@PLANC.P31? + $t120300@PLANC.P32?"
+		col PLANKORR3, "План с уч. корр-ва {0}", forperiods="17,18,19,3", formula=" $t120300@PLAN.P251? + $t120300@PLANC.P31? + $t120300@PLANC.P32? + $t120300@PLANC.P33? "
+		col PLANC3, "План по снижению числ-ти {0}", forperiods="17,18,19,3", formula=" $t120300@PLANC.P31? + $t120300@PLANC.P32? + $t120300@PLANC.P33?"
+		col PLANKORR4, "План с уч. корр-ва {0}", forperiods="110,111,112,4", formula=" $t120300@PLAN.P251? + $t120300@PLANC.P31? + $t120300@PLANC.P32? + $t120300@PLANC.P33? + $t120300@PLANC.P34? "
+		col PLANC4, "План по снижению числ-ти {0}", forperiods="110,111,112,4", formula=" $t120300@PLANC.P31? + $t120300@PLANC.P32? + $t120300@PLANC.P33? + $t120300@PLANC.P34? "
+		col JOB, "На конец {2} {0}", customCode="TEK"
+		col JOBDELTA, "Изм-е числ-ти с н.г.", formula=" @TEK? - @NGOD? "
+
+#====================================================================================
+#Численность и средняя заработная плата OLAP
+#------------------------------------------------------------------------------------
+olap_trud_abst trud_olap_countizp, "Численность и заработная плата" :
+	ranameA = "Среднесписочная численность и средняя заработная плата организаций УГМК"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		row t110300, "Среднеспис. числ-ть, чел."
+		row t110400, "Средняя ЗП, руб./мес."
+		col JOB, _FACT
+		col JOB, _FACT, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+
+#====================================================================================
+#Численность и средняя заработная плата OLAP (с расшифровками)
+#------------------------------------------------------------------------------------
+olap_trud_abst trud_olap_countizp_rash, "Численность и заработная плата (с расшифровками)" :
+	ranameA = "Среднесписочная численность и средняя заработная плата организаций УГМК"
+	reportsetex _СВОДНЫЙ_ОТЧЕТ_ПО_ФАКТУ :
+		row t110300, "Среднеспис. числ-ть, чел."
+		row t110310, "ППП"
+		row t110311, "РСиС"
+		row t110312, "Рабочие"
+		row t110320, "НПП"
+		row t110400, "Средняя ЗП, руб./мес."
+		row t110410, "ППП"
+		row t110420, "НПП"
+		col JOB, _FACT
+		col JOB, _FACT, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ
+
+
+#====================================================================================
+#Отчет по труду OLAP
+#------------------------------------------------------------------------------------
+olap_trud_report trud_olap_fact, "Отчет по труду" :		
+	rows :  
+		generator _ГЕНЕРАТОР_СТРОК :
+			rowlist = """
+				t110100,t110130,t110131,t110132,t110300,t110400,t110600,t110610,t110611,t110500
+			"""
+			value = true
+
+#====================================================================================
+#План по труду OLAP
+#------------------------------------------------------------------------------------
+olap_trud_report trud_olap_plan2011, "План по труду" :		
+	rows :  
+		generator _ГЕНЕРАТОР_СТРОК :
+			rowlist = """
+				t110100,t110130,t110131,t110132,t110300,t110400,t110600,t110610,t110611,t110500
+			"""
+			value = true
+
+#====================================================================================
+#План по труду 2010 OLAP
+#------------------------------------------------------------------------------------
+olap_trud_report trud_olap_plan, "План по труду 2010" :		
+	rows :  
+		generator _ГЕНЕРАТОР_СТРОК :
+			rowlist = """
+				t120100,t120200,t120300,t120400,t120500
+			"""
+			value = true
+
+
+#====================================================================================
+#Расчет-обоснование плана по труду (форма № 1-Т)
+#------------------------------------------------------------------------------------
+kvartform trud_obosn, "Расчет-обоснование плана по труду (форма № 1-Т)", group=trud_grp, roleprefix=ZP, rootrow=t210 :
+	import fordesign
+
+#====================================================================================
+#Смета централизованных выплат (форма № 2-Т) 
+#------------------------------------------------------------------------------------
+kvartform trud_cent_vipl, "Смета централизованных выплат (форма № 2-Т)", group=trud_grp, roleprefix=ZP, rootrow=t220 :
+	import fordesign
+
+#====================================================================================
+#Смета социальных выплат (форма № 3-Т)
+#------------------------------------------------------------------------------------
+kvartform trud_soc_vipl, "Смета социальных выплат (форма № 3-Т)", group=trud_grp, roleprefix=ZP, rootrow=t230 :
+	import fordesign
+	useformmatrixA = false
+	useformmatrixB = false
+	useformmatrixC = false
+
+#====================================================================================
+#ФЗП работников несписочного состава (форма № 4-Т)
+#------------------------------------------------------------------------------------
+kvartform trud_fzp_nespis, "ФЗП работников несписочного состава (форма № 4-Т)", group=trud_grp, roleprefix=ZP, rootrow=t240 :
+	import fordesign
+
+#====================================================================================
+#Затраты на персонал (форма № 5-Т)
+#------------------------------------------------------------------------------------
+kvartform trud_zatr_pers, "Затраты на персонал (форма № 5-Т)", group=trud_grp, roleprefix=ZP, rootrow=t250 :
+	import fordesign
+
+#====================================================================================
+#Затраты на обучение персонала
+#------------------------------------------------------------------------------------
+kvartform trud_zatr_lehr, "Затраты на обучение персонала", group=trud_grp, roleprefix=ZP, rootrow=t260 :
+	import fordesign
+
+#====================================================================================
+#Реализация жилищной программы
+#------------------------------------------------------------------------------------
+global _NAME_ZHILPR : "Реализация жилищной программы"
+monthform zhilpr,  "Реализация жилищной программы (Приложение № 11)", rootrow=t211, roleprefix=KADR:
+	useonobjstates = false
+	formnameA = _NAME_ZHILPR
+	ra_numberA = "Приложение № 11"
+	ranameA = _NAME_ZHILPR
+	rbnameA = _NAME_ZHILPR
+	formnameB = _NAME_ZHILPR
+	ra_numberB = "Приложение № 11"
+	ranameB = _NAME_ZHILPR
+	rbnameB = _NAME_ZHILPR
+	forgroup=HOUSEPROG
+	group=trud_grp
+

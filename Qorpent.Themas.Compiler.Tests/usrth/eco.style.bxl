@@ -1,0 +1,24 @@
+﻿#####################################################################################
+###################                 Глобальные стили                #################
+#####################################################################################
+
+#====================================================================================
+#Стиль баланса
+#------------------------------------------------------------------------------------
+subset ss_balans : 
+	use level_1_style : "font-size:9pt;background-color:#FFFFFF;padding-left:20px;font-weight:bold;"
+	use level_2_style : "font-size:8pt;background-color:#FFFFFF;padding-left:40px;font-weight:bold;"
+
+#####################################################################################
+##################                  Глобальные форматы             ##################
+#####################################################################################
+global "_INT, _ЦЕЛОЕ" : "#,#"
+global "_DEC1, _ДЕС1" : "#,0.0"
+global "_DEC2, _ДЕС2" : "#,0.00"
+global "_DEC3, _ДЕС3" : "#,0.000"
+#global "_STYLE_PLAN" : 'background-color:#ffeecc;'
+#global "_STYLE_TPFP" : 'border-right:solid 2px black;border-left:solid 2px black;background-color:#ddeeee;'
+global "_STYLE_OLAP" : """[objtype=otr] td, [objtype=h] td, [objtype=og] td, [objtype=alldb] td{background-color:gray; color:white; font-size:10pt; font-weight:bold; }"""
+global "_STYLE_PLAN" : ''
+global "_STYLE_TPFP" : 'border-right:solid 2px black;border-left:solid 2px black;'
+

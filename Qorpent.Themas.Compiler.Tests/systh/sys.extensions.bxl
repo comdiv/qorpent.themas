@@ -1,0 +1,10 @@
+﻿#все, что связано с группировкой
+extension states : """Comdiv.Zeta.Web.InputTemplates.ILockStateProvider, Comdiv.Zeta.Web"""
+extension invest : """Comdiv.Zeta.Web.IInvestHelper, Comdiv.Zeta.Web"""
+extension responsibility : """Comdiv.Zeta.Web.Themas.IResponsibilityProvider, Comdiv.Zeta.Web"""
+extension sqlreport : """Comdiv.Zeta.Web.ISqlReportProvider, Comdiv.Zeta.Web"""
+extension zetadosie : """Comdiv.Zeta.Web.Dosie.IZetaDosieHelper, Comdiv.Zeta.Web"""
+extension wiki : """Comdiv.Reporting.IWikiHelper, Comdiv.Reporting"""
+extension themas : """Comdiv.Zeta.Web.Themas.IThemaHelper, Comdiv.Zeta.Web"""
+
+

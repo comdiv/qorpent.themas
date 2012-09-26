@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+	<thema id="pnp">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="f7">
+		<param id=".active" type="bool">true</param>
+	</thema>
+	<thema id="finres">
+		<param id=".active" type="bool">true</param>
+	</thema>
+	<thema id="sprib">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="sbalans">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="smeta">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="pit">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="blag">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="med">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="f6">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="checkpoint">
+		<param id=".active" type="bool">false</param>
+	</thema>
+	<thema id="balans_rbp">
+		<param id=".active" type="bool">true</param>
+	</thema>
+	<thema id="zatr_am">
+		<param id=".active" type="bool">true</param>
+	</thema>
+	<thema id="obproizf">
+		<param id=".active" type="bool">true</param>
+	</thema>
+	<thema id="obproiz">
+		<param id=".active" type="bool">false</param>
+	</thema>
+</root>

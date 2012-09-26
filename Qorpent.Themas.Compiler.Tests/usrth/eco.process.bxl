@@ -1,0 +1,905 @@
+﻿namespace root
+
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+namespace root
+processes main:
+	__srcline = 5
+	preservexml = 1
+	dependency :
+		__srcline = 17
+		source = 'nalogA.in'
+		target = 'zatrA.in'
+	dependency :
+		__srcline = 18
+		source = 'nalogB.in'
+		target = 'zatrB.in'
+	dependency :
+		__srcline = 44
+		source = 'ras_dkA.in'
+		target = 'nalogA.in'
+	dependency :
+		__srcline = 67
+		source = 'f7A.in'
+		target = 'zatr_prA.in'
+	dependency :
+		__srcline = 68
+		source = 'f7B.in'
+		target = 'zatr_prB.in'
+	dependency :
+		__srcline = 77
+		source = 'rashsnA.in'
+		target = 'osnpokA.in'
+	dependency :
+		__srcline = 78
+		source = 'rashsnB.in'
+		target = 'osnpokB.in'
+	dependency :
+		__srcline = 81
+		source = 'invA.in'
+		target = 'osnpokA.in'
+	dependency :
+		__srcline = 82
+		source = 'invB.in'
+		target = 'osnpokB.in'
+	dependency :
+		__srcline = 83
+		source = 'trudA.in'
+		target = 'osnpokA.in'
+	dependency :
+		__srcline = 84
+		source = 'trudB.in'
+		target = 'osnpokB.in'
+	dependency :
+		__srcline = 85
+		source = 'zatrA.in'
+		target = 'osnpokA.in'
+	dependency :
+		__srcline = 87
+		source = 'nalogA.in'
+		target = 'osnpokA.in'
+	dependency :
+		__srcline = 88
+		source = 'nalogB.in'
+		target = 'osnpokB.in'
+	perioddependency :
+		__srcline = 93
+		on = 252
+		need = 251
+	perioddependency :
+		__srcline = 94
+		on = 253
+		need = 252
+	perioddependency :
+		__srcline = 95
+		on = 254
+		need = 253
+	finalform :
+		__srcline = 101
+		result = 'osnpokA.in'
+		source = 'balans_rnsA.in'
+	finalform :
+		__srcline = 104
+		result = 'osnpokA.in'
+		source = 'nalogA.in'
+	finalform :
+		__srcline = 107
+		result = 'osnpokA.in'
+		source = 'ras_dkA.in'
+	finalform :
+		__srcline = 108
+		result = 'osnpokA.in'
+		source = 'zatrA.in'
+	finalform :
+		__srcline = 109
+		result = 'osnpokA.in'
+		source = 'zatr_sirA.in'
+	finalform :
+		__srcline = 110
+		result = 'osnpokA.in'
+		source = 'zatr_uslperA.in'
+	finalform :
+		__srcline = 111
+		result = 'osnpokA.in'
+		source = 'zatr_terA.in'
+	finalform :
+		__srcline = 113
+		result = 'osnpokA.in'
+		source = 'zatr_amA.in'
+	finalform :
+		__srcline = 114
+		result = 'osnpokA.in'
+		source = 'finresA.in'
+	finalform :
+		__srcline = 115
+		result = 'osnpokA.in'
+		source = 'rashsnA.in'
+	finalform :
+		__srcline = 118
+		result = 'osnpokA.in'
+		source = 'invA.in'
+	finalform :
+		__srcline = 121
+		result = 'osnpokA.in'
+		source = 'zhilprA.in'
+	finalform :
+		__srcline = 128
+		result = 'osnpokB.in'
+		source = 'balans_rnsB.in'
+	finalform :
+		__srcline = 131
+		result = 'osnpokB.in'
+		source = 'nalogB.in'
+	finalform :
+		__srcline = 132
+		result = 'osnpokB.in'
+		source = 'nalog_ndsB.in'
+	finalform :
+		__srcline = 133
+		result = 'osnpokB.in'
+		source = 'nalog_nds19B.in'
+	finalform :
+		__srcline = 134
+		result = 'osnpokB.in'
+		source = 'ras_dkB.in'
+	finalform :
+		__srcline = 135
+		result = 'osnpokB.in'
+		source = 'zatrB.in'
+	finalform :
+		__srcline = 136
+		result = 'osnpokB.in'
+		source = 'zatr_sirB.in'
+	finalform :
+		__srcline = 137
+		result = 'osnpokB.in'
+		source = 'zatr_uslperB.in'
+	finalform :
+		__srcline = 138
+		result = 'osnpokB.in'
+		source = 'zatr_terB.in'
+	finalform :
+		__srcline = 141
+		result = 'osnpokB.in'
+		source = 'finresB.in'
+	finalform :
+		__srcline = 142
+		result = 'osnpokB.in'
+		source = 'rashsnB.in'
+	finalform :
+		__srcline = 145
+		result = 'osnpokB.in'
+		source = 'invB.in'
+	finalform :
+		__srcline = 148
+		result = 'osnpokB.in'
+		source = 'zhilprB.in'
+		controlperiodsA = '12:22;13:1;14:24;15:25;16:2;17:27;18:28;19:3;110:210;111:211;112:4'
+		controlperiodsB = '251:303;252:306;253:309'
+	form code = balans:
+		__srcline = 268
+		alias = 'Ф1(Б)'
+		target = true
+		idx = 10
+	form code = zatr:
+		__srcline = 273
+		alias = Ф3
+		target = true
+		idx = 50
+	form code = nalog_nds:
+		__srcline = 273
+		alias = НДС
+		target = true
+		idx = 150
+	form code = nalog_nds19:
+		__srcline = 273
+		alias = 'Б.23'
+		target = true
+		idx = 150
+	form code = balans_rbp:
+		__srcline = 273
+		alias = 'Б. 10'
+		target = true
+		idx = 150
+	form code = balans_rnma:
+		__srcline = 273
+		alias = 'Б. 1'
+		target = true
+		idx = 150
+	form code = balans_ros:
+		__srcline = 273
+		alias = 'Б. 1.1'
+		target = true
+		idx = 150
+	form code = balans_rfv:
+		__srcline = 273
+		alias = 'Б. 4'
+		target = true
+		idx = 150
+	form code = balans_rdbp:
+		__srcline = 273
+		alias = 'Б. 17'
+		target = true
+		idx = 150
+	form code = balans_rsim:
+		__srcline = 273
+		alias = 'Б. 5'
+		target = true
+		idx = 150
+	form code = nalog:
+		__srcline = 278
+		alias = Налоги
+		target = true
+		idx = 20
+	form code = osnpok:
+		__srcline = 283
+		alias = Ф2
+		target = true
+		idx = 35
+	form code = prib:
+		__srcline = 288
+		alias = 'Ф2(Б)'
+		target = true
+		idx = 20
+	form code = zatr_pr:
+		__srcline = 293
+		alias = 'расш3.4'
+		target = true
+		idx = 55
+	form code = finres:
+		__srcline = 298
+		alias = Ф4
+		target = true
+		idx = 35
+	form code = balans2011:
+		__srcline = 303
+		alias = 'Ф1(Б) 2011'
+		target = true
+		idx = 11
+	form code = prib2011:
+		__srcline = 308
+		alias = 'Ф2(Б) 2011'
+		target = true
+		idx = 20
+	form code = balans_rns:
+		__srcline = 313
+		alias = 'Б.3'
+		target = true
+		idx = 150
+	form code = free_active:
+		__srcline = 318
+		alias = ЧА
+		target = true
+		idx = 12
+	form code = ras_dk:
+		__srcline = 323
+		alias = ДК
+		target = true
+		idx = 17
+	form code = f7:
+		__srcline = 328
+		alias = Ф7
+		target = true
+		idx = 60
+	form code = f8:
+		__srcline = 333
+		alias = Ф8
+		target = true
+		idx = 70
+	form code = inv:
+		__srcline = 338
+		alias = Ф9
+		target = true
+		idx = 80
+	form code = rashsn:
+		__srcline = 343
+		alias = Ф6
+		target = true
+		idx = 90
+	form code = trud:
+		__srcline = 348
+		alias = Т
+		target = true
+		idx = 100
+	form code = obproizf:
+		__srcline = 358
+		alias = 'Б.1'
+		target = true
+		idx = 30
+	form code = bio_nalog_calc:
+		alias = Экол
+		target = false
+		idx = 200
+	form code = controlpointall:
+		alias = КП
+		target = true
+		idx = '-10'
+	rule type = deny:
+		current = controlpointallA
+		resultstate = '0ISOPEN'
+	rule type = deny:
+		current = controlpointallA
+		resultstate = '0ISBLOCK'
+	rule type = deny:
+		current = controlpointallB
+		resultstate = '0ISOPEN'
+	rule type = deny:
+		current = controlpointallB
+		resultstate = '0ISBLOCK'
+	rule type = deny:
+		current = controlpointallC
+		resultstate = '0ISOPEN'
+	rule type = deny:
+		current = controlpointallC
+		resultstate = '0ISBLOCK'
+	rule type = copy:
+		current = osnpokA
+		target = controlpointallA
+	rule type = copy:
+		current = osnpokB
+		target = controlpointallB
+	rule type = copy:
+		current = osnpokC
+		target = controlpointallC
+	rule type = backcheck:
+		current = controlpointallA
+	rule type = backcheck:
+		current = controlpointallB
+	rule type = backcheck:
+		current = controlpointallC
+	dependency :
+		source = 'balansA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'balans2011A.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'nalogA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'pribA.in'
+		target = 'controlpointallA.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'balansA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'balansB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'balans2011A.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'balans2011B.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'ras_dkA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'ras_dkB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'nalogA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'nalogB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'pribA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'pribB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'prib2011A.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'prib2011B.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'finresA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'finresB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'osnpokA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'osnpokB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'zatrA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'zatrB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'zatr_prA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'zatr_prB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'f7A.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'f7B.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'f8A.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'f8B.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'invA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'invB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'rashsnA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'rashsnB.in'
+	hat :
+		source = 'controlpointallA.in'
+		result = 'obproizfA.in'
+	hat :
+		source = 'controlpointallB.in'
+		result = 'obproizfB.in'
+	dependency :
+		source = 'prib2011A.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'prib2011B.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'f8A.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'f8B.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'f7A.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'f7B.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'zatr_prA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'zatr_prB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'zatrA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'zatrB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'osnpokA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'osnpokB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'finresA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'finresB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'ras_dkA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'balans_rnsA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'rashsnA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'rashsnB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'invA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'invB.in'
+		target = 'controlpointallB.in'
+	form code = opr:
+		alias = ОПР
+		target = false
+		idx = 120
+	form code = zp_zatr:
+		alias = ЗП
+		target = false
+		idx = 120
+	dependency :
+		source = 'balans2011A.in'
+		target = 'balans_rfvA.in'
+	dependency :
+		source = 'balans2011A.in'
+		target = 'free_activeA.in'
+	dependency :
+		source = 'balans2011A.in'
+		target = 'balans_rnsA.in'
+	hat :
+		source = 'balans2011A.in'
+		result = 'osnpokA.in'
+	hat :
+		source = 'balans2011B.in'
+		result = 'osnpokB.in'
+	dependency :
+		source = 'balans2011A.in'
+		target = 'zatrA.in'
+	dependency :
+		source = 'balans2011B.in'
+		target = 'zatrB.in'
+	hat :
+		source = 'ras_dkA.in'
+		result = 'controlpointallA.in'
+	hat :
+		source = 'ras_dkB.in'
+		result = 'controlpointallB.in'
+	hat :
+		source = 'balansA.in'
+		result = 'controlpointallA.in'
+	hat :
+		source = 'balansB.in'
+		result = 'controlpointallB.in'
+	hat :
+		source = 'prib2011A.in'
+		result = 'osnpokA.in'
+	hat :
+		source = 'prib2011B.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'zatrA.in'
+		result = 'nalogA.in'
+	primaryform :
+		source = 'zatrB.in'
+		result = 'nalogB.in'
+	primaryform :
+		source = 'pribA.in'
+		result = 'nalogA.in'
+	primaryform :
+		source = 'pribB.in'
+		result = 'nalogB.in'
+	primaryform :
+		source = 'prib2011A.in'
+		result = 'nalogA.in'
+	primaryform :
+		source = 'prib2011B.in'
+		result = 'nalogB.in'
+	formextension :
+		source = 'zatrA.in'
+		result = 'zatr_prA.in'
+	formextension :
+		source = 'zatrB.in'
+		result = 'zatr_prB.in'
+	primaryform :
+		source = 'zatr_prA.in'
+		result = 'zatrA.in'
+	primaryform :
+		source = 'zatr_prB.in'
+		result = 'zatrB.in'
+	formextension :
+		source = 'prib2011A.in'
+		result = 'f7A.in'
+	formextension :
+		source = 'prib2011B.in'
+		result = 'f7B.in'
+	formextension :
+		source = 'prib2011A.in'
+		result = 'f8A.in'
+	formextension :
+		source = 'prib2011B.in'
+		result = 'f8B.in'
+	formextension :
+		source = 'pribA.in'
+		result = 'finresA.in'
+	formextension :
+		source = 'pribB.in'
+		result = 'finresB.in'
+	formextension :
+		source = 'prib2011A.in'
+		result = 'finresA.in'
+	formextension :
+		source = 'prib2011B.in'
+		result = 'finresB.in'
+	dependentform :
+		source = 'f7A.in'
+		result = 'zatr_prA.in'
+	dependentform :
+		source = 'f7B.in'
+		result = 'zatr_prB.in'
+	primaryform :
+		source = 'zatr_prA.in'
+		result = 'f7A.in'
+	primaryform :
+		source = 'zatr_prB.in'
+		result = 'f7B.in'
+	formextension :
+		source = 'f7A.in'
+		result = 'prib2011A.in'
+	formextension :
+		source = 'f7B.in'
+		result = 'prib2011B.in'
+	formextension :
+		source = 'f8A.in'
+		result = 'prib2011A.in'
+	formextension :
+		source = 'f8B.in'
+		result = 'prib2011B.in'
+	formextension :
+		source = 'finresA.in'
+		result = 'prib2011A.in'
+	formextension :
+		source = 'finresB.in'
+		result = 'prib2011B.in'
+	formextension :
+		source = 'finresA.in'
+		result = 'pribA.in'
+	formextension :
+		source = 'finresB.in'
+		result = 'pribB.in'
+	formextension :
+		source = 'f7A.in'
+		result = 'pribA.in'
+	formextension :
+		source = 'f7B.in'
+		result = 'pribB.in'
+	formextension :
+		source = 'f8A.in'
+		result = 'pribA.in'
+	formextension :
+		source = 'f8B.in'
+		result = 'pribB.in'
+	primaryform :
+		source = 'balans2011A.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'balans2011B.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'nalogA.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'nalogB.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'pribA.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'pribB.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'zatrA.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'zatrB.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'invA.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'invB.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'rashsnA.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'rashsnB.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'trudA.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'trudB.in'
+		result = 'osnpokB.in'
+	dependentform :
+		source = 'osnpokA.in'
+		result = 'zatrA.in'
+	dependentform :
+		source = 'osnpokB.in'
+		result = 'zatrB.in'
+	dependentform :
+		source = 'osnpokA.in'
+		result = 'rashsnA.in'
+	dependentform :
+		source = 'osnpokB.in'
+		result = 'rashsnB.in'
+	dependentform :
+		source = 'osnpokA.in'
+		result = 'trudA.in'
+	dependentform :
+		source = 'osnpokB.in'
+		result = 'trudB.in'
+	dependentform :
+		source = 'osnpokA.in'
+		result = 'invA.in'
+	dependentform :
+		source = 'osnpokB.in'
+		result = 'invB.in'
+	dependentform :
+		source = 'osnpokA.in'
+		result = 'prib2011A.in'
+	dependentform :
+		source = 'osnpokB.in'
+		result = 'prib2011B.in'
+	form code = zatr_am:
+		alias = Аморт
+		target = true
+		idx = 56
+	dependency :
+		source = 'zatr_amA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'zatr_amA.in'
+		target = 'zatrA.in'
+	dependency :
+		source = 'zatrA.in'
+		target = 'zatr_prA.in'
+	dependency :
+		source = 'zatrB.in'
+		target = 'zatr_prB.in'
+	dependency :
+		source = 'prib2011A.in'
+		target = 'nalogA.in'
+	dependency :
+		source = 'prib2011B.in'
+		target = 'nalogB.in'
+	form code = trud_obosn:
+		alias = T1
+		target = true
+		idx = 110
+	form code = trud_cent_vipl:
+		alias = T2
+		target = true
+		idx = 110
+	form code = trud_soct_vipl:
+		alias = T3
+		target = true
+		idx = 110
+	form code = trud_fzp_nespis:
+		alias = T4
+		target = true
+		idx = 110
+	form code = trud_zatr_pers:
+		alias = T5
+		target = true
+		idx = 110
+	form code = trud_zatr_lehr:
+		alias = T6
+		target = true
+		idx = 110
+	finalform :
+		source = 'prib2011A.in'
+		result = 'osnpokA.in'
+	finalform :
+		source = 'prib2011B.in'
+		result = 'osnpokB.in'
+	dependency :
+		source = 'prib2011A.in'
+		target = 'osnpokA.in'
+	dependency :
+		source = 'prib2011B.in'
+		target = 'osnpokB.in'
+	finalform :
+		source = 'obproizfA.in'
+		result = 'osnpokA.in'
+	finalform :
+		source = 'obproizfB.in'
+		result = 'osnpokB.in'
+	dependency :
+		source = 'rashsnA.in'
+		target = 'finresA.in'
+	dependency :
+		source = 'rashsnB.in'
+		target = 'finresB.in'
+	dependency :
+		source = 'trud_fzp_nespisA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'trud_fzp_nespisB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'trud_cent_viplA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'trud_cent_viplB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'trud_obosnA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'trud_obosnB.in'
+		target = 'controlpointallB.in'
+	dependency :
+		source = 'trud_zatr_lehrA.in'
+		target = 'controlpointallA.in'
+	dependency :
+		source = 'trud_zatr_lehrB.in'
+		target = 'controlpointallB.in'
+	finalform :
+		source = 'trudA.in'
+		result = 'osnpokA.in'
+	finalform :
+		source = 'trudB.in'
+		result = 'osnpokB.in'
+	dependency :
+		source = 'nalogB.in'
+		target = 'controlpointallB.in'
+	finalform :
+		source = 'balans2011A.in'
+		result = 'osnpokA.in'
+	finalform :
+		source = 'balans2011B.in'
+		result = 'osnpokB.in'
+	primaryform :
+		source = 'pribA.in'
+		result = 'finresA.in'
+	primaryform :
+		source = 'pribB.in'
+		result = 'finresB.in'
+	dependency :
+		source = 'prib2011B.in'
+		target = 'finresB.in'
+	dependency :
+		source = 'prib2011B.in'
+		target = 'f7B.in'
+	dependency :
+		source = 'prib2011B.in'
+		target = 'f8B.in'
+	primaryform :
+		source = 'prib2011A.in'
+		result = 'osnpokA.in'
+	primaryform :
+		source = 'prib2011B.in'
+		result = 'osnpokB.in'
+	dependency :
+		source = 'balans2011A.in'
+		target = 'ras_dkA.in'
+	form code = prib_cons:
+		alias = Конс_pr
+		target = true
+		idx = 160
+	form code = finres_cons:
+		alias = Конс_fr
+		target = false
+		idx = 160
+	dependency :
+		source = 'finres_consA.in'
+		target = 'prib_consA.in'
+	dependency :
+		source = 'balans2011A.in'
+		target = 'f7A.in'
+	dependency :
+		source = 'prib2011A.in'
+		target = 'f7A.in'
+	dependency :
+		source = 'prib2011A.in'
+		target = 'f8A.in'
+	dependency :
+		source = 'prib2011A.in'
+		target = 'finresA.in'
+	finalform :
+		source = 'free_activeA.in'
+		result = 'balans2011A.in'
+	finalform :
+		source = 'free_activeB.in'
+		result = 'balans2011B.in'

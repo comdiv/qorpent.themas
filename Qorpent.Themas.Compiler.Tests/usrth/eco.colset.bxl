@@ -1,0 +1,1485 @@
+﻿#####################################################################################
+###################              Типовые наборы колонок             #################
+#####################################################################################
+
+#====================================================================================
+#Действующий годовой ТПФП
+#------------------------------------------------------------------------------------
+subset cs_tpfp, "Утвержденный ТПФП" :
+	col PLAN, "Утвержд. ТПФП {0}", period=301, fixed, condition=PLAN
+
+#====================================================================================
+#Коррективы и изменения ТПФП
+#------------------------------------------------------------------------------------
+subset cs_tpfp_izm, "Коррективы и изменения ТПФП" :
+	col IZM, "в т.ч. изменение к первонач. ТПФП {0}", condition="PLAN,USEIZMTPFP", formula=" @PLAN.P301? - @PLAN.P251? "
+	col KORR1, "Корр. ТПФП за {2} {0}", period=1, condition="PLAN,USEKORRTPFP", forperiods="11,12,13,1,403", formula=" @PLANC.P31? "
+	col KORR2, "Корр. ТПФП за {2} {0}", period=2, condition="PLAN,USEKORRTPFP", forperiods="14,15,16,2,406", formula=" @PLANC.P31? + @PLANC.P32? "
+	col KORR3, "Корр. ТПФП за {2} {0}", period=3, condition="PLAN,USEKORRTPFP", forperiods="17,18,19,3,409", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? "
+	col KORR4, "Корр. ТПФП за {2} {0}", period=4, condition="PLAN,USEKORRTPFP", forperiods="110,111,112,4,401", formula=" @PLANC.P31? + @PLANC.P32? + @PLANC.P33? + @PLANC.P34?"
+
+#====================================================================================
+#Колонки плановых показателей нарастающим итогом
+#------------------------------------------------------------------------------------
+subset cs_plan_sng_form, "Месячный план (нар. итогом)" :
+	col PLANSNG1, matrixid="PLANSNG", _ПЛАН, period=_СУММЕСЯЦ, forperiods="1,11,12,13,403", fixed, validation="validate-int-cell-number"
+	col PLANSNG2, matrixid="PLANSNG", _ПЛАН, period=_СУММЕСЯЦ, forperiods="2,14,15,16,406", fixed, validation="validate-int-cell-number"
+	col PLANSNG3, matrixid="PLANSNG",_ПЛАН, period=_СУММЕСЯЦ, forperiods="3,17,18,19,409", fixed, validation="validate-int-cell-number"
+	col PLANSNG4, matrixid="PLANSNG",_ПЛАН, period=_СУММЕСЯЦ, forperiods="4,110,111,112,401", fixed, validation="validate-int-cell-number"
+	col PLAN, period=303, forperiods="1,11,12,13,2,14,15,16,403", visible=false
+	col PLAN, period=306, forperiods="2,14,15,16,3,17,18,19,403,406", visible=false
+	col PLAN, period=309, forperiods="3,17,18,19,4,110,111,112,406,409", visible=false
+	col PLAN, period=301, forperiods="4,110,111,112,401", visible=false
+
+#====================================================================================
+#Колонки отклонения фактических от плановых показателей нарастающим итогом
+#------------------------------------------------------------------------------------
+subset cs_otkl_plan_sng_form, "Отклонения факта от плана (нар. итогом)" :
+	col AGGOTKL1, _ОТКЛПЛАН, matrixformula="TEKSNG,-PLANSNG", matrixformulatype="sum", period=_СУММЕСЯЦ, forperiods="1,11,12,13,403", condition="OTKL",  formula=" @Б1? - @PLANSNG1? ", fixed
+	col AGGOTKL2, _ОТКЛПЛАН, matrixformula="TEKSNG,-PLANSNG", matrixformulatype="sum",period=_СУММЕСЯЦ, forperiods="2,14,15,16,406", condition="OTKL", formula=" @Б1? - @PLANSNG2? ", fixed
+	col AGGOTKL3, _ОТКЛПЛАН, matrixformula="TEKSNG,-PLANSNG", matrixformulatype="sum",period=_СУММЕСЯЦ, forperiods="3,17,18,19,409", condition="OTKL", formula=" @Б1? - @PLANSNG3? ", fixed
+	col AGGOTKL4, _ОТКЛПЛАН, matrixformula="TEKSNG,-PLANSNG", matrixformulatype="sum",period=_СУММЕСЯЦ, forperiods="4,110,111,112,401", condition="OTKL", formula=" @Б1? - @PLANSNG4? ", fixed
+	
+	col AGGOTKL1P, "_ОТКЛПЛАН, %", matrixformula="TEKSNG,PLANSNG", matrixformulatype="proc", period=_СУММЕСЯЦ, forperiods="1,11,12,13,403", format=_DEC1, condition="OTKL",  formula="( @Б1? - @PLANSNG1? )/ @PLANSNG1? * 100", fixed:
+		checkrule action="|>=|", value="15", cellstyle=";color :red;"
+		checkrule action="|<-=>|", value="5", value2="15", cellstyle=";color :blue;"
+		checkrule action="|<->|", value="0", value2="5", cellstyle=";color :green;"
+	col AGGOTKL2P,  "_ОТКЛПЛАН, %", matrixformula="TEKSNG,PLANSNG", matrixformulatype="proc",period=_СУММЕСЯЦ, forperiods="2,14,15,16,406", format=_DEC1,condition="OTKL", formula=" ( @Б1? - @PLANSNG2? )/ @PLANSNG2? * 100 ", fixed:
+		checkrule action="|>=|", value="15", cellstyle=";color :red;"
+		checkrule action="|<-=>|", value="5", value2="15", cellstyle=";color :blue;"
+		checkrule action="|<->|", value="0", value2="5", cellstyle=";color :green;"
+	col AGGOTKL3P,  "_ОТКЛПЛАН, %", matrixformula="TEKSNG,PLANSNG", matrixformulatype="proc",period=_СУММЕСЯЦ, forperiods="3,17,18,19,409", format=_DEC1,condition="OTKL", formula="( @Б1? - @PLANSNG3? )/ @PLANSNG3? * 100", fixed:
+		checkrule action="|>=|", value="15", cellstyle=";color :red;"
+		checkrule action="|<-=>|", value="5", value2="15", cellstyle=";color :blue;"
+		checkrule action="|<->|", value="0", value2="5", cellstyle=";color :green;"
+	col AGGOTKL4P,  "_ОТКЛПЛАН, %", matrixformula="TEKSNG,PLANSNG", matrixformulatype="proc",period=_СУММЕСЯЦ, forperiods="4,110,111,112,401", format=_DEC1,condition="OTKL", formula="( @Б1? - @PLANSNG4? )/ @PLANSNG4? * 100", fixed:
+		checkrule action="|>=|", value="15", cellstyle=";color :red;"
+		checkrule action="|<-=>|", value="5", value2="15", cellstyle=";color :blue;"
+		checkrule action="|<->|", value="0", value2="5", cellstyle=";color :green;"
+	
+	
+
+#====================================================================================
+#Колонки ожидаемых форм ввода
+#------------------------------------------------------------------------------------
+subset cs_pred_year_sng, "Предыдущий год с начала года" :
+	col Б1, _ФАКТ, customCode=PREVYEAR, period=_ЯНВ, forperiods="_ЯНВ", year=-1, fixed, condition="PREDYEAR and FACT"
+	col Б1, _ФАКТ, customCode=PREVYEAR, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", year=-1, fixed, condition="PREDYEAR and FACT"
+	col Б1, _ФАКТ, customCode=PREVYEAR, period=1, forperiods=403, year=-1, fixed, condition="PREDYEAR and FACT"
+	col Б1, _ФАКТ, customCode=PREVYEAR, period=2, forperiods=406, year=-1, fixed, condition="PREDYEAR and FACT"
+	col Б1, _ФАКТ, customCode=PREVYEAR, period=3, forperiods=409, year=-1, fixed, condition="PREDYEAR and FACT"
+	col Б1, _ФАКТ, customCode=PREVYEAR, period=4, forperiods=401, year=-1, fixed, condition="PREDYEAR and FACT"
+
+#====================================================================================
+#Колонки ожидаемых форм ввода
+#------------------------------------------------------------------------------------
+subset cs_nalog_pred_year_sng, "Предыдущий год с начала года (налоги)" :
+	col Pd, _ФАКТ, customCode=PREVYEAR, period=_ЯНВ, forperiods="_ЯНВ", year=-1, fixed, condition="PREDYEAR and FACT"
+	col Pd, _ФАКТ, customCode=PREVYEAR, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", year=-1, fixed, condition="PREDYEAR and FACT"
+	col Pd, _ФАКТ, customCode=PREVYEAR, period=1, forperiods=403, year=-1, fixed, condition="PREDYEAR and FACT"
+	col Pd, _ФАКТ, customCode=PREVYEAR, period=2, forperiods=406, year=-1, fixed, condition="PREDYEAR and FACT"
+	col Pd, _ФАКТ, customCode=PREVYEAR, period=3, forperiods=409, year=-1, fixed, condition="PREDYEAR and FACT"
+	col Pd, _ФАКТ, customCode=PREVYEAR, period=4, forperiods=401, year=-1, fixed, condition="PREDYEAR and FACT"
+
+#====================================================================================
+#Колонки ожидаемых форм ввода (расчетно)
+#------------------------------------------------------------------------------------
+subset cs_ozhid_calc, "Ожидаемая форма (расчетно)" :
+	col Б1, _ФАКТ, matrixid="FACTSNGCALC", period=25, forperiods=406, format=_INT, fixed, forgroup="!PR_KVART"
+#	col PLAN6, "План май-июнь {0}", matrixid="PLANMESCALC", period=16, forperiods=406, format=_INT, formula=" ( @PLAN.P306? - @PLAN.P303? ) / 3 * 2", forgroup="!PR_KVART"
+	col PLAN6, _ПЛАН, matrixid="PLANMESCALC", period=16, forperiods=406, format=_INT, formula=" ( @PLAN.P306? - @PLAN.P303? ) / 3 ", forgroup="!PR_KVART"
+	col OZHIDCALC, "Ожид. {2} {0} (расчетно)", matrixid="OZHIDCALC", matrixformula="FACTSNGCALC,PLANMESCALC", matrixformulatype="sum", period=406, forperiods=406, format=_INT, forgroup="!PR_KVART"
+
+	col Б1, _ФАКТ, matrixid="FACTSNGCALC", period=1, forperiods=406, format=_INT, fixed, forgroup="PR_KVART"
+	col PLAN6, "План II кв. {0}", matrixid="PLANKVCALC", period=2, forperiods=406, format=_INT, formula=" @PLAN.P306? - @PLAN.P303? ", forgroup="PR_KVART"
+	col OZHIDCALC, "Ожид. {2} {0} (расчетно)", matrixid="OZHIDCALC", matrixformula="FACTSNGCALC,PLANKVCALC", matrixformulatype="sum", period=406, forperiods=406, format=_INT, forgroup="PR_KVART"
+
+#====================================================================================
+#Колонки ожидаемых форм ввода (расчетно)
+#------------------------------------------------------------------------------------
+subset cs_ozhid_calc_kvart, "Ожидаемая форма (расчетно за квартал)" :
+	col Б1, _ФАКТ, matrixid="FACTSNGCALC", period=1, forperiods=406, format=_INT, fixed
+	col PLAN6, "План II кв. {0}", matrixid="PLANKVCALC", period=2, forperiods=406, format=_INT, formula=" @PLAN.P306? - @PLAN.P303? "
+	col OZHIDCALC, "Ожид. {2} {0} (расчетно)", matrixid="OZHIDCALC", matrixformula="FACTSNGCALC,PLANKVCALC", matrixformulatype="sum", period=406, forperiods=406, format=_INT
+
+#====================================================================================
+#Колонки ожидаемых форм ввода
+#------------------------------------------------------------------------------------
+subset cs_ozhid, "Ожидаемая форма" :
+	col Б1, _ОЖИД, matrixid="TEKSNG", forperiods=_ОЖИД_СНГ, validation="validate-int-cell-number", controlpoint=true
+
+#====================================================================================
+#Колонки ожидаемых форм ввода
+#------------------------------------------------------------------------------------
+subset cs_ozhid_calc_otkl, "Ожидаемая форма (отклонение)" :
+	col OZHIDCALCOTKL, "Откл. ожид. от расчетно", forperiods="406", matrixformula="TEKSNG,-OZHIDCALC", matrixformulatype="sum"
+
+#====================================================================================
+#Контроль оборотов при вводе данных
+#------------------------------------------------------------------------------------
+subset cs_contr_ob_form, "Контроль месячных оборотов" :
+	col KONTROB, _CONTR_OB, matrixformula="PREDSNG,TEK,-TEKSNG", matrixformulatype="sum", forperiods=_НЕ_ЯНВ, formula=" @Б1.P@_ПРЕД_СУММЕСЯЦ? + @Б1? - @Б1.P@_СУММЕСЯЦ? ", forgroup="!PR_KVART" :
+		checkrule action="|<>|", value="0", cellstyle=";color :red; background : yellow;"
+
+#====================================================================================
+#Колонки для месячных форм ввода
+#------------------------------------------------------------------------------------
+subset cs_month_form, "Месячная форма" :
+	import cs_pred_year_sng
+	import cs_tpfp
+	import cs_plan_sng_form
+	col Б1, _ФАКТ, matrixid="PREDSNG", period=_ПРЕД_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, validation="validate-int-cell-number", forgroup="!PR_KVART"
+	col Б1, _ФАКТ, matrixid="TEK", forperiods=_ТОЛЬКО_МЕС, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, _ФАКТ, matrixid="TEKSNG", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, _ФАКТ, period=_СУММЕСЯЦ, forperiods=_МЕС_СНГ, validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Б1, "_ФАКТ (ADMIN)", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ", auto, controlpoint=true, forrole="ADMIN",  forgroup="!PR_KVART"
+	import cs_ozhid_calc
+	import cs_ozhid
+	import cs_ozhid_calc_otkl
+	import cs_otkl_plan_sng_form
+	import cs_contr_ob_form
+
+#====================================================================================
+#Колонки для месячных форм ввода (расчетные с н.г.)
+#------------------------------------------------------------------------------------
+subset cs_calc_month_form, "Месячная форма (расчетные с н.г.)" :
+	import cs_tpfp
+	import cs_plan_sng_form
+	col Б1, _ФАКТ, period=-502, forperiods=_НЕ_ЯНВ, fixed
+	col Б1, _ФАКТ, validation="validate-int-cell-number", controlpoint=true
+	col Б1, _ФАКТ, period=-501, forperiods=_НЕ_ЯНВ, fixed
+	import cs_ozhid_calc
+	import cs_ozhid
+	import cs_ozhid_calc_otkl
+	import cs_otkl_plan_sng_form
+	col KONTROB, _CONTR_OB, forperiods=_НЕ_ЯНВ, formula=" @Б1.P-502? + @Б1? - @Б1.P-501? ", fixed
+
+#====================================================================================
+#Колонки для месячных форм ввода нарастающим итогом
+#------------------------------------------------------------------------------------
+subset cs_sng_form, "Месячная форма (нар. итогом)" :
+	import cs_pred_year_sng
+	import cs_tpfp
+	import cs_plan_sng_form
+	col Б1, _ФАКТ, matrixid="PREDSNG", period=_ПРЕД_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, fixed, validation="validate-int-cell-number", forgroup="!PR_KVART"
+	col Б1, _ФАКТ, matrixid="TEK", auto, fixed, forperiods=_ТОЛЬКО_МЕС, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, _ФАКТ, matrixid="TEKSNG", forperiods="_ЯНВ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, "_ФАКТ (ADMIN)", forperiods=_ТОЛЬКО_МЕС, auto, controlpoint=true, forrole="ADMIN",  forgroup="!PR_KVART"
+	col Б1, _ФАКТ, matrixid="TEKSNG", period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, _ФАКТ, period=_СУММЕСЯЦ, forperiods=_МЕС_СНГ, validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	import cs_ozhid_calc
+	import cs_ozhid
+	import cs_ozhid_calc_otkl
+	import cs_otkl_plan_sng_form
+	import cs_contr_ob_form
+
+#====================================================================================
+#Колонки для квартальных форм ввода
+#------------------------------------------------------------------------------------
+subset cs_kvart_form, "Квартальная форма" :
+	import cs_pred_year_sng
+	import cs_tpfp
+	import cs_plan_sng_form
+	col Б1, _ФАКТ, forperiods=_МЕС_СНГ, validation="validate-int-cell-number", controlpoint=true
+	col Б1КОНС, "_ФАКТ без вн. оборота", forperiods=_МЕС_СНГ, validation="validate-int-cell-number", controlpoint=true, forrole="ADMIN", condition="CONS"
+	import cs_ozhid_calc_kvart
+	import cs_ozhid
+	import cs_ozhid_calc_otkl
+	import cs_otkl_plan_sng_form
+
+#====================================================================================
+#Колонки месячных планов
+#------------------------------------------------------------------------------------
+subset cs_operplan_mes_report, "Месячные планы" :
+	col PLAN, "План {2} {0}", customCode="MONTHPLAN", matrixid="MONTHPLAN", forperiods="12,13", format=_INT, condition="PLAN", formula=" @PLAN.P303? / 3", style=_STYLE_PLAN
+	col PLANKV, "План {2} {0}", customCode="MONTHPLAN", matrixid="MONTHPLAN", forperiods="14,15,16", format=_INT, condition="PLAN", formula=" ( @PLAN.P306? - @PLAN.P303? ) / 3", style=_STYLE_PLAN
+	col PLANKV, "План {2} {0}", customCode="MONTHPLAN", matrixid="MONTHPLAN", forperiods="17,18,19", format=_INT, condition="PLAN", formula=" ( @PLAN.P309? - @PLAN.P306? ) / 3 ", style=_STYLE_PLAN
+	col PLANKV, "План {2} {0}", customCode="MONTHPLAN", matrixid="MONTHPLAN", forperiods="110,111,112", format=_INT, condition="PLAN", formula=" ( @PLAN.P301? - @PLAN.P309? ) / 3", style=_STYLE_PLAN
+
+#====================================================================================
+#Колонки месячных планов с начала года
+#------------------------------------------------------------------------------------
+subset cs_operplan_sng_report, "Месячные планы (с начала года)" :
+	col PLAN, "План янв. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=303, forperiods="11", format=_INT, condition="PLAN", formula="@PLAN.P303? / 3", style=_STYLE_PLAN
+	col PLAN, "План 2 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=303, forperiods="12", format=_INT, condition="PLAN", formula="@PLAN.P303? / 3 * 2", style=_STYLE_PLAN
+	col PLAN, "План I кв {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=303, forperiods="1,13,403", format=_INT, condition="PLAN", style=_STYLE_PLAN
+
+	col PLANKV, "План 4 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=306, forperiods="14", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? / 3", style=_STYLE_PLAN
+	col PLANKV, "План 5 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=306, forperiods="15", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? / 3 * 2", style=_STYLE_PLAN
+	col PLANKV, "План I пг {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=306, forperiods="2,16,406", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? ", style=_STYLE_PLAN
+
+	col PLANKV, "План 7 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=309, forperiods="17", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? / 3 ", style=_STYLE_PLAN
+	col PLANKV, "План 8 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=309, forperiods="18", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? / 3 * 2 ", style=_STYLE_PLAN
+	col PLANKV, "План 9 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=309, forperiods="3,19,409", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? ", style=_STYLE_PLAN
+
+	col PLANKV, "План 10 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=301, forperiods="110", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? + @DELTAKV.P301? / 3", style=_STYLE_PLAN
+	col PLANKV, "План 11 мес. {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=301, forperiods="111", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? + @DELTAKV.P301? / 3 * 2", style=_STYLE_PLAN
+	col PLANKV, "План {0}", customCode="AGGPLAN2", matrixid="AGGPLAN2", period=301, forperiods="4,112,401", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? + @DELTAKV.P301?", style=_STYLE_PLAN
+
+#====================================================================================
+#Колонки для месячной отчетности
+#------------------------------------------------------------------------------------
+subset cs_mes_report, "Месячная отчетность (отчет)" :
+	col Б1, _FACT, period=4, year=-10, condition="FACT and Y10"
+	col Б1, _FACT, period=4, year=-9, condition="FACT and Y9"
+	col Б1, _FACT, period=4, year=-8, condition="FACT and Y8"
+	col Б1, _FACT, period=4, year=-7, condition="FACT and Y7"
+	col Б1, _FACT, period=4, year=-6, condition="FACT and Y6"
+	col Б1, _FACT, period=4, year=-5, condition="FACT and Y5"
+	col Б1, _FACT, period=4, year=-4, condition="FACT and Y4"
+	col Б1, _FACT, period=4, year=-3, condition="FACT and Y3"
+	col Б1, _FACT, period=4, year=-2, condition="FACT and Y2"
+	col Б1, _FACT, period=4, year=-1, condition="FACT and Y1", forperiods="_ЯНВ,_НЕ_ЯНВ,22,1,24,25,2,27,28,3,210,211"
+	col OTKLPREDY, "Откл. {0} от пред. года", period=4, year=-1, condition="FACT and Y2 and OTKL", forperiods="_ЯНВ,_НЕ_ЯНВ,22,1,24,25,2,27,28,3,210,211", formula=" @Б1? - @Б1.Y-1? "
+
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-112, condition="PRED and FACT and M12 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-111, condition="PRED and FACT and M11 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-110, condition="PRED and FACT and M10 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-109, condition="PRED and FACT and M9 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-108, condition="PRED and FACT and M8 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-107, condition="PRED and FACT and M7 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-106, condition="PRED and FACT and M6 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-105, condition="PRED and FACT and M5 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-104, condition="PRED and FACT and M4 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-103, condition="PRED and FACT and M3 "
+	col Б1, _FACT, customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-102, condition="PRED and FACT and M2 "
+
+	col Б1, _FACT, customCode=PREDFACT, matrixid="PREDFACT", forperiods="_ЯНВ,_НЕ_ЯНВ", period=-101, condition="PRED and FACT"
+	col PLAN, "Ожидаемое {0}", customCode=OZHID, matrixid="OZHID", period=401, forperiods=4, condition="OZHID"
+
+	import cs_operplan_mes_report
+	col Б1, _FACT, customCode=CURRENTFACT, matrixid="CURRENTFACT", forperiods=_НЕ_ЯНВ, condition="FACT and BYMONTH"
+	col PREDOTKL, _OTKLPRED, matrixformula="CURRENTFACT,-PREDFACT", matrixformulatype="sum",  forperiods=_НЕ_ЯНВ, period=-101, condition="OTKL", formula=" @CURRENTFACT? - @PREDFACT?   ", condition="PRED and M1 and FACT and BYMONTH and OTKL"
+	col MONTHOTKL, _OTKLPLAN, matrixformula="CURRENTFACT,-MONTHPLAN", matrixformulatype="sum",  forperiods=_НЕ_ЯНВ, condition="OTKL", formula=" @CURRENTFACT? - @MONTHPLAN?   ", style=_STYLE_PLAN , condition="PLAN and FACT and BYMONTH and OTKL"
+
+	import cs_pred_year_sng
+	col PLAN , _TPFP, period=301, style=_STYLE_TPFP, condition="PLAN"
+	import cs_tpfp_izm
+		
+	col PLANSNG1, _ПЛАН, customCode=AGGPLAN1, matrixid="AGGPLAN1", period=_СУММЕСЯЦ, forperiods="1,11,12,13,403,22", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ and not KVKURS"
+	col PLANSNG2, _ПЛАН, customCode=AGGPLAN1, matrixid="AGGPLAN1", period=_СУММЕСЯЦ, forperiods="2,14,15,16,406,24,25", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ and not KVKURS"
+	col PLANSNG3, _ПЛАН, customCode=AGGPLAN1, matrixid="AGGPLAN1", period=_СУММЕСЯЦ, forperiods="3,17,18,19,409,27,28", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ and not KVKURS"
+	col PLANSNG4, _ПЛАН, customCode=AGGPLAN1, matrixid="AGGPLAN1", period=_СУММЕСЯЦ, forperiods="4,110,111,112,401,210,211", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ and not KVKURS"
+
+	col Б1, _FACT, customCode=AGGFACT, matrixid="AGGFACT", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", condition="FACT and СНГ"
+	col Б1, _OZHID, customCode=AGGFACT, matrixid="AGGFACT", period=_СУММЕСЯЦ, forperiods="_ОЖИД_СНГ", condition="FACT and СНГ"
+	col PLAN, _OZHID, customCode=AGGFACT, matrixid="AGGFACT", forperiods="401", condition="FACT and СНГ"
+
+	col PREVOTKL, _OTKLFACT_PG, period=_СУММЕСЯЦ , formula=" @Б1? - @PREVYEAR? ", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", format=_INT, condition="FACT and СНГ and OTKL and PREDYEAR"
+	col PREVOTKL, "Откл-е от пред. года", formula=" @PLAN? - @PREVYEAR? ", forperiods="401", format=_INT, condition="FACT and СНГ and OTKL and PREDYEAR"
+	col OZHIDOTKL, "Откл-е от ожид.", formula=" @Б1? - @OZHID? ", format=_INT, condition=" OZHID and OTKL "
+		
+	col AGGOTKL, _OTKLPLAN, period=_СУММЕСЯЦ,forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ",  matrixformula="AGGFACT,-AGGPLAN1", matrixformulatype="sum", formula="   @AGGFACT? - @AGGPLAN1?" , style=_STYLE_PLAN, condition="PLAN and FACT and СНГ and OTKL and not KVKURS"
+	col AGGOTKL, _OTKLPLAN, period=_СУММЕСЯЦ,forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ",  matrixformula="AGGFACT,-AGGPLAN2", matrixformulatype="sum", formula="   @AGGFACT? - @AGGPLAN2?" , style=_STYLE_PLAN, condition="PLAN and FACT and СНГ and OTKL and KVKURS"
+	col AGGOTKL1, _OTKLPLAN, forperiods="401",  matrixformula="AGGFACT,-AGGPLAN1", matrixformulatype="sum", formula="   @AGGFACT? - @AGGPLAN1?" , style=_STYLE_PLAN, condition="PLAN and FACT and СНГ and OTKL and not KVKURS"
+	col AGGOTKL1, _OTKLPLAN, forperiods="401",  matrixformula="AGGFACT,-AGGPLAN2", matrixformulatype="sum", formula="   @AGGFACT? - @AGGPLAN2?" , style=_STYLE_PLAN, condition="PLAN and FACT and СНГ and OTKL and KVKURS"
+	
+	
+		
+#====================================================================================
+#Колонки для валютной отчетности
+#------------------------------------------------------------------------------------
+subset cs_valuta_report, "Валютная отчетность" :
+	col Б1, "_FACT (R)", forperiods="1,2,3,4", year=-1, format="#,##0.##"
+	col Б1, "_FACT ($)", forperiods="1,2,3,4", year=-1, valuta="USD", format="#,##0.##"
+
+	col Б1, "_FACT (R)", period=1, forperiods="403", year=-1, format="#,##0.##"
+	col Б1, "_FACT ($)", period=1, forperiods="403", year=-1, valuta="USD", format="#,##0.##"
+	col Б1, "_FACT (R)", period=2, forperiods="406", year=-1, format="#,##0.##"
+	col Б1, "_FACT ($)", period=2, forperiods="406", year=-1, valuta="USD", format="#,##0.##"
+	col Б1, "_FACT (R)", period=3, forperiods="409", year=-1, format="#,##0.##"
+	col Б1, "_FACT ($)", period=3, forperiods="409", year=-1, valuta="USD", format="#,##0.##"
+
+	col PLAN , "_TPFP (R)", period=301, format="#,##0.##" 
+	col PLAN , "_TPFP ($)", period=301, valuta="USD", format="#,##0.##"
+		
+	col PLAN, "_PLAN (R)", period=303, forperiods="1,403", format="#,##0.##"
+	col PLAN, "_PLAN (R)", period=306, forperiods="2,406", format="#,##0.##"
+	col PLAN, "_PLAN (R)", period=309, forperiods="3,409", format="#,##0.##"
+	col PLAN, "_PLAN ($)", period=303, forperiods="1,403", valuta="USD", format="#,##0.##"
+	col PLAN, "_PLAN ($)", period=306, forperiods="2,406", valuta="USD", format="#,##0.##"
+	col PLAN, "_PLAN ($)", period=309, forperiods="3,409", valuta="USD", format="#,##0.##"
+
+	col Б1, "_FACT (R)", forperiods="1,2,3,4,_ОЖИД_СНГ", format="#,##0.##"
+	col Б1, "_FACT ($)", forperiods="1,2,3,4,_ОЖИД_СНГ", valuta="USD", format="#,##0.##"
+
+#====================================================================================
+#Колонки для валютной отчетности
+#------------------------------------------------------------------------------------
+subset cs_valuta_report_int, "Валютная отчетность" :
+	col Б1, "_FACT (R)", forperiods="1,2,3,4", year=-1, format=_INT
+	col Б1, "_FACT ($)", forperiods="1,2,3,4", year=-1, valuta="USD", format=_INT
+
+	col Б1, "_FACT (R)", period=1, forperiods="403", year=-1, format=_INT
+	col Б1, "_FACT ($)", period=1, forperiods="403", year=-1, valuta="USD", format=_INT
+	col Б1, "_FACT (R)", period=2, forperiods="406", year=-1, format=_INT
+	col Б1, "_FACT ($)", period=2, forperiods="406", year=-1, valuta="USD", format=_INT
+	col Б1, "_FACT (R)", period=3, forperiods="409", year=-1, format=_INT
+	col Б1, "_FACT ($)", period=3, forperiods="409", year=-1, valuta="USD", format=_INT
+
+	col PLAN , "_TPFP (R)", period=301, format=_INT 
+	col PLAN , "_TPFP ($)", period=301, valuta="USD", format=_INT
+		
+	col PLAN, "_PLAN (R)", period=303, forperiods="1,403", format=_INT
+	col PLAN, "_PLAN (R)", period=306, forperiods="2,406", format=_INT
+	col PLAN, "_PLAN (R)", period=309, forperiods="3,409", format=_INT
+	col PLAN, "_PLAN ($)", period=303, forperiods="1,403", valuta="USD", format=_INT
+	col PLAN, "_PLAN ($)", period=306, forperiods="2,406", valuta="USD", format=_INT
+	col PLAN, "_PLAN ($)", period=309, forperiods="3,409", valuta="USD", format=_INT
+
+	col Б1, "_FACT (R)", forperiods="1,2,3,4,_ОЖИД_СНГ", format=_INT
+	col Б1, "_FACT ($)", forperiods="1,2,3,4,_ОЖИД_СНГ", valuta="USD", format=_INT
+
+#====================================================================================
+#Колонки квартальных планов
+#------------------------------------------------------------------------------------
+subset cs_operplan_report, "Квартальный план" :
+	col PLAN, "План I кв {0}", customCode="AGGPLAN", period=303, forperiods="1,403", format=_INT, condition="PLAN", style=_STYLE_PLAN
+	col PLAN, "План I пг {0}", customCode="AGGPLAN", period=306, forperiods="2,406", format=_INT, condition="not KVKURS and PLAN", style=_STYLE_PLAN
+#	col PLANKV, "План I пг {0}", customCode="AGGPLAN", period=306, forperiods="2,406", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? ", style=_STYLE_PLAN
+	col PLAN, "План 9 мес. {0}", customCode="AGGPLAN", period=309, forperiods="3,409", format=_INT, condition="not KVKURS and PLAN", style=_STYLE_PLAN
+#	col PLANKV, "План 9 мес. {0}", customCode="AGGPLAN", period=309, forperiods="3,409", format=_INT, condition="KVKURS and PLAN", formula="@PLAN.P303? + @DELTAKV.P306? + @DELTAKV.P309? ", style=_STYLE_PLAN
+	col PLAN, "План {0} год", customCode="AGGPLAN", period=301, forperiods="4,401", format=_INT, condition="not KVKURS and PLAN", style=_STYLE_PLAN
+
+#====================================================================================
+#Колонки для квартальной отчетности
+#------------------------------------------------------------------------------------
+subset cs_kvart_report, "Квартальный отчет" :
+	col Б1, _FACT, period=4, year=-10, condition="FACT and Y10"
+	col Б1, _FACT, period=4, year=-9, condition="FACT and Y9"
+	col Б1, _FACT, period=4, year=-8, condition="FACT and Y8"
+	col Б1, _FACT, period=4, year=-7, condition="FACT and Y7"
+	col Б1, _FACT, period=4, year=-6, condition="FACT and Y6"
+	col Б1, _FACT, period=4, year=-5, condition="FACT and Y5"
+	col Б1, _FACT, period=4, year=-4, condition="FACT and Y4"
+	col Б1, _FACT, period=4, year=-3, condition="FACT and Y3"
+	col Б1, _FACT, period=4, year=-2, condition="FACT and Y2"
+	col Б1, _FACT, period=4, year=-1, condition="FACT and Y1", forperiods="_ЯНВ,_НЕ_ЯНВ,22,1,24,25,2,27,28,3,210,211"
+	col OTKLPREDY, "Откл. {0} от пред. года", period=4, year=-1, condition="FACT and Y2 and OTKL", forperiods="_ЯНВ,_НЕ_ЯНВ,22,1,24,25,2,27,28,3,210,211", formula=" @Б1? - @Б1.Y-1? "
+
+	col Б1, customCode=PREVYEAR, _FACT, period=1, forperiods="1,11,12,13,403", year=-1 , condition="FACT, PREDYEAR"
+	col Б1, customCode=PREVYEAR, _FACT, period=2, forperiods="2,14,15,16,406", year=-1 , condition="FACT, PREDYEAR"
+	col Б1, customCode=PREVYEAR, _FACT, period=3, forperiods="3,17,18,19,409", year=-1 , condition="FACT, PREDYEAR"
+	col Б1, customCode=PREVYEAR, _FACT, period=4, forperiods="4,110,111,112,401", year=-1 , condition="FACT, PREDYEAR"
+
+#	col PLAN, "Ожидаемое {0}", customCode=OZHID, period=401, forperiods=4, condition="OZHID"
+	col PLAN , _TPFP, period=301, style=_STYLE_TPFP, condition="PLAN, OTKL"
+	import cs_tpfp_izm
+	import cs_operplan_report
+#	col AGGPLAN, _PLAN, customCode=AGGPLAN, period=303, forperiods="11,12,13", style=_STYLE_PLAN , condition="PLAN"
+#	col AGGPLAN1, _PLAN, customCode=AGGPLAN, period=306, forperiods="14,15,16", style=_STYLE_PLAN , condition="PLAN"
+#	col AGGPLAN2, _PLAN, customCode=AGGPLAN, period=309, forperiods="17,18,19", style=_STYLE_PLAN , condition="PLAN"
+#	col AGGPLAN3, _PLAN, customCode=AGGPLAN, period=301, forperiods="4,110,111,112", style=_STYLE_PLAN , condition="PLAN"
+
+#	col Б1, _FACT, customCode=AGGFACT, period=1, forperiods="1,11,12,13", condition="FACT"
+#	col Б1, _FACT, customCode=AGGFACT, period=2, forperiods="2,14,15,16", condition="FACT"
+#	col Б1, _FACT, customCode=AGGFACT, period=3, forperiods="3,17,18,19", condition="FACT"
+#	col Б1, _FACT, customCode=AGGFACT, period=4, forperiods="4,110,111,112", condition="FACT"
+
+	col Б1, _FACT, customCode=AGGFACT, forperiods="_МЕС_СНГ", condition="FACT"
+	col Б1, _ОЖИД, customCode=AGGFACT, forperiods="_ОЖИД_СНГ", condition="FACT"
+	col PLAN, _ОЖИД, customCode=AGGFACT, forperiods="401", condition="FACT"
+
+	col PREVOTKL, _OTKLFACT_PG, forperiods="_МЕС_СНГ,_ОЖИД_СНГ", formula=" @AGGFACT? - @PREVYEAR? ",  format=_INT, condition="FACT and OTKL and PREDYEAR"
+	col AGGOTKL, _OTKLPLAN, forperiods="_МЕС_СНГ,_ОЖИД_СНГ", formula=" @AGGFACT? - @AGGPLAN? ",  format=_INT, condition="FACT and PLAN and OTKL"
+
+	col PREVOTKL1, "Откл-е от пред. года", forperiods="401", formula=" @AGGFACT? - @PREVYEAR? ",  format=_INT, condition="FACT and OTKL and PREDYEAR"
+	col AGGOTKL1, _OTKLPLAN, forperiods="401", formula=" @AGGFACT? - @AGGPLAN? ",  format=_INT, condition="FACT and PLAN and OTKL"
+
+#	col PREVOTKL, _OTKLFACT_PG, period=1, forperiods="1,11,12,13,403", formula=" @Б1? - @PREVYEAR? ",  format=_INT, condition="FACT,OTKL,PREDYEAR"
+#	col PREVOTKL, _OTKLFACT_PG, period=2, forperiods="2,14,15,16,406", formula=" @Б1? - @PREVYEAR? ",  format=_INT, condition="FACT,OTKL,PREDYEAR"
+#	col PREVOTKL, _OTKLFACT_PG, period=3, forperiods="3,17,18,19,409", formula=" @Б1? - @PREVYEAR? ",  format=_INT, condition="FACT,OTKL,PREDYEAR"
+#	col PREVOTKL, _OTKLFACT_PG, period=4, forperiods="4,110,111,112,401", formula="@Б1? - @PREVYEAR? ",  format=_INT, condition="FACT,OTKL,PREDYEAR"
+		
+#	col AGGOTKL, _OTKLPLAN, period=1, forperiods="1,11,12,13,403",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and not KVKURS"
+#	col AGGOTKL, _OTKLPLAN, period=2, forperiods="2,14,15,16,406",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and not KVKURS"
+#	col AGGOTKL, _OTKLPLAN, period=3, forperiods="3,17,18,19,409",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and not KVKURS"
+#	col AGGOTKL, _OTKLPLAN, period=4, forperiods="4,110,111,112,401",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and not KVKURS"
+
+#	col AGGOTKL1, _OTKLPLAN, period=1, forperiods="1,11,12,13,403",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and KVKURS"
+#	col AGGOTKL1, _OTKLPLAN, period=2, forperiods="2,14,15,16,406",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and KVKURS"
+#	col AGGOTKL1, _OTKLPLAN, period=3, forperiods="3,17,18,19,409",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and KVKURS"
+#	col AGGOTKL1, _OTKLPLAN, period=4, forperiods="4,110,111,112,401",  formulatype="stack-value", formula="-,2,3" , style=_STYLE_PLAN, condition="PLAN and OTKL and KVKURS"
+
+	col OZHIDOTKL, "Откл-е от ожид.", formula=" @Б1? - @OZHID? ", format=_INT, condition=" OZHID and OTKL "
+
+#====================================================================================
+#Колонки для финансового отчета
+#------------------------------------------------------------------------------------
+subset cs_finot_report, "Финансовый отчет" :
+	col Б1, _FACT, period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ"
+	col Б1, _FACT, period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", year=-1 
+	col PREVOTKL, _OTKLFACT_PG, period=_СУММЕСЯЦ, formulatype="stack-value", formula="-,2,1"
+	
+#====================================================================================
+#Колонки для ввода данных по схеме количество-цена-сумма
+#------------------------------------------------------------------------------------
+subset cs_kcs_form, "Количество-цена-сумма" :
+	col KOL, _КОЛ, format=_DEC1
+	col CENA1, _ЦЕНА, formula="@SUMMA? / @KOL? * 1000", fixed
+	col SUMMA, _СУММА, validation="validate-int-cell-number"
+	col KOL, _КОЛ, format=_DEC1, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, auto
+	col CENA1, _ЦЕНА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, formula="@SUMMA? / @KOL? * 1000", fixed
+	col SUMMA, _СУММА, period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, auto, validation="validate-int-cell-number"
+
+#====================================================================================
+#Колонки для отчета о движении денежных средств
+#------------------------------------------------------------------------------------
+subset cs_dds_report, "Отчет ДДС" :
+	col PREDFACT, customCode=PREDFACT, _FACT, forperiods=_НЕ_ЯНВ, period=-101, condition="PRED and BYMONTH "
+	col Б1, customCode=CURRENTFACT, _FACT, forperiods=_ТОЛЬКО_МЕС, condition="BYMONTH"
+	col PREDOTKL, _OTKLPRED,  forperiods=_ТОЛЬКО_МЕС, period=-101, formula=" @CURRENTFACT? - @PREDFACT?   ", condition="PRED and BYMONTH"
+	col Б1, customCode=PREVYEAR, _FACT, period=_СУММЕСЯЦ, year=-1 , condition="СНГ and PRED"
+	col Б1, customCode=AGGFACT, _FACT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition=СНГ
+	col PREVOTKL, _OTKLFACT_PG, period=_СУММЕСЯЦ , formula=" @Б1? - @PREVYEAR? ",  format=_INT, condition="СНГ and PRED"
+
+#====================================================================================
+#Колонки для формы по балансу
+#------------------------------------------------------------------------------------
+subset cs_balans_form, "Баланс (форма)" :
+	col CORRECTION, "Уточн. на {5}", period=_СУММЕСЯЦ, year=-1, forgroup="PRD_CORRECTION"
+	col Б1КОРР1, "На {5}", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", year=-1, fixed, controlpoint=true, formula=" @Б1.P3? + @CORRECTION.P-505? ", forgroup="PRD_CORRECTION"
+	
+	col Б1, "На {5}", period=3, forperiods="11,12,13,14,15,16,17,18,19,110,111,112,2,3,4,_ОЖИД_СНГ", year=-1, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PRD_CORRECTION"
+	col Б1, "На {5}", period=3, forperiods="1", year=-1, validation="validate-int-cell-number", controlpoint=true, forgroup="!PRD_CORRECTION"
+
+	col REVISION, "Ревизия на начало {2} {0}", period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col REVISION, "Ревизия нар. итогом {2} {0}", period=-505, forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed
+
+	col Б1, _НА_НАЧАЛО, forperiods="_ЯНВ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, _НА_НАЧАЛО, forperiods="_НЕ_ЯНВ,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б2, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ",  auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б2, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ",  auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col IZM1, "Изменение за {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", formula=" @Б2? - @Б1? "
+
+	col Б1, _НА_НАЧАЛО, period= _СУММЕСЯЦ, forperiods="1", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Б1, _НА_НАЧАЛО, period= _СУММЕСЯЦ, forperiods="2,3,4,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Б2, _НА_КОНЕЦ, period= _СУММЕСЯЦ, forperiods="1,2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+
+	col IZM2, "Изменение за {2} {0}", period="_СУММЕСЯЦ", forperiods="_НЕ_ЯНВ,_МЕС_СНГ", formula=" @Б2.P@_СУММЕСЯЦ? - @Б1.P@_СУММЕСЯЦ?"
+
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula=" @Б2.P@_СУММЕСЯЦ? - @Б2? + @Б2.P@_ПРЕД_СУММЕСЯЦ? - @Б1?", validation="validate-int-cell-number", forgroup="!PR_KVART"
+	col КОСТ1, "Контроль ревизий = 0",  forperiods=_НЕ_ЯНВ, fixed , formula=" @Б1.P@_ПРЕД_СУММЕСЯЦ? + @REVISION.P@_СУММЕСЯЦ? - @Б1.P@_СУММЕСЯЦ? ", forgroup="!PR_KVART"
+	col КОСТ2, "Контроль ревизий = 0",  forperiods=_МЕС_СНГ, fixed , formula=" @Б1.P@_ПРЕД_СУММЕСЯЦ? + @REVISION.P@_СУММЕСЯЦ? - @Б1.P@_СУММЕСЯЦ? ", forgroup="PR_KVART"
+	col КОСТ3, "Контроль ревизий = 0",  forperiods=_ОЖИД_СНГ, fixed , formula=" @Б1.P1? + @REVISION? - @Б1? "
+	col КОСТ4, "Откл. от 31.12 пред. года",  forperiods="_ЯНВ,_НЕ_ЯНВ,1,2,3,4", fixed , formula=" @Б1.P@_СУММЕСЯЦ? - @Б2.Y-1.P4? ", validation="validate-int-cell-number"
+
+	col Б1ВО, "_НА_НАЧАЛО вн. об.", forperiods=_ЯНВ, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART,CONS_FIN", forrole="ADMIN"
+	col Б1ВО, "_НА_НАЧАЛО вн. об.", forperiods=_НЕ_ЯНВ, auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART,CONS_FIN", forrole="ADMIN"
+	col Б2ВО, "_НА_КОНЕЦ вн. об.", forperiods="_ЯНВ,_НЕ_ЯНВ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART,CONS_FIN", forrole="ADMIN"
+	col Б1ВО, "_НА_НАЧАЛО вн. об.", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ",  auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART,CONS_FIN", forrole="ADMIN"
+	col Б2ВО, "_НА_КОНЕЦ вн. об.", period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ",  auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART,CONS_FIN", forrole="ADMIN"
+
+	col Б1ВО, "_НА_НАЧАЛО вн. об.", period= _СУММЕСЯЦ, forperiods="1", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART,CONS_FIN", forrole="ADMIN"
+	col Б1ВО, "_НА_НАЧАЛО вн. об.", period= _СУММЕСЯЦ, forperiods="2,3,4", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART,CONS_FIN", forrole="ADMIN"
+	col Б2ВО, "_НА_КОНЕЦ вн. об.", period= _СУММЕСЯЦ, forperiods="1,2,3,4", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART,CONS_FIN", forrole="ADMIN"
+
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula=" @Б2ВО.P@_СУММЕСЯЦ? - @Б2ВО? + @Б2ВО.P@_ПРЕД_СУММЕСЯЦ? - @Б1ВО?", validation="validate-int-cell-number", forgroup="!PR_KVART,CONS_FIN", forrole="ADMIN"
+
+#====================================================================================
+#Колонки для формы по балансу 2011
+#------------------------------------------------------------------------------------
+subset cs_balans_form_1, "Баланс 2011 (форма)" :
+	col CORRECTION, "Уточн. на {5}", period=_СУММЕСЯЦ, year=-1, forgroup="PRD_CORRECTION"
+	col Б1КОРР1, "На {5}", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", year=-1, fixed, controlpoint=true, formula=" @Б1.P3? + @CORRECTION.P-505? ", forgroup="PRD_CORRECTION"
+
+	col Б1, "На {5}", period=3, forperiods="11,12,13,14,15,16,17,18,19,110,111,112,2,3,4,_ОЖИД_СНГ", year=-1, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PRD_CORRECTION"
+	col Б1, "На {5}", period=3, forperiods="1", year=-1, validation="validate-int-cell-number", controlpoint=true, forgroup="!PRD_CORRECTION"
+
+	col REVISION, "Ревизия на {5}", period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col REVISION, "Ревизия нар. итогом  {2} {0}", period=-505, forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed
+
+	col Б1, "На {5}", forperiods=_ЯНВ, auto,  validation="validate-int-cell-number", controlpoint=true
+	col Б1, "На {5}", forperiods="_НЕ_ЯНВ,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true
+	col Б1, "На {5}", forperiods="1", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Б1, "На {5}", forperiods="1", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, "На {5}", forperiods="2,3,4", auto, fixed, validation="validate-int-cell-number", controlpoint=true
+	col Б2, "На {6}", forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true
+	col Б2, "На {6}", forperiods="1,2,3,4", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Б2, "На {6}", forperiods="1,2,3,4", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Б1, "На {5}", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ",  auto, fixed, validation="validate-int-cell-number", controlpoint=true
+	col Б2, "На {6}", period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ",  auto, fixed, validation="validate-int-cell-number", controlpoint=true
+
+	col IZM1, "Изменение за {2} {0}", forperiods="_ЯНВ,_НЕ_ЯНВ,_ОЖИД_СНГ", formula=" @Б2? - @Б1? "
+	col IZM2, "Изменение за {2} {0}", period="_СУММЕСЯЦ", forperiods="_МЕС_СНГ", formula=" @Б2.P@_СУММЕСЯЦ? - @Б1.P@_СУММЕСЯЦ?"
+
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula=" @Б2.P@_СУММЕСЯЦ? - @Б2? + @Б2.P@_ПРЕД_СУММЕСЯЦ? - @Б1?", validation="validate-int-cell-number"
+	col КОСТ1, "Контроль ревизий = 0",  forperiods=_НЕ_ЯНВ, fixed , formula=" @Б1.P@_ПРЕД_СУММЕСЯЦ? + @REVISION.P@_СУММЕСЯЦ? - @Б1.P@_СУММЕСЯЦ? ", forgroup="!PR_KVART"
+	col КОСТ2, "Контроль ревизий = 0",  forperiods=_МЕС_СНГ, fixed , formula=" @Б1.P@_ПРЕД_СУММЕСЯЦ? + @REVISION.P@_СУММЕСЯЦ? - @Б1.P@_СУММЕСЯЦ? ", forgroup="PR_KVART"
+	col КОСТ3, "Контроль ревизий = 0",  forperiods=_ОЖИД_СНГ, fixed , formula=" @Б1.P1? + @REVISION? - @Б1? "
+	col КОСТ4, "Откл. от 31.12 пред. года",  forperiods="_ЯНВ,_НЕ_ЯНВ,1,2,3,4", fixed , formula=" @Б1.P@_СУММЕСЯЦ? - @Б2.Y-1.P4? ", validation="validate-int-cell-number"
+
+	col Б1ВО, "На {5} вн. оборот", period=3, forperiods="1,11,12,13", year=-1, validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+	col Б1ВО, "На {5} вн. оборот", forperiods=_ЯНВ, validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+	col Б1ВО, "На {5} вн. оборот", forperiods=_НЕ_ЯНВ, auto, fixed, validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+	col Б1ВО, "На {5} вн. оборот", forperiods="1,2,3,4", validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+	col Б2ВО, "На {6} вн. оборот", validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+	col Б1ВО, "На {5} вн. оборот", period= _СУММЕСЯЦ,  forperiods=_НЕ_ЯНВ,  auto, fixed, validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+	col Б2ВО, "На {6} вн. оборот", period= _СУММЕСЯЦ ,  forperiods=_НЕ_ЯНВ,  auto, fixed, validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Б2ВО.P@_СУММЕСЯЦ? - @Б2ВО? ", validation="validate-int-cell-number", forrole="ADMIN", forgroup="CONS_FIN"
+
+#====================================================================================
+#Колонки для отчета по балансу
+#------------------------------------------------------------------------------------
+subset cs_balansreport, "Баланс (отчет)" :
+	var usecons, "Консолидированные результаты", target=condition, group=_ГП_ВРЕМЯ, altvalue=CONS, type=bool : false
+
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-112, condition="PRED and M12 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-111, condition="PRED and M11 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-110, condition="PRED and M10 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-109, condition="PRED and M9 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-108, condition="PRED and M8 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-107, condition="PRED and M7 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-106, condition="PRED and M6 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-105, condition="PRED and M5 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-104, condition="PRED and M4 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-103, condition="PRED and M3 "
+	col Б2, _НА_КОНЕЦ, customCode=PREDMES, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ", period=-102, condition="PRED and M2 "
+
+	col Б1, _НА_НАЧАЛО, matrixid="SNGOn", period=_ЯНВ, forperiods=_НЕ_ЯНВ, condition="СНГ and not CONS", validation="validate-int-cell-number"
+	col Б1, _НА_НАЧАЛО, matrixid="MESOn", condition="BYMONTH and not CONS", validation="validate-int-cell-number"
+	col Б2, _НА_КОНЕЦ, matrixid="SNGOk", condition="not CONS and ( BYMONTH  or СНГ ) ", validation="validate-int-cell-number"
+	col ИЗММ,"Изм-ние за {2} {0}", matrixformula="SNGOk,-MESOn", matrixformulatype="sum", formulatype="stack-value", formula="-,1,2", condition="BYMONTH and not CONS and OTKL "
+	col ИЗМСНГ,"Изм-ние за {2} {0}", matrixformula="SNGOk,-SNGOn", matrixformulatype="sum", formulatype="stack-value", formula="-,2,4", period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, condition="СНГ and not CONS and OTKL "
+	
+	col Б1К, _НА_НАЧАЛО, matrixid="KSNGOn1", period=_ЯНВ, forperiods=_НЕ_ЯНВ, condition="СНГ and CONS", validation="validate-int-cell-number"
+	col Б1К, _НА_НАЧАЛО, matrixid="KMESOn1", condition="BYMONTH and CONS", validation="validate-int-cell-number"
+	col Б2К, _НА_КОНЕЦ, matrixid="KSNGOk1", condition="CONS and ( BYMONTH  or СНГ ) ", validation="validate-int-cell-number"
+	col ИЗММК,"Изм-ние за {2} {0}", matrixformula="KSNGOk1,-KMESOn1", matrixformulatype="sum", formulatype="stack-value", formula="-,1,2", condition="BYMONTH and CONS and OTKL "
+	col ИЗМСНГК,"Изм-ние за {2} {0}", matrixformula="KSNGOk1,-KSNGOn1", matrixformulatype="sum", formulatype="stack-value", formula="-,2,4", period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, condition="СНГ and CONS and OTKL "
+
+#====================================================================================
+#Колонки для отчета по балансу 2011
+#------------------------------------------------------------------------------------
+subset cs_balansreport_1, "Баланс 2011 (отчет)" :
+	var usecons, "Консолидированные результаты", target=condition, group=_ГП_ВРЕМЯ, altvalue=CONS, type=bool : false
+
+	col Б2, "Ожид. на {6}", customCode=OZHID, forperiods="_ОЖИД_СНГ", condition="not CONS and OZHID"
+	col Б2, "На {6}", matrixid="SNGOk", condition="( BYMONTH  or СНГ ) and not CONS "
+	col Б1, "На {5}", matrixid="MESOn", condition="BYMONTH and not CONS"
+	col Б1, "На {5}", matrixid="SNGOn", period=_ЯНВ, forperiods=_НЕ_ЯНВ, condition="СНГ and not CONS"
+	
+	col Б2, "Ожид. на {6}", customCode=OZHID, forperiods="_ОЖИД_СНГ", condition="CONS and OZHID"
+	col Б2, "На {6}", matrixid="KSNGOk1", condition="( BYMONTH  or СНГ ) and CONS "
+	col Б1, "На {5}", matrixid="KMESOn1", condition="BYMONTH and CONS"
+	col Б1, "На {5}", matrixid="KSNGOn1", period=_ЯНВ, forperiods=_НЕ_ЯНВ, condition="СНГ and CONS"
+	
+	col Б1, "На {5}", period=3, year=-1, condition="PREDYEAR"
+#	col Б1КОРР1, "На {5}", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", year=-1, formula=" @Б1.P3? + @CORRECTION.P-505? ", condition="PREDYEAR"
+
+
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-102, condition="PRED and M2 ", formula=" @Б2.P-201.P-102? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-103, condition="PRED and M3 ", formula=" @Б2.P-201.P-103? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-104, condition="PRED and M4 ", formula=" @Б2.P-201.P-104? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-105, condition="PRED and M5 ", formula=" @Б2.P-201.P-105? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-106, condition="PRED and M6 ", formula=" @Б2.P-201.P-106? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-107, condition="PRED and M7 ", formula=" @Б2.P-201.P-107? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-108, condition="PRED and M8 ", formula=" @Б2.P-201.P-108? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-109, condition="PRED and M9 ", formula=" @Б2.P-201.P-109? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-110, condition="PRED and M10 ", formula=" @Б2.P-201.P-110? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-111, condition="PRED and M11 ", formula=" @Б2.P-201.P-111? "
+	col Б2, "На {6}", customCode=PREDMES, forperiods="_ЯНВ,_НЕ_ЯНВ", period=-112, condition="PRED and M12 ", formula=" @Б2.P-201.P-112? "
+
+	col ИЗММ,"Изм-ние за {2} {0}", matrixformula="SNGOk,-MESOn", matrixformulatype="sum", formula=" @Б2? - @Б1? ", condition="BYMONTH and not CONS and OTKL "
+	col ИЗМСНГ,"Изм-ние за {2} {0}", matrixformula="SNGOk,-SNGOn", matrixformulatype="sum", formula=" @Б2? - @Б1.P@_СУММЕСЯЦ? ", period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, condition="СНГ and not CONS and OTKL "
+
+	col ИЗММК,"Изм-ние за {2} {0}", matrixformula="KSNGOk1,-KMESOn1", matrixformulatype="sum", formula=" @Б2? - @Б1? ", condition="BYMONTH and CONS and OTKL "
+	col ИЗМСНГК,"Изм-ние за {2} {0}", matrixformula="KSNGOk1,-KSNGOn1", matrixformulatype="sum", formula=" @Б2? - @Б1.P@_СУММЕСЯЦ? ", period=_СУММЕСЯЦ, forperiods=_НЕ_ЯНВ, condition="СНГ and CONS and OTKL "
+
+#====================================================================================
+#Колонки для формы коррективов по балансу
+#------------------------------------------------------------------------------------
+subset cs_balans_korr_form, "Баланс (коррективы)" :
+	col PLAN, "На конец  {0}", period="401", year=-1, fixed, validation="validate-int-cell-number"
+	col PLAN, "На конец  {0}", period="301", fixed, validation="validate-int-cell-number"
+	col PLANC, "Первоначальный ТПФП {0}", period=251, fixed, validation="validate-int-cell-number"
+	col PLANC, "Корректив в I кв {0}", period="31" , forperiods="31,32,33,34", fixed, validation="validate-int-cell-number"
+	col PLANC, "Корректив в II кв {0}", period="32" , forperiods="32", validation="validate-int-cell-number"
+	col PLANC, "Корректив в II кв {0}", period="32" , forperiods="31,33,34", fixed, validation="validate-int-cell-number"
+	col PLANC, "Корректив в III кв {0}", period="33", forperiods="33", validation="validate-int-cell-number"
+	col PLANC, "Корректив в III кв {0}", period="33", forperiods="31,32,34", fixed, validation="validate-int-cell-number"
+	col PLANC, "Корректив в IV кв {0}", period="34", forperiods="34", validation="validate-int-cell-number"
+	col PLANC, "Корректив в IV кв {0}", period="34", forperiods="31,32,33", fixed, validation="validate-int-cell-number"
+	col PLANCORRECTED, "Уточненный ТПФП {0}", period=301, forperiods="31,32,33,34", fixed, validation="validate-int-cell-number"
+
+#====================================================================================
+#Колонки для налогов за предыдущий год
+#------------------------------------------------------------------------------------
+subset cs_nalog_predgod, "Налоги (предыдущий год)" :
+	var usepredyear , "Использовать предыдущий год", group=_ГП_ВРЕМЯ, target=condition, altvalue=PREDYEAR, type=bool : false
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,1,2,3,4", year=-1, condition="OST,PREDYEAR", auto, validation="validate-int-cell-number"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,1,2,3,4", year=-1, condition="NACH,PREDYEAR", auto, validation="validate-int-cell-number"
+	col Pd_korr, _KORR, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,1,2,3,4", year=-1, condition="NACH,PREDYEAR,USEKORR", auto, validation="validate-int-cell-number"
+	col Rd, _УПЛАЧЕНО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,1,2,3,4", year=-1, condition="OPL,PREDYEAR", auto, validation="validate-int-cell-number"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,1,2,3,4", year=-1, condition="OST,PREDYEAR", validation="validate-int-cell-number", fixed
+
+#====================================================================================
+#Колонки для месячной налоговой отчетности
+#------------------------------------------------------------------------------------
+subset cs_mes_nalog_report, "Налоги (план-факт)" :
+	col Pd, _FACT, customCode=PREDFACT, forperiods=_НЕ_ЯНВ, period=-101, condition="PRED and FACT"
+	col MONTHPLAN, customCode=MONTHPLAN, _PLAN, forperiods=_ТОЛЬКО_МЕС, style=_STYLE_PLAN,  formula="( @PLAN.P-203?  / 3)" , condition="PLAN and BYMONTH"
+	col Pd, _FACT, customCode=CURRENTFACT, forperiods=_ТОЛЬКО_МЕС, condition="FACT and BYMONTH"
+	col PREDOTKL, _OTKLPRED,  forperiods=_НЕ_ЯНВ, period=-101, condition="OTKL", formula=" @CURRENTFACT? - @PREDFACT?   ", condition="PRED and FACT and OTKL"
+	col MONTHOTKL, _OTKLPLAN,  forperiods=_ТОЛЬКО_МЕС, condition="OTKL", formula=" @CURRENTFACT? - @MONTHPLAN?   ", style=_STYLE_PLAN , condition="PLAN and FACT and BYMONTH and OTKL "
+	
+	import cs_nalog_pred_year_sng
+	col PLAN , _TPFP, period=301, style=_STYLE_TPFP, condition="PLAN and СНГ"
+	import cs_tpfp_izm
+		
+	col PLANSNG1, customCode=AGGPLAN, _ПЛАН, period=_СУММЕСЯЦ, forperiods="1,11,12,13,403", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ"
+	col PLANSNG2, customCode=AGGPLAN, _ПЛАН, period=_СУММЕСЯЦ, forperiods="2,14,15,16,406", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ"
+	col PLANSNG3, customCode=AGGPLAN, _ПЛАН, period=_СУММЕСЯЦ, forperiods="3,17,18,19,409", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ"
+	col PLANSNG4, customCode=AGGPLAN, _ПЛАН, period=_СУММЕСЯЦ, forperiods="4,110,111,112,401", fixed, style=_STYLE_PLAN, condition="PLAN and СНГ"
+
+	col Pd, customCode=AGGFACT, _FACT, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="FACT and СНГ"
+	col Pd, customCode=AGGFACT, _OZHID, period=_СУММЕСЯЦ, forperiods="_ОЖИД_СНГ", condition="FACT and СНГ"
+	col PLAN, customCode=AGGFACT, _OZHID, forperiods="401", condition="FACT and СНГ"
+
+	col PREVOTKL, _OTKLFACT_PG, period=_СУММЕСЯЦ , formula=" @AGGFACT? - @PREVYEAR? ", forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", format=_INT, condition="FACT and СНГ and OTKL "
+	col AGGOTKL, _OTKLPLAN, period=_СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", formula="   @AGGFACT? - @AGGPLAN?" , style=_STYLE_PLAN, condition="PLAN and FACT and СНГ and OTKL"
+
+	col PREVOTKL1, "Откл-е от {3} года", forperiods="401", formula=" @AGGFACT? - @PREVYEAR? ",  format=_INT, condition="FACT and СНГ and OTKL "
+	col AGGOTKL1, "Откл-е от плана {0}", forperiods="401",  formula="   @AGGFACT? - @AGGPLAN?" , style=_STYLE_PLAN, condition="PLAN and FACT and СНГ and OTKL"
+
+#====================================================================================
+#Колонки для налогов
+#------------------------------------------------------------------------------------
+subset cs_nalog, "Налоги (форма)" :
+	col On, _НА_НАЧАЛО, matrixid="On", forperiods=_ЯНВ, auto, condition="OST,BYMONTH", validation="validate-int-cell-number", forgroup="!PR_KVART"
+	col On, _НА_НАЧАЛО, matrixid="On", forperiods="_НЕ_ЯНВ,_ОЖИД_СНГ", condition="OST,BYMONTH", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, matrixid="Pd", forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", condition="NACH,BYMONTH", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", condition="NACH,BYMONTH,USEKORR", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, matrixid="Rd", forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", condition="OPL,BYMONTH", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", condition="OST,BYMONTH", validation="validate-int-cell-number", controlpoint=true, fixed, forgroup="!PR_KVART"
+	
+	col On, _НА_НАЧАЛО, matrixid="On1", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OST,СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, matrixid="Pd1", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="NACH,СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Pd_korr, _KORR, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="NACH,СНГ,USEKORR", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, matrixid="Rd1", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OPL,СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OST,СНГ,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, fixed, forgroup="!PR_KVART"
+
+	col On, _НА_НАЧАЛО, matrixid="On2", period= _СУММЕСЯЦ,  forperiods="1", auto, condition="OST,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col On, _НА_НАЧАЛО, matrixid="On2", period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, fixed, condition="OST,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Pd, _НАЧИСЛЕНО, matrixid="Pd2", period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="NACH,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Pd_korr, _KORR, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="NACH,СНГ,USEKORR", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Rd, _УПЛАЧЕНО, matrixid="Rd2", period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OPL,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Ok, _НА_КОНЕЦ, period=_СУММЕСЯЦ , forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OST,СНГ", validation="validate-int-cell-number", controlpoint=true, fixed, forgroup="PR_KVART"
+
+#====================================================================================
+#Колонки для налогов помесячно за предыдущие годы
+#------------------------------------------------------------------------------------
+subset cs_nalog_report_predgod, "Налоги (предыдущие годы)" :
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-8, condition="OST and Y8"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-8, condition="NACH and Y8"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-8, condition="NACH and USEKORR and Y8"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-8, condition="OPL and Y8"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-8, condition="OST and Y8"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-7, condition="OST and Y7"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-7, condition="NACH and Y7"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-7, condition="NACH and USEKORR and Y7"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-7, condition="OPL and Y7"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-7, condition="OST and Y7"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-6, condition="OST and Y6"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-6, condition="NACH and Y6"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-6, condition="NACH and USEKORR and Y6"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-6, condition="OPL and Y6"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-6, condition="OST and Y6"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-5, condition="OST and Y5"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-5, condition="NACH and Y5"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-5, condition="NACH and USEKORR and Y5"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-5, condition="OPL and Y5"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-5, condition="OST and Y5"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-4, condition="OST and Y4"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-4, condition="NACH and Y4"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-4, condition="NACH and USEKORR and Y4"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-4, condition="OPL and Y4"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-4, condition="OST and Y4"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-3, condition="OST and Y3"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-3, condition="NACH and Y3"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-3, condition="NACH and USEKORR and Y3"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-3, condition="OPL and Y3"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-3, condition="OST and Y3"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-2, condition="OST and Y2"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-2, condition="NACH and Y2"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-2, condition="NACH and USEKORR and Y2"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-2, condition="OPL and Y2"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-2, condition="OST and Y2"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, condition="OST and Y1"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, condition="NACH and Y1"
+	col Pd_korr, _KORR, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, condition="NACH and USEKORR and Y1"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, condition="OPL and Y1"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, condition="OST and Y1"
+
+	col OnOTKL, "Откл. _НА_НАЧАЛО от пред. года", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, formula=" @On? - @On.Y-1? ", condition="OST and Y2 and OTKL"
+	col PdOTKL, "Откл. _НАЧИСЛЕНО от пред. года", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, formula=" @Pd? - @Pd.Y-1? ", condition="NACH and Y2 and OTKL"
+	col Pd_korrOTKL, "Откл. _KORR от пред. года", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, formula=" @Pd_korr? - @Pd_korr.Y-1? ", condition="NACH and USEKORR and Y2 and OTKL"
+	col RdOTKL, "Откл. _УПЛАЧЕНО от пред. года", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, formula=" @Rd? - @Rd.Y-1? ", condition="OPL and Y2 and OTKL"
+	col OkOTKL, "Откл. _НА_КОНЕЦ от пред. года", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", period=4, year=-1, formula=" @Ok? - @Ok.Y-1? ", condition="OST and Y2 and OTKL"
+
+
+#====================================================================================
+#Колонки для налогов помесячно за предыдущие периоды
+#------------------------------------------------------------------------------------
+subset cs_nalog_report_predmes, "Налоги (предыдущие месяцы)" :
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-112, condition="OST and BYMONTH and PRED and M12", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-112, condition="NACH and BYMONTH and PRED and M12", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-112, condition="NACH and BYMONTH and USEKORR and PRED and M12", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-112, condition="OPL and BYMONTH and PRED and M12", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-112, condition="OST and BYMONTH and PRED and M12", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-111, condition="OST and BYMONTH and PRED and M11", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-111, condition="NACH and BYMONTH and PRED and M11", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-111, condition="NACH and BYMONTH and USEKORR and PRED and M11", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-111, condition="OPL and BYMONTH and PRED and M11", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-111, condition="OST and BYMONTH and PRED and M11", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-110, condition="OST and BYMONTH and PRED and M10", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-110, condition="NACH and BYMONTH and PRED and M10", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-110, condition="NACH and BYMONTH and USEKORR and PRED and M10", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-110, condition="OPL and BYMONTH and PRED and M10", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-110, condition="OST and BYMONTH and PRED and M10", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-109, condition="OST and BYMONTH and PRED and M9", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-109, condition="NACH and BYMONTH and PRED and M9", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-109, condition="NACH and BYMONTH and USEKORR and PRED and M9", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-109, condition="OPL and BYMONTH and PRED and M9", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-109, condition="OST and BYMONTH and PRED and M9", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-108, condition="OST and BYMONTH and PRED and M8", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-108, condition="NACH and BYMONTH and PRED and M8", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-108, condition="NACH and BYMONTH and USEKORR and PRED and M8", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-108, condition="OPL and BYMONTH and PRED and M8", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-108, condition="OST and BYMONTH and PRED and M8", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-107, condition="OST and BYMONTH and PRED and M7", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-107, condition="NACH and BYMONTH and PRED and M7", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-107, condition="NACH and BYMONTH and USEKORR and PRED and M7", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-107, condition="OPL and BYMONTH and PRED and M7", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-107, condition="OST and BYMONTH and PRED and M7", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-106, condition="OST and BYMONTH and PRED and M6", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-106, condition="NACH and BYMONTH and PRED and M6", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-106, condition="NACH and BYMONTH and USEKORR and PRED and M6", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-106, condition="OPL and BYMONTH and PRED and M6", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-106, condition="OST and BYMONTH and PRED and M6", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-105, condition="OST and BYMONTH and PRED and M5", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-105, condition="NACH and BYMONTH and PRED and M5", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-105, condition="NACH and BYMONTH and USEKORR and PRED and M5", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-105, condition="OPL and BYMONTH and PRED and M5", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-105, condition="OST and BYMONTH and PRED and M5", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-104, condition="OST and BYMONTH and PRED and M4", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-104, condition="NACH and BYMONTH and PRED and M4", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-104, condition="NACH and BYMONTH and USEKORR and PRED and M4", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-104, condition="OPL and BYMONTH and PRED and M4", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-104, condition="OST and BYMONTH and PRED and M4", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-103, condition="OST and BYMONTH and PRED and M3", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-103, condition="NACH and BYMONTH and PRED and M3", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-103, condition="NACH and BYMONTH and PRED and USEKORR and M3", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-103, condition="OPL and BYMONTH and PRED and M3", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-103, condition="OST and BYMONTH and PRED and M3", forgroup="!PR_KVART"
+
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-102, condition="OST and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-102, condition="NACH and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-102, condition="NACH and BYMONTH and PRED and USEKORR and M2", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-102, condition="OPL and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-102, condition="OST and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-101, condition="OST and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-101, condition="NACH and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-101, condition="NACH and BYMONTH and PRED and USEKORR and M2", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-101, condition="OPL and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", period=-101, condition="OST and BYMONTH and PRED and M2", forgroup="!PR_KVART"
+
+#====================================================================================
+#Колонки для налогов (квартальная расшифровка)
+#------------------------------------------------------------------------------------
+subset cs_nalog_report_kvartras, "Налоги (квартальная расшифровка)" :
+	col On, "На начало I кв. {0}", period=1, forperiods="1,13,403", condition="OST and KVARTRAS and M2"
+	col Pd, "Начислено I кв. {0}", period=1, forperiods="1,13,403", condition="NACH and KVARTRAS"
+	col Pd_korr, "в т.ч. уточн. I кв. {0}", period=1, forperiods="1,13,403", condition="NACH and USEKORR and KVARTRAS and M2 and M2"
+	col Rd, "Уплачено I кв. {0}", period=1, forperiods="1,13,403", condition="OPL and KVARTRAS and M2"
+	col Ok, "На конец I кв. {0}", period=1, forperiods="1,13,403", condition="OST and KVARTRAS and M2"
+	#--------------------------------------------------------------------------------------------------------
+	col On, "На начало I кв. {0}", period=1, forperiods="2,16,406", condition="OST and KVARTRAS and M5"
+	col Pd, "Начислено I кв. {0}", period=1, forperiods="2,16,406", condition="NACH and KVARTRAS and M5"
+	col Pd_korr, "в т.ч. уточн. I кв. {0}", period=1, forperiods="2,16,406", condition="NACH and USEKORR and KVARTRAS and M5"
+	col Rd, "Уплачено I кв. {0}", period=1, forperiods="2,16,406", condition="OPL and KVARTRAS and M5"
+	col Ok, "На конец I кв. {0}", period=1, forperiods="2,16,406", condition="OST and KVARTRAS and M5"
+
+	col On2, "На начало II кв. {0}", forperiods="2,16,406", condition="OST and KVARTRAS and M2", formula=" @On.P2? "
+	col Pd2, "Начислено II кв. {0}", forperiods="2,16,406", condition="NACH and KVARTRAS and M2", formula=" @Pd.P2? - @Pd.P1? "
+	col Pd_korr2, "в т.ч. уточн. II кв. {0}", forperiods="2,16,406", condition="NACH and USEKORR and KVARTRAS and M2", formula=" @Pd_korr.P2? - @Pd_korr.P1?"
+	col Rd2, "Уплачено II кв. {0}", forperiods="2,16,406", condition="OPL and KVARTRAS and M2", formula=" @Rd.P2? - @Rd.P1? "
+	col Ok2, "На конец II кв. {0}", forperiods="2,16,406", condition="OST and KVARTRAS and M2", formula=" @Ok.P2? "
+	#--------------------------------------------------------------------------------------------------------
+	col On, "На начало I кв. {0}", period=1, forperiods="3,19,409", condition="OST and KVARTRAS and M8"
+	col Pd, "Начислено I кв. {0}", period=1, forperiods="3,19,409", condition="NACH and KVARTRAS and M8"
+	col Pd_korr, "в т.ч. уточн. I кв. {0}", period=1, forperiods="3,19,409", condition="NACH and USEKORR and KVARTRAS and M8"
+	col Rd, "Уплачено I кв. {0}", period=1, forperiods="3,19,409", condition="OPL and KVARTRAS and M8"
+	col Ok, "На конец I кв. {0}", period=1, forperiods="3,19,409", condition="OST and KVARTRAS and M8"
+
+	col On2, "На начало II кв. {0}", forperiods="3,19,409", condition="OST and KVARTRAS and M5", formula=" @On.P2? "
+	col Pd2, "Начислено II кв. {0}", forperiods="3,19,409", condition="NACH and KVARTRAS and M5", formula=" @Pd.P2? - @Pd.P1? "
+	col Pd_korr2, "в т.ч. уточн. II кв. {0}", forperiods="3,19,409", condition="NACH and USEKORR and KVARTRAS and M5", formula=" @Pd_korr.P2? - @Pd_korr.P1?"
+	col Rd2, "Уплачено II кв. {0}", forperiods="3,19,409", condition="OPL and KVARTRAS and M5", formula=" @Rd.P2? - @Rd.P1? "
+	col Ok2, "На конец II кв. {0}", forperiods="3,19,409", condition="OST and KVARTRAS and M5", formula=" @Ok.P2? "
+
+	col On3, "На начало III кв. {0}", forperiods="3,19,409", condition="OST and KVARTRAS and M2", formula=" @On.P3? "
+	col Pd3, "Начислено III кв. {0}", forperiods="3,19,409", condition="NACH and KVARTRAS and M2", formula=" @Pd.P3? - @Pd.P2?"
+	col Pd_korr3, "в т.ч. уточн. III кв. {0}", forperiods="3,19,409", condition="NACH and USEKORR and KVARTRAS and M2", formula=" @Pd_korr.P3? - @Pd_korr.P2? "
+	col Rd3, "Уплачено III кв. {0}", forperiods="3,19,409", condition="OPL and KVARTRAS and M2", formula=" @Rd.P3? - @Rd.P2? "
+	col Ok3, "На конец III кв. {0}", forperiods="3,19,409", condition="OST and KVARTRAS and M2", formula=" @Rd.P3? "
+
+	#--------------------------------------------------------------------------------------------------------
+	col On, "На начало I кв. {0}", period=1, forperiods="4,112,401", condition="OST and KVARTRAS and M11"
+	col Pd, "Начислено I кв. {0}", period=1, forperiods="4,112,401", condition="NACH and KVARTRAS and M11"
+	col Pd_korr, "в т.ч. уточн. I кв. {0}", period=1, forperiods="4,112,401", condition="NACH and USEKORR and KVARTRAS and M11"
+	col Rd, "Уплачено I кв. {0}", period=1, forperiods="4,112,401", condition="OPL and KVARTRAS and M11"
+	col Ok, "На конец I кв. {0}", period=1, forperiods="4,112,401", condition="OST and KVARTRAS and M11"
+
+	col On2, "На начало II кв. {0}", forperiods="4,112,401", condition="OST and KVARTRAS and M8", formula=" @On.P2? "
+	col Pd2, "Начислено II кв. {0}", forperiods="4,112,401", condition="NACH and KVARTRAS and M8", formula=" @Pd.P2? - @Pd.P1? "
+	col Pd_korr2, "в т.ч. уточн. II кв. {0}", forperiods="4,112,401", condition="NACH and USEKORR and KVARTRAS and M8", formula=" @Pd_korr.P2? - @Pd_korr.P1?"
+	col Rd2, "Уплачено II кв. {0}", forperiods="4,112,401", condition="OPL and KVARTRAS and M8", formula=" @Rd.P2? - @Rd.P1? "
+	col Ok2, "На конец II кв. {0}", forperiods="4,112,401", condition="OST and KVARTRAS and M8", formula=" @Ok.P2? "
+
+	col On3, "На начало III кв. {0}", forperiods="4,112,401", condition="OST and KVARTRAS and M5", formula=" @On.P3? "
+	col Pd3, "Начислено III кв. {0}", forperiods="4,112,401", condition="NACH and KVARTRAS and M5", formula=" @Pd.P3? - @Pd.P2?"
+	col Pd_korr3, "в т.ч. уточн. III кв. {0}", forperiods="4,112,401", condition="NACH and USEKORR and KVARTRAS and M5", formula=" @Pd_korr.P3? - @Pd_korr.P2? "
+	col Rd3, "Уплачено III кв. {0}", forperiods="4,112,401", condition="OPL and KVARTRAS and M5", formula=" @Rd.P3? - @Rd.P2? "
+	col Ok3, "На конец III кв. {0}", forperiods="4,112,401", condition="OST and KVARTRAS and M5", formula=" @Rd.P3? "
+
+	col On4, "На начало IV кв. {0}", forperiods="4,112,401", condition="OST and KVARTRAS and M2", formula=" @On.P4? "
+	col Pd4, "Начислено IV кв. {0}", forperiods="4,112,401", condition="NACH and KVARTRAS and M2", formula=" @Pd.P4? - @Pd.P3?"
+	col Pd_korr4, "в т.ч. уточн. IV кв. {0}", forperiods="4,112,401", condition="NACH and USEKORR and KVARTRAS and M2", formula=" @Pd_korr.P4? - @Pd_korr.P3?"
+	col Rd4, "Уплачено IV кв. {0}", forperiods="4,112,401", condition="OPL and KVARTRAS and M2", formula=" @Rd.P4? - @Rd.P3?"
+	col Ok4, "На конец IV кв. {0}", forperiods="4,112,401", condition="OST and KVARTRAS and M2", formula=" @Ok.P4? "
+
+
+#====================================================================================
+#Колонки для налогов
+#------------------------------------------------------------------------------------
+subset cs_nalog_report, "Налоги (отчет с оборотами)" :
+	import cs_nalog_report_predgod
+	import cs_nalog_report_predmes
+
+	col On, _НА_НАЧАЛО, matrixid="On10", year=-1, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OST and BYMONTH and PREDYEAR", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, matrixid="Pd10", year=-1, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="NACH and BYMONTH and PREDYEAR", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", year=-1, condition="NACH and BYMONTH and USEKORR and PREDYEAR", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, matrixid="Rd10", year=-1, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OPL and BYMONTH and PREDYEAR", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", year=-1, condition="OST and BYMONTH and PREDYEAR", forgroup="!PR_KVART"
+	
+	col On, _НА_НАЧАЛО, matrixid="On11", year=-1, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST and СНГ and PREDYEAR"
+	col Pd, _НАЧИСЛЕНО, matrixid="Pd11", year=-1, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH and СНГ and PREDYEAR"
+	col Pd_korr, _KORR, period= _СУММЕСЯЦ,  year=-1, forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH and СНГ and USEKORR and PREDYEAR"
+	col Rd, _УПЛАЧЕНО, matrixid="Rd11", year=-1, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OPL and СНГ and PREDYEAR"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  year=-1, forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST and СНГ and PREDYEAR"
+
+	col On, _НА_НАЧАЛО, matrixid="On", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OST,BYMONTH", forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, matrixid="Pd", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="NACH,BYMONTH", forgroup="!PR_KVART"
+	col Pd_korr, _KORR, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="NACH,BYMONTH,USEKORR", forgroup="!PR_KVART"
+	col Rd, _УПЛАЧЕНО, matrixid="Rd", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OPL,BYMONTH", forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OST,BYMONTH", forgroup="!PR_KVART"
+	
+	col On, _НА_НАЧАЛО, matrixid="On1", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST,СНГ"
+	col Pd, _НАЧИСЛЕНО, matrixid="Pd1", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH,СНГ"
+	col Pd_korr, _KORR, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH,СНГ,USEKORR"
+	col Rd, _УПЛАЧЕНО, matrixid="Rd1", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OPL,СНГ"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST,СНГ"
+
+	col OnOTKL, "Откл. _НА_НАЧАЛО от пред. пер.", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", formula=" @On? - @On.Y-1? ", condition="OST and СНГ and PREDYEAR and OTKL"
+	col PdOTKL, "Откл. _НАЧИСЛЕНО от пред. пер.", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", formula=" @Pd? - @Pd.Y-1? ", condition="NACH and СНГ and PREDYEAR and OTKL"
+	col Pd_korrOTKL, "Откл. _KORR от пред. пер.", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", formula=" @Pd_korr? - @Pd_korr.Y-1? ", condition="NACH and СНГ and USEKORR and PREDYEAR and OTKL"
+	col RdOTKL, "Откл. _УПЛАЧЕНО от пред. пер.", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", formula=" @Rd? - @Rd.Y-1? ", condition="OPL and СНГ and PREDYEAR and OTKL"
+	col OkOTKL, "Откл. _НА_КОНЕЦ от пред. пер.", period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", formula=" @Ok? - @Ok.Y-1? ", condition="OST and СНГ and PREDYEAR and OTKL"
+
+	import cs_nalog_report_kvartras
+
+#====================================================================================
+#Налоги (отчет за предыдущие года)
+#------------------------------------------------------------------------------------
+subset cs_nalog_report_predyear, "Налоги (отчет за предыдущие года)" :
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-9, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc10"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH5", period=4, year=-9, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc10"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-9, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc10"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL5", period=4, year=-9, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc10"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-9, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc10"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-8, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc9"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH5", period=4, year=-8, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc9"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-8, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc9"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL5", period=4, year=-8, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc9"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-8, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc9"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-7, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc8"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH5", period=4, year=-7, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc8"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-7, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc8"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL5", period=4, year=-7, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc8"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-7, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc8"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-6, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc7"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH5", period=4, year=-6, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc7"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-6, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc7"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL5", period=4, year=-6, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc7"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-6, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc7"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-5, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc6"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH5", period=4, year=-5, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc6"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-5, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc6"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL5", period=4, year=-5, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc6"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-5, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc6"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-4, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc5"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH4", period=4, year=-4, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc5"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-4, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc5"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL4", period=4, year=-4, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc5"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-4, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc5"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-3, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc4"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH3", period=4, year=-3, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc4"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-3, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc4"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL3", period=4, year=-3, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc4"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-3, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc4"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc3"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH2", period=4, year=-2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and yc3"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="NACH and USEKORR and yc3"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL2", period=4, year=-2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OPL and yc3"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-2, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ,251,401", condition="OST and yc3"
+
+	col On, _НА_НАЧАЛО, matrixid="OST", period=4, year=-1, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST and yc2"
+	col Pd, _НАЧИСЛЕНО, matrixid="NACH1", period=4, year=-1, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH and yc2"
+	col Pd_korr, _KORR, matrixid="USEKORR", period=4, year=-1, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH and USEKORR,yc2"
+	col Rd, _УПЛАЧЕНО, matrixid="OPL1", period=4, year=-1, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OPL and yc2"
+	col Ok, _НА_КОНЕЦ, matrixid="OST", period=4, year=-1, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST and yc2"
+
+	col PLAN, "Начислено {0} (ожид.)", matrixid="NACH1", period=401, year=-1, forperiods="251", condition="NACH and yc2"
+	col PLAN, "Начислено {0} (план)", period=251, forperiods="251", condition="NACH and yc1"
+	col PLAN, "Начислено {0} (ожид.)", period=401, forperiods="401", condition="NACH and yc1"
+
+	col Pd1, "Начислено всего", matrixformula="?NACH1,?NACH2,?NACH3,?NACH4,?NACH5", matrixformulatype="sum", period=4, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH,SUMMAYEAR"
+	col Rd1, "Уплачено всего", matrixformula="?OPL1,?OPL2,?OPL3,?OPL4,?OPL5", matrixformulatype="sum", period=4, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OPL,SUMMAYEAR"
+
+
+#====================================================================================
+#Колонки для контроля остатков по налогам в форме ввода
+#------------------------------------------------------------------------------------
+subset cs_nalog_control_ost, "Налоги (контроль остатков)" :
+#	col Ok, _НА_КОНЕЦ, matrixid="PREDOk", forperiods=_НЕ_ЯНВ, visible=false
+#	col КОСТ, _CONTR_OST,  matrixformula="PREDOk,-Ok", matrixformulatype="sum", forperiods=_НЕ_ЯНВ, fixed , formula="@Ok.P@_СУММЕСЯЦ? - @Ok?", forgroup="!PR_KVART"
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Ok.P@_СУММЕСЯЦ? - @Ok?", forgroup="!PR_KVART"
+
+#====================================================================================
+#Колонки для контроля остатков по налогам
+#------------------------------------------------------------------------------------
+subset cs_nalog_control, "Налоги (контроль по пред. году)" :
+	col Ok, "Ост. на кон. года за 12 мес. {0}", customCode=On4_1, year=-1, period=4, forperiods="1", fixed
+	col On, "Ост. на нач. года за 3 мес. {0}", customCode=On1, period=1, forperiods="1", fixed
+	col OTKL, "Отклонение", formula=" @Ok.Y-1.P4? - @On.P1? "
+
+	col On, "Ост. на нач. года за 9 мес. {0}", customCode=On3, period=3, forperiods="4", fixed
+	col On, "Ост. на нач. года за 12 мес. {0}", customCode=On4, period=4, forperiods="4", fixed
+	col OTKL, "Отклонение", formula=" @On.P4? - @On.P3? ", forperiods="4"
+
+#====================================================================================
+#Колонки для отклонения задолженности по налогам на начало периода
+#------------------------------------------------------------------------------------
+subset cs_nalog_otkl_on, "Налоги к возмещению и уплате (на начало)" :
+	col Okk, "К возмещ. на начало {2} {0}", forperiods="1,2,3,4,_ОЖИД_СНГ", formulatype="boo", formula="@On.sign( -1 )?", condition="RAZVSALDO"
+	col Okk3, "К уплате на начало {2} {0}", forperiods="1,2,3,4,_ОЖИД_СНГ", formulatype="boo", formula="@On.sign( 1 )?", condition="RAZVSALDO"
+
+#====================================================================================
+#Колонки для отклонения задолженности по налогам на конец периода
+#------------------------------------------------------------------------------------
+subset cs_nalog_otkl_ok, "Налоги к возмещению и уплате (на конец)" :
+	col Okk4, "К возмещ. на конец {2} {0}", forperiods="1,2,3,4,_ОЖИД_СНГ", formulatype="boo", formula="@Ok.sign( -1 )?", condition="RAZVSALDO"
+	col Okk7, "К уплате на конец {2} {0}",  forperiods="1,2,3,4,_ОЖИД_СНГ", formulatype="boo", formula="@Ok.sign( 1 )?", condition="RAZVSALDO"
+
+#====================================================================================
+#Колонки для расчета НДС
+#------------------------------------------------------------------------------------
+subset cs_nalog_nds, "Налоги (НДС)" :
+	col Б1, "Доходы и расходы", customCode="NOB", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", format=_INT, validation="validate-int-cell-number"
+	col PLAN, "Доходы и расходы", customCode="NOB", forperiods="251,252,253,254,301,303,306,309", format=_INT, validation="validate-int-cell-number"
+	col NNOB, "Необлагаемая база", customCode="NNOB", format=_INT, validation="validate-int-cell-number"
+	col NOB, "Н/о база тек. периода", customCode="NOB", format=_INT
+	col NDSRATE, "Ставка НДС", customCode="NALRATE", format="#.##"
+	col NDSSUM, "Сумма НДС тек. периода", customCode="NDSSUM", format=_INT
+
+	col NOBKORR, "Н/о база по доп. декл.", customCode="NOBKORR", format=_INT, validation="validate-int-cell-number"
+	col NDSSUMKORR, "Сумма НДС по доп. декл.", customCode="NDSSUMKORR", format=_INT
+	col NOBVSEGO, "Н/о база всего", customCode="NOBVSEGO", formula=" @NOB? + @NOBKORR? ", format=_INT
+	col NDSVSEGO, "Сумма НДС всего", customCode="NDSVSEGO", formula=" @NDSSUM? + @NDSSUMKORR? ", format=_INT
+
+#====================================================================================
+#Соглашение о социальном партнерстве
+#------------------------------------------------------------------------------------
+subset cs_nalog_soc_part, "Соглашение о социальном партнерстве" :
+	col Pd, _НАЧИСЛЕНО, year=-1, period=4, fixed
+	col Pd, _НАЧИСЛЕНО, fixed
+
+#====================================================================================
+#Колонки для расшифровок отдельных счетов баланса
+#------------------------------------------------------------------------------------
+subset cs_buh_conto, "Расшифровки статей баланса (форма месячная)" :
+	col On, _НА_НАЧАЛО, period=25, forperiods="406", fixed, forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, period=25, forperiods="406", fixed, forgroup="!PR_KVART"
+	col Rd, _СПИСАНО, period=25, forperiods="406", fixed, forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, period=25, forperiods="406", fixed, forgroup="!PR_KVART"
+
+	col On, _НА_НАЧАЛО, period=1, forperiods="406", fixed, forgroup="PR_KVART"
+	col Pd, _НАЧИСЛЕНО, period=1, forperiods="406", fixed, forgroup="PR_KVART"
+	col Rd, _СПИСАНО, period=1, forperiods="406", fixed, forgroup="PR_KVART"
+	col Ok, _НА_КОНЕЦ, period=1, forperiods="406", fixed, forgroup="PR_KVART"
+
+	col REVISIONON, "_НА_НАЧАЛО (ревизия)", period= _СУММЕСЯЦ,  forperiods="2,3,4", forgroup="PR_KVART"
+	col REVISIONON, "_НА_НАЧАЛО (ревизия)", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ", forgroup="!PR_KVART"
+	col REVISIONPD, "_НАЧИСЛЕНО (ревизия)", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ", forgroup="!PR_KVART"
+	col REVISIONRD, "_СПИСАНО (ревизия)", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ", forgroup="!PR_KVART"
+
+	col On, _НА_НАЧАЛО, forperiods="_ЯНВ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col On, _НА_НАЧАЛО, forperiods="_НЕ_ЯНВ,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Rd, _СПИСАНО, forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", validation="validate-int-cell-number", fixed, controlpoint=true, forgroup="!PR_KVART"
+	col PdVO, "в т.ч. _НАЧИСЛЕНО вн. об.", forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col RdVO, "в т.ч. _СПИСАНО вн. об.", forperiods="_ЯНВ, _НЕ_ЯНВ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, controlpoint=true, forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, controlpoint=true, forgroup="!PR_KVART"
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, controlpoint=true, forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", fixed, controlpoint=true, forgroup="!PR_KVART"
+	col PdVO, "в т.ч. _НАЧИСЛЕНО вн. об.", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, controlpoint=true, forgroup="!PR_KVART"
+	col RdVO, "в т.ч. _СПИСАНО вн. об.", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", auto, fixed, controlpoint=true, forgroup="!PR_KVART"
+
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="1", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="1,2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", fixed, controlpoint=true, forgroup="PR_KVART"
+	col PdVO, "в т.ч. _НАЧИСЛЕНО вн. об.", period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col RdVO, "в т.ч. _СПИСАНО вн. об.", period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Ok.P@_СУММЕСЯЦ? - @Ok?"
+
+#====================================================================================
+#Колонки для расшифровок отдельных счетов баланса
+#------------------------------------------------------------------------------------
+subset cs_buh_conto_report, "Расшифровки статей баланса (отчет)" :
+	col On, "На {5}", matrixid="OSTNMES", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OST,BYMONTH"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="NACH,BYMONTH"
+	col RdVO, "в т.ч. вн. оборот {2} {0}", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OPL and BYMONTH and VNOB"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="NACH,BYMONTH"
+	col PdVO, "в т.ч. вн. оборот {2} {0}", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="NACH and BYMONTH and VNOB"
+	col Ok, "На {6}", matrixid="OSTNMES", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OST,BYMONTH"
+	col OTKLMES, "Изменения за {2} {0}", matrixformula="OSTKMES,-OSTNMES", matrixformulatype="sum", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OTKL,BYMONTH"
+	
+	col On, "На {5}", period= 1, year=-1, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OST,СНГ,PREDYEAR"
+	col On, "На {5}", matrixid="OSTNSNG", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OST,СНГ"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="NACH,СНГ"
+	col PdVO, "в т.ч. вн. оборот {2} {0}", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="NACH and СНГ and VNOB"
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OPL,СНГ"
+	col RdVO, "в т.ч. вн. оборот {2} {0}", period= _СУММЕСЯЦ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OPL and СНГ and VNOB"
+	col Ok, "На {6}", matrixid="OSTKSNG", period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OST and СНГ"
+	col OTKLMES, "Изменения за {2} {0}", period= _СУММЕСЯЦ ,  matrixformula="OSTKSNG,-OSTNSNG", matrixformulatype="sum", forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OTKL,СНГ"
+
+	col On, "На {5}", period=3, year=-1, forperiods="_ОЖИД_СНГ", condition="OST,PREDYEAR"
+	col On, "На {5}", matrixid="OSTNSNG", forperiods="_ОЖИД_СНГ", condition="OST"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ОЖИД_СНГ", condition="NACH"
+	col PdVO, "в т.ч. вн. оборот {2} {0}", forperiods="_ОЖИД_СНГ", condition="NACH and VNOB"
+	col Rd, _СПИСАНО, forperiods="_ОЖИД_СНГ", condition="OPL"
+	col RdVO, "в т.ч. вн. оборот {2} {0}", forperiods="_ОЖИД_СНГ", condition="OPL and VNOB"
+	col Ok, "На {6}", matrixid="OSTKSNG", forperiods="_ОЖИД_СНГ", condition="OST"
+	col OTKLMES, "Изменения за {2} {0}", matrixformula="OSTKSNG,-OSTNSNG", matrixformulatype="sum", forperiods="_ОЖИД_СНГ", condition="OTKL"
+
+#====================================================================================
+#Колонки для расшифровок отдельных счетов баланса
+#------------------------------------------------------------------------------------
+subset cs_buh_conto_kvart, "Расшифровки статей баланса (форма квартальная)" :
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="1", year=-1, condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, forperiods="2,3,4", year=-1, fixed, condition="OST", validation="validate-int-cell-number", controlpoint=true
+
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="1", condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, fixed, condition="OST", validation="validate-int-cell-number", controlpoint=true
+	col On, "_НА_НАЧАЛО (ADMIN)", period= _СУММЕСЯЦ,  forperiods="2,3,4,_ОЖИД_СНГ", auto, condition="OST", validation="validate-int-cell-number", controlpoint=true, forrole="ADMIN"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="NACH", validation="validate-int-cell-number", controlpoint=true
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OPL", validation="validate-int-cell-number", controlpoint=true
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OST", validation="validate-int-cell-number", fixed, controlpoint=true
+	col PdVO, "в т.ч. _НАЧИСЛЕНО вн. об.", period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="NACH", validation="validate-int-cell-number", controlpoint=true
+	col RdVO, "в т.ч. _СПИСАНО вн. об.", period= _СУММЕСЯЦ,  forperiods="1,2,3,4,_ОЖИД_СНГ", condition="OPL", validation="validate-int-cell-number", controlpoint=true
+
+#====================================================================================
+#Колонки для расшифровок отдельных счетов баланса (отчет)
+#------------------------------------------------------------------------------------
+subset cs_buh_conto_sng_report, "Расшифровки статей баланса (квартальные отчеты)" :
+	col On, "На {5}", period= _СУММЕСЯЦ,  period=3, year=-1, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", fixed, condition="OST,PREDYEAR"
+	col On, "На {5}", matrixid="OSTNSNG", period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH"
+	col PdVO, "в т.ч. вн. оборот {2} {0}", period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="NACH and VNOB"
+	col Rd, _СПИСАНО, period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OPL"
+	col RdVO, "в т.ч. вн. оборот {2} {0}", period= _СУММЕСЯЦ,  forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OPL and VNOB"
+	col Ok, "На {6}", matrixid="OSTKSNG", period= _СУММЕСЯЦ ,  forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ", condition="OST"
+	col OTKLSNG, "Изменения за {2} {0}", period= _СУММЕСЯЦ , matrixformula="OSTKSNG,-OSTNSNG", matrixformulatype="sum", formula="@Ok.P@_СУММЕСЯЦ? - @On.P@_СУММЕСЯЦ? ", forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ", condition="OST,OTKL"
+	col OTKLSNG, "Изменения за {2} {0}", matrixformula="OSTKSNG,-OSTNSNG", matrixformulatype="sum", formula="@Ok? - @On? ", forperiods="_ОЖИД_СНГ", condition="OST,OTKL"
+
+#====================================================================================
+#Колонки для расшифровок остатков отдельных счетов баланса
+#------------------------------------------------------------------------------------
+subset cs_buh_saldo, "Остатки бухгалтерских счетов" :
+	col On, _НА_НАЧАЛО, fixed, forperiods="1"
+	col On, _НА_НАЧАЛО, fixed, auto, forperiods="2,3,4"
+	col Ok, _НА_КОНЕЦ, fixed
+
+#====================================================================================
+#Колонки для остатков внеоборотных активов
+#------------------------------------------------------------------------------------
+subset cs_os, "Остатки внеоборотных активов" :
+	col BSTn, "Бал. ст-ть на {5}", period=3, year=-1, forperiods="1", validation="validate-int-cell-number", controlpoint=true
+	col ASTn, "Нач. аморт-я на {5}", period=3, year=-1, forperiods="1", validation="validate-int-cell-number", controlpoint=true
+	col OSTn, "Ост. ст-ть на {5}", period=3, year=-1, forperiods="1", validation="validate-int-cell-number", controlpoint=true
+	col BSTn, "Бал. ст-ть на {5}", period=3, year=-1, forperiods="2,3,4", fixed, validation="validate-int-cell-number", controlpoint=true
+	col ASTn, "Нач. аморт-я на {5}", period=3, year=-1, forperiods="2,3,4", fixed, validation="validate-int-cell-number", controlpoint=true
+	col OSTn, "Ост. ст-ть на {5}", period=3, year=-1, forperiods="2,3,4", fixed, validation="validate-int-cell-number", controlpoint=true
+
+	col BSTn, "Бал. ст-ть _НА_НАЧАЛО", auto, forperiods="1", validation="validate-int-cell-number", controlpoint=true
+	col ASTn, "Нач. аморт-я _НА_НАЧАЛО", auto, forperiods="1", validation="validate-int-cell-number", controlpoint=true
+	col OSTn, "Ост. ст-ть _НА_НАЧАЛО", auto, forperiods="1", validation="validate-int-cell-number", controlpoint=true
+	col BSTn, "Бал. ст-ть _НА_НАЧАЛО", auto, fixed, forperiods="2,3,4", validation="validate-int-cell-number", controlpoint=true
+	col ASTn, "Нач. аморт-я _НА_НАЧАЛО", auto, fixed, forperiods="2,3,4", validation="validate-int-cell-number", controlpoint=true
+	col OSTn, "Ост. ст-ть _НА_НАЧАЛО", auto, fixed, forperiods="2,3,4", validation="validate-int-cell-number", controlpoint=true
+	col BSTk, "Бал. ст-ть _НА_КОНЕЦ", validation="validate-int-cell-number", controlpoint=true
+	col ASTk, "Нач. аморт-я _НА_КОНЕЦ", validation="validate-int-cell-number", controlpoint=true
+	col OSTk, "Ост. ст-ть _НА_КОНЕЦ", validation="validate-int-cell-number", controlpoint=true
+
+#====================================================================================
+#Колонки для остатков внеоборотных активов
+#------------------------------------------------------------------------------------
+subset cs_os_report, "Остатки внеоборотных активов (отчет)" :
+	col BSTn, "Бал. ст-ть на {5}", matrixid="BSTnm", condition="BALST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col ASTn, "Нач. аморт-я на {5}", matrixid="ASTnm", condition="AMST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col OSTn, "Ост. ст-ть на {5}", matrixid="OSTnm", condition="OSTST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col BSTk, "Бал. ст-ть на {6}", matrixid="BSTkm", condition="BALST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col ASTk, "Нач. аморт-я на {6}", matrixid="ASTkm", condition="AMST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col OSTk, "Ост. ст-ть на {6}", matrixid="OSTkm", condition="OSTST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col BOTKL, "Изм-е бал. ст-ти за {2} {0}", matrixformula="BSTkm,-BSTnm", matrixformulatype="sum", condition="OTKL,BALST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col AOTKL, "Изм-е нач. аморт-и за {2} {0}", matrixformula="ASTkm,-ASTnm", matrixformulatype="sum", condition="OTKL,AMST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+	col OOTKL, "Изм. ост. ст-ти за {2} {0}", matrixformula="OSTkm,-OSTnm", matrixformulatype="sum", condition="OTKL,OSTST,BYMONTH", forperiods="_ЯНВ,_НЕ_ЯНВ"
+
+	col BSTn, "Бал. ст-ть на {5}", period=3, year=-1, condition="BALST"
+	col ASTn, "Нач. аморт-я на {5}", period=3, year=-1, condition="AMST"
+	col OSTn, "Ост. ст-ть на {5}", period=3, year=-1, condition="OSTST"
+
+	col BSTn, "Бал. ст-ть на {5}", matrixid="BSTn1", condition="BALST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col ASTn, "Нач. аморт-я на {5}", matrixid="ASTn1", condition="AMST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col OSTn, "Ост. ст-ть на {5}", matrixid="OSTn1", condition="OSTST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+
+	col BSTk, "Бал. ст-ть на {6}", matrixid="BSTk1", condition="BALST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col ASTk, "Нач. аморт-я на {6}", matrixid="ASTk1", condition="AMST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col OSTk, "Ост. ст-ть на {6}", matrixid="OSTk1", condition="OSTST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+
+#	col BOTKL1, "Изм-е бал. ст-ти за {2} {0}", matrixformula="BSTk1,-BSTn1", matrixformulatype="sum", condition="OTKL,BALST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+#	col AOTKL1, "Изм-е нач. аморт-и за {2} {0}", matrixformula="ASTk1,-ASTn1", matrixformulatype="sum", condition="OTKL,AMST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+#	col OOTKL1, "Изм. ост. ст-ти за {2} {0}", matrixformula="OSTk1,-OSTn1", matrixformulatype="sum", condition="OTKL,OSTST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+
+	col BOTKL1, "Изм-е бал. ст-ти за {2} {0}", formula=" @BSTk.P-201? - @BSTn.P-201? ", condition="OTKL,BALST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col AOTKL1, "Изм-е нач. аморт-и за {2} {0}", formula=" @ASTk.P-201? - @ASTn.P-201? ", condition="OTKL,AMST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+	col OOTKL1, "Изм. ост. ст-ти за {2} {0}", formula=" @OSTk.P-201? - @OSTn.P-201? ", condition="OTKL,OSTST", period=_СУММЕСЯЦ, forperiods="_ЯНВ,_НЕ_ЯНВ,_МЕС_СНГ,_ОЖИД_СНГ"
+
+#====================================================================================
+#Колонки для расшифровок баланса с оборотами
+#------------------------------------------------------------------------------------
+subset cs_balans_ras, "Расшфифровки баланса с оборотами" :
+	col On, _НА_НАЧАЛО, forperiods=_ЯНВ, auto, condition="OST,BYMONTH", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col On, _НА_НАЧАЛО, forperiods=_НЕ_ЯНВ, condition="OST,BYMONTH", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="NACH,BYMONTH", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Rd, "Списано {2} {0}", forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OPL,BYMONTH", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, forperiods="_ЯНВ, _НЕ_ЯНВ", condition="OST,BYMONTH", validation="validate-int-cell-number", fixed, controlpoint=true, forgroup="!PR_KVART"
+	
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ, auto, fixed, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OST,СНГ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  auto, fixed, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="NACH,СНГ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Rd, "Списано {2} {0}", period= _СУММЕСЯЦ,  auto, fixed, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OPL,СНГ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  auto, fixed, forperiods="_НЕ_ЯНВ,_МЕС_СНГ", condition="OST,СНГ", validation="validate-int-cell-number", fixed, controlpoint=true, forgroup="!PR_KVART"
+
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="1", condition="OST,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col On, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods="2,3,4", condition="OST,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Pd, _НАЧИСЛЕНО, period= _СУММЕСЯЦ,  forperiods="1,2,3,4", condition="NACH,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Rd, "Списано {2} {0}", period= _СУММЕСЯЦ,  forperiods="1,2,3,4", condition="OPL,СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col Ok, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods="1,2,3,4", condition="OST,СНГ", validation="validate-int-cell-number", fixed, controlpoint=true, forgroup="PR_KVART"
+	
+	col Pd_otkl, "Откл. начислено", period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,1,2,3,4", year=0, condition="NACH,PREDYEAR", validation="validate-int-cell-number", fixed, formulatype=boo, formula = " @Pd? - @Pd.Y-1? "
+	col Rd_otkl, "Откл. списано", period= _СУММЕСЯЦ ,  forperiods="_НЕ_ЯНВ,1,2,3,4", year=0, condition="OPL,PREDYEAR", validation="validate-int-cell-number", fixed, formulatype=boo, formula = " @Rd? - @Rd.Y-1? "
+
+#====================================================================================
+#Колонки для расчета чистых активов 2011
+#------------------------------------------------------------------------------------
+subset cs_free_active_form_1, "Чистые активы 2011" :
+	col Б1, "На {5}", period=3, forperiods="1", year=-1, validation="validate-int-cell-number"
+	col Б1, "На {5}", forperiods=_ЯНВ, auto, validation="validate-int-cell-number"
+	col Б1, "На {5}", forperiods=_НЕ_ЯНВ, auto, fixed, validation="validate-int-cell-number"
+	col Б1, "На {5}", forperiods="1", validation="validate-int-cell-number"
+	col Б1, "На {5}", forperiods="2,3,4", auto, fixed, validation="validate-int-cell-number"
+	col Б2, "На {6}", validation="validate-int-cell-number"
+	col Б1, "На {5}", period= _СУММЕСЯЦ,  forperiods=_НЕ_ЯНВ,  auto, fixed, validation="validate-int-cell-number"
+	col Б2, "На {6}", period= _СУММЕСЯЦ ,  forperiods=_НЕ_ЯНВ,  auto, fixed, validation="validate-int-cell-number"
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Б2.P@_СУММЕСЯЦ? - @Б2?", validation="validate-int-cell-number"
+
+#====================================================================================
+#Колонки для расчета чистых активов
+#------------------------------------------------------------------------------------
+subset cs_free_active_form, "Чистые активы" :
+	col Б1, _НА_НАЧАЛО, forperiods=_ЯНВ, validation="validate-int-cell-number"
+	col Б1, _НА_НАЧАЛО, forperiods=_НЕ_ЯНВ, auto, fixed, validation="validate-int-cell-number"
+	col Б1, _НА_НАЧАЛО, forperiods="1", auto, validation="validate-int-cell-number"
+	col Б1, _НА_НАЧАЛО, forperiods="2,3,4", auto, fixed, validation="validate-int-cell-number"
+	col Б2, _НА_КОНЕЦ, validation="validate-int-cell-number"
+	col Б1, _НА_НАЧАЛО, period= _СУММЕСЯЦ,  forperiods=_НЕ_ЯНВ,  auto, fixed, validation="validate-int-cell-number"
+	col Б2, _НА_КОНЕЦ, period= _СУММЕСЯЦ ,  forperiods=_НЕ_ЯНВ,  auto, fixed, validation="validate-int-cell-number"
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@Б2.P@_СУММЕСЯЦ? - @Б2?", validation="validate-int-cell-number"
+
+#====================================================================================
+#Дебиторка и кредиторка (форма)
+#------------------------------------------------------------------------------------
+subset cs_dkz, "Дебиторка и кредиторка (форма)" :
+	col REVISIONDZ, "Ревизия ДЗ на {5}", period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,406,409", forgroup="!PR_KVART"
+	col REVISIONDZ, "Ревизия ДЗ нар. итогом  {2} {0}", period=-505, forperiods="_НЕ_ЯНВ,406,409", fixed, forgroup="!PR_KVART"
+	col REVISIONKZ, "Ревизия КЗ на {5}", period= _СУММЕСЯЦ, forperiods="_НЕ_ЯНВ,406,409", forgroup="!PR_KVART"
+	col REVISIONKZ, "Ревизия КЗ нар. итогом  {2} {0}", period=-505, forperiods="_НЕ_ЯНВ,406,409", fixed, forgroup="!PR_KVART"
+
+	col REVISIONDZ, "Ревизия ДЗ на {5}", period= _СУММЕСЯЦ, forperiods="2,3,4,406,409", forgroup="PR_KVART"
+	col REVISIONDZ, "Ревизия ДЗ нар. итогом  {2} {0}", period=-505, forperiods="2,3,4,406,409", fixed, forgroup="PR_KVART"
+	col REVISIONKZ, "Ревизия КЗ на {5}", period= _СУММЕСЯЦ, forperiods="2,3,4,406,409", forgroup="PR_KVART"
+	col REVISIONKZ, "Ревизия КЗ нар. итогом  {2} {0}", period=-505, forperiods="2,3,4,406,409", fixed, forgroup="PR_KVART"
+
+	col DZn, "Деб. з-ть нач. {2} {0}", forperiods="_ЯНВ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZRn, "Резервы нач. {2} {0}", forperiods="_ЯНВ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZn, "Деб. з-ть нач. {2} {0}", forperiods="_НЕ_ЯНВ,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZRn, "Резервы нач. {2} {0}", forperiods="_НЕ_ЯНВ,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col KZn, "Кред. з-ть нач. {2} {0}", forperiods="_ЯНВ", auto, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col KZn, "Кред. з-ть нач. {2} {0}", forperiods="_НЕ_ЯНВ,_ОЖИД_СНГ", auto, fixed, validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+
+	col DZk, "Деб. з-ть кон. {2} {0}", period=25, fixed, forperiods="406", forgroup="!PR_KVART"
+	col DZRk, "Резервы кон. {2} {0}", period=25, fixed, forperiods="406", forgroup="!PR_KVART"
+	col KZk, "Кред. з-ть кон. {2} {0}", period=25, fixed, forperiods="406", forgroup="!PR_KVART"
+	col DZk, "Деб. з-ть кон. {2} {0}", period=1, fixed, forperiods="406", forgroup="PR_KVART"
+	col DZRk, "Резервы на кон. {2} {0}", period=1, fixed, forperiods="406", forgroup="PR_KVART"
+	col KZk, "Кред. з-ть кон. {2} {0}", period=1, fixed, forperiods="406", forgroup="PR_KVART"
+
+	col DZk, "Деб. з-ть кон. {2} {0}", forperiods="_ТОЛЬКО_МЕС,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZRk, "Резервы кон. {2} {0}", forperiods="_ТОЛЬКО_МЕС,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col KZk, "Кред. з-ть кон. {2} {0}", forperiods="_ТОЛЬКО_МЕС,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+
+	col DZn, "Деб. з-ть нач. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZRn, "Резервы нач. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZn, "Деб. з-ть нач. {2} {0}", period=_СУММЕСЯЦ, forperiods="1", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col DZRn, "Резервы нач. {2} {0}", period=_СУММЕСЯЦ, forperiods="1", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col DZn, "Деб. з-ть нач. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col DZRn, "Резервы нач. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+
+	col KZn, "Кред. з-ть нач. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col KZn, "Кред. з-ть нач. {2} {0}", period=_СУММЕСЯЦ, forperiods="1", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col KZn, "Кред. з-ть нач. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="2,3,4,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+
+	col DZk, "Деб. з-ть кон. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZRk, "Резервы кон. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col DZk, "Деб. з-ть кон. {2} {0}", period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+	col DZRk, "Резервы кон. {2} {0}", period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+
+	col KZk, "Кред. з-ть кон. {2} {0}", period=_СУММЕСЯЦ, auto, fixed, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART"
+	col KZk, "Кред. з-ть кон. {2} {0}", period=_СУММЕСЯЦ, forperiods="_МЕС_СНГ,_ОЖИД_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="PR_KVART"
+
+#	col DZn, "Деб. з-ть нач. {2} {0} (ADMIN)", period=_СУММЕСЯЦ, auto, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART", forrole="ADMIN"
+#	col KZn, "Кред. з-ть нач. {2} {0} (ADMIN)", period=_СУММЕСЯЦ, auto, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART", forrole="ADMIN"
+#	col DZk, "Деб. з-ть кон. {2} {0} (ADMIN)", period=_СУММЕСЯЦ, auto, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART", forrole="ADMIN"
+#	col KZk, "Кред. з-ть кон. {2} {0} (ADMIN)", period=_СУММЕСЯЦ, auto, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ", validation="validate-int-cell-number", controlpoint=true, forgroup="!PR_KVART", forrole="ADMIN"
+
+#	col КОСТ1, "Контроль ревизий ДЗ = 0",  forperiods=_НЕ_ЯНВ, fixed , formula=" @DZ.P@_ПРЕД_СУММЕСЯЦ? + @REVISIONDZ.P@_СУММЕСЯЦ? - @DZ.P@_СУММЕСЯЦ? ", forgroup="!PR_KVART"
+#	col КОСТ2, "Контроль ревизий ДЗ = 0",  forperiods=_МЕС_СНГ, fixed , formula=" @DZ.P@_ПРЕД_СУММЕСЯЦ? + @REVISIONDZ.P@_СУММЕСЯЦ? - @DZ.P@_СУММЕСЯЦ? ", forgroup="PR_KVART"
+#	col КОСТ3, "Контроль ревизий ДЗ = 0",  forperiods=_ОЖИД_СНГ, fixed , formula=" @DZ.P1? + @REVISIONDZ? - @DZ? "
+
+#	col КОСТ4, "Контроль ревизий КЗ = 0",  forperiods=_НЕ_ЯНВ, fixed , formula=" @KZ.P@_ПРЕД_СУММЕСЯЦ? + @REVISIONKZ.P@_СУММЕСЯЦ? - @KZ.P@_СУММЕСЯЦ? ", forgroup="!PR_KVART"
+#	col КОСТ5, "Контроль ревизий КЗ = 0",  forperiods=_МЕС_СНГ, fixed , formula=" @KZ.P@_ПРЕД_СУММЕСЯЦ? + @REVISIONKZ.P@_СУММЕСЯЦ? - @KZ.P@_СУММЕСЯЦ? ", forgroup="PR_KVART"
+#	col КОСТ6, "Контроль ревизий КЗ = 0",  forperiods=_ОЖИД_СНГ, fixed , formula=" @KZ.P1? + @REVISIONKZ? - @KZ? "
+
+	col КОСТ, _CONTR_OST,  forperiods=_НЕ_ЯНВ, fixed , formula="@DZk.P@_СУММЕСЯЦ? - @DZk? + @KZk.P@_СУММЕСЯЦ? - @KZk? + @DZk.P@_ПРЕД_СУММЕСЯЦ? - @DZn? + @KZk.P@_ПРЕД_СУММЕСЯЦ? - @KZn?", validation="validate-int-cell-number", forgroup="!PR_KVART"
+
+#====================================================================================
+#Дебиторка и кредиторка (контроль)
+#------------------------------------------------------------------------------------
+subset cs_dkz_control, "Дебиторка и кредиторка (контроль)" :
+	col DZk, "Деб. з-ть кон. 12 мес. {0}", customCode="DZn4-1", year=-1, period=4, forperiods=1, fixed
+	col KZk, "Кред. з-ть кон. 12 мес. {0}", customCode="KZn4-1", year=-1, period=4, forperiods=1, fixed
+	col DZn, "Деб. з-ть нач. 3 мес. {0}", customCode="DZn1", period=1, forperiods=1, fixed
+	col KZn, "Кред. з-ть нач. 3 мес. {0}", customCode="KZn1", period=1, forperiods=1, fixed
+	col OTKL1, "Отклонение деб. з-ти", formula=" @DZn.P1? - @DZk.Y-1.P4? ", forperiods=1
+	col OTKL2, "Отклонение кред. з-ти", formula=" @KZn.P1? - @KZk.Y-1.P4? ", forperiods=1
+
+	col DZn, "Деб. з-ть нач. 9 мес. {0}", customCode="DZn3", period=3, forperiods=4, fixed
+	col KZn, "Кред. з-ть нач. 9 мес. {0}", customCode="KZn3", period=3, forperiods=4, fixed
+	col DZn, "Деб. з-ть нач. 12 мес. {0}", customCode="DZn4", period=4, forperiods=4, fixed
+	col KZn, "Кред. з-ть нач. 12 мес. {0}", customCode="KZn4", period=4, forperiods=4, fixed
+	col OTKL3, "Отклонение деб. з-ти", formula=" @DZn.P4? - @DZn.P3? ", forperiods=4
+	col OTKL4, "Отклонение кред. з-ти", formula=" @KZn.P4? - @KZn.P3? ", forperiods=4
+
+#====================================================================================
+#Дебиторка и кредиторка (отчет)
+#------------------------------------------------------------------------------------
+subset cs_dkz_report, "Дебиторка и кредиторка (отчет)" :
+	col DZn, "Деб. з-ть на {5}", matrixid="SNGDZn-1", period=3, year=-1, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and СНГ and PREDYEAR"
+	col DZRn, "Резервы на {5}", matrixid="SNGDZRn-1", year=-1, period=3, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and RESERV and СНГ and PREDYEAR"
+#	col DZSRn, "Деб. з-ть с уч. резервов {5}", matrixid="SNGDZSRn-1", period=3, year=-1, formula="", forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and СНГ and PREDYEAR"
+	col KZn, "Кр. з-ть на {5}", matrixid="SNGKZn-1", period=3, year=-1, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="KZ and СНГ and PREDYEAR"
+
+	col DZn, "Деб. з-ть на {4}", matrixid="MESDZn", forperiods="_ТОЛЬКО_МЕС", condition="DZ and BYMONTH"
+	col DZRn, "Резервы на {4}", matrixid="MESDZRn", forperiods="_ТОЛЬКО_МЕС", condition="DZ and RESERV and BYMONTH"
+	col KZn, "Кр. з-ть на {4}", matrixid="MESKZn", forperiods="_ТОЛЬКО_МЕС", condition="KZ and BYMONTH"
+
+	col DZn, "Деб. з-ть на {4}", matrixid="SNGDZn", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and СНГ"
+	col DZRn, "Резервы на {4}", matrixid="SNGDZRn", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and RESERV and СНГ"
+	col KZn, "Кр. з-ть на {4}", matrixid="SNGKZn", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="KZ and СНГ"
+
+	col DZk, "Деб. з-ть на {6}", matrixid="SNGDZk", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and ( BYMONTH or СНГ )"
+	col DZRk, "Резервы на {6}", matrixid="SNGDZRk", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and RESERV and ( BYMONTH or СНГ )"
+	col KZk, "Кр. з-ть на {6}", matrixid="SNGKZk", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="KZ and ( BYMONTH or СНГ )"
+
+	col OTKL1, "Изм. деб. з-ти за {2} {0}", matrixformula="SNGDZk,-MESDZn", matrixformulatype="sum", formula=" @DZk? - @DZn? ", forperiods="_ТОЛЬКО_МЕС", condition="DZ and OTKL and BYMONTH"
+	col OTKL2, "Изм. резервов за {2} {0}", matrixformula="SNGDZRk,-MESDZRn", matrixformulatype="sum", formula=" @DZRk? - @DZRn? ", forperiods="_ТОЛЬКО_МЕС", condition="DZ and RESERV and OTKL and BYMONTH"
+	col OTKL3, "Изм. кред. з-ти за {2} {0}", matrixformula="SNGKZk,-MESKZn", matrixformulatype="sum", formula=" @KZk? - @KZn? ", forperiods="_ТОЛЬКО_МЕС", condition="KZ and OTKL and BYMONTH"
+
+	col OTKL4, "Изм. деб. з-ти за {2} {0}", matrixformula="SNGDZk,-SNGDZn", matrixformulatype="sum", formula=" @DZk.P@_СУММЕСЯЦ? - @DZn.P@_СУММЕСЯЦ? ", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and OTKL and СНГ"
+	col OTKL5, "Изм. резервов за {2} {0}", matrixformula="SNGDZRk,-SNGDZRn", matrixformulatype="sum", formula=" @DZRk.P@_СУММЕСЯЦ? - @DZRn.P@_СУММЕСЯЦ? ", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="DZ and RESERV and OTKL and СНГ "
+	col OTKL6, "Изм. кред. з-ти за {2} {0}", matrixformula="SNGKZk,-SNGKZn", matrixformulatype="sum", formula=" @KZk.P@_СУММЕСЯЦ? - @KZn.P@_СУММЕСЯЦ? ", period=_СУММЕСЯЦ, forperiods="_ТОЛЬКО_МЕС,_МЕС_СНГ,_ОЖИД_СНГ", condition="KZ and OTKL and СНГ "
+
+
+#====================================================================================
+#Нормативные ковенанты
+#------------------------------------------------------------------------------------
+subset cs_covenant_normativ, "Ковенанты - нормативы (форма)" :
+	col NORM, _FACT, period=4, forperiods="1,2,3,4", year=-1, format="#,0.##"
+	col NORM, _FACT, format="#,0.##"
+
+#====================================================================================
+#Нормативные ковенанты
+#------------------------------------------------------------------------------------
+subset cs_covenant_normativ_report, "Ковенанты - нормативы (отчет)" :
+	col NORM, _FACT, period=4, forperiods="1,2,3,4", year=-1, format="#,0.##"
+	col NORM, _FACT, format="#,0.##"
+
+#====================================================================================
+#Нормативные ковенанты
+#------------------------------------------------------------------------------------
+subset cs_covenant_amort, "Ковенанты (амортизация)" :
+	col Б1, _FACT, period=4, forperiods="1,2,3,4", year=-1, format="#,0.##"
+	col Б1, _FACT, format="#,0.##"
+
+#====================================================================================
+#Колонки для ковенантов ВТБ
+#-----------------------------------------https://assoicorp.ugmk.com:449/ecot/thema/fileindex.rails?asworkspace=1#-------------------------------------------
+subset cs_covenant_vtb, "Ковенанты (ВТБ)" :
+	col OBOST, _FACT, period=4, forperiods="1,2,3,4", year=-1, format="#,0.##"
+
+	col OBOST, _FACT, period=1, forperiods=1, year=-1, format="#,0.##"
+	col OBOST, _FACT, period=1, forperiods=1, format="#,0.##"
+	col PRIVED10, "Привед. {2} {0}", period=4, forperiods=1, format="#,0.##"
+
+	col OBOST, _FACT, period=2, forperiods=2, year=-1, format="#,0.##"
+	col OBOST, _FACT, period=2, forperiods=2, format="#,0.##"
+	col PRIVED20, "Привед. {2} {0}", period=4, forperiods=2, format="#,0.##"
+
+	col OBOST, _FACT, period=3, forperiods=3, year=-1, format="#,0.##"
+	col OBOST, _FACT, period=3, forperiods=3, format="#,0.##"
+	col PRIVED30, "Привед. {2} {0}", period=4, forperiods=3, format="#,0.##"
+
+	col OBOST, _FACT, period=4, forperiods=4, format="#,0.##"
+
+#====================================================================================
+#Колонки для ковенантов Газпромбанка
+#------------------------------------------------------------------------------------
+subset cs_covenant_gpb, "Ковенанты (Газпромбанк)" :
+	col OBOST, _FACT, period=4, forperiods="1,2,3,4", year=-1, format="#,0.##"
+	col OBOST, _FACT, format="#,0.##"
+#	col PRIVED, "Привед. {2} {0}", period=4, forperiods="1,2,3", format="#,0.##"
+
+	col PRIVED1, "Привед. {2} {0}", period=4, forperiods=1, format="#,0.##"
+	col PRIVED2, "Привед. {2} {0}", period=4, forperiods=2, format="#,0.##"
+	col PRIVED3, "Привед. {2} {0}", period=4, forperiods=3, format="#,0.##"
+
+#====================================================================================
+#Колонки для ковенантов Сбербанка
+#------------------------------------------------------------------------------------
+subset cs_covenant_sb, "Ковенанты (Сбербанк)" :
+	col OBOST, _FACT, period=4, forperiods="1,2,3,4", year=-1, format="#,0.##"
+	col OBOST, _FACT, format="#,0.##"
+#	col PRIVED, "Привед. {2} {0}", period=4, forperiods="1,2,3", format="#,0.##"
+
+	col PRIVED1, "Привед. {2} {0}", period=4, forperiods=1, format="#,0.##"
+	col PRIVED2, "Привед. {2} {0}", period=4, forperiods=2, format="#,0.##"
+	col PRIVED3, "Привед. {2} {0}", period=4, forperiods=3, format="#,0.##"
+
+
+
+#====================================================================================
+#Колонки для исторических данных с 1994 по 2011 год
+#------------------------------------------------------------------------------------
+subset cs_osnpok_90, "Исторические данные (1990-2010)" :
+	
+	col Б1, "{0} г.", year=-20, forperiods=4, conditions="Y20"
+#	col Б1, "{0} г.", year=-19, forperiods=4, conditions="Y19"
+#	col Б1, "{0} г.", year=-18, forperiods=4, conditions="Y18"
+#	col Б1, "{0} г.", year=-17, forperiods=4, conditions="Y17"
+#	col Б1, "{0} г.", year=-16, forperiods=4, conditions="Y16"
+	col Б1, "{0} г. (деном.)", year=-15, forperiods=4, conditions="Y15"
+#	col Б1, "{0} г.", year=-14, forperiods=4, conditions="Y14"
+#	col Б1, "{0} г.", year=-13, forperiods=4, conditions="Y13"
+#	col Б1, "{0} г.", year=-12, forperiods=4, conditions="Y12"
+	col Б1, "{0} г.", year=-11, forperiods=4, conditions="Y11"
+	col Б1, "{0} г.", year=-10, forperiods=4, conditions="Y10"
+#	col Б1, "{0} г.", year=-9, forperiods=4, conditions="Y9"
+#	col Б1, "{0} г.", year=-8, forperiods=4, conditions="Y8"
+#	col Б1, "{0} г.", year=-7, forperiods=4, conditions="Y7"
+#	col Б1, "{0} г.", year=-6, forperiods=4, conditions="Y6"
+	col Б1, "{0} г.", year=-5, forperiods=4, conditions="Y5"
+	col Б1, "{0} г.", year=-4, forperiods=4, conditions="Y4"
+	col Б1, "{0} г.", year=-3, forperiods=4, conditions="Y3"
+	col Б1, "{0} г.", year=-2, forperiods=4, conditions="Y2"
+	col Б1, "{0} г.", year=-1, forperiods=4, conditions="Y1"
+	col Б1, "{0} г."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
