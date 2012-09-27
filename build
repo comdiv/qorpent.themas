@@ -1,7 +1,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
+		<!-- for now only compiler can be compiled well -->
+		<Project Include=".\Qorpent.Themas.Compiler\Qorpent.Themas.Compiler.csproj" />
+		<Project Include=".\Qorpent.Themas.Compiler.Tests\Qorpent.Themas.Compiler.Tests.csproj" />
+		<!--
 		<Project Include=".\**\*.csproj" Exclude=".\**\*.Tests.csproj" />
 		<Project Include=".\**\*.Tests.csproj" />
+		-->
 	</ItemGroup>
 	<Target Name="Build">
 		<MSBuild Projects="@(Project)" Properties="NoProjRef=True" />

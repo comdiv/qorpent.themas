@@ -82,6 +82,10 @@
     <Compile Include="ZetaIntegration\IZetaObjIntermediate.cs" />
     <Compile Include="ZetaIntegration\IZetaRowIntermediate.cs" />
   </ItemGroup>
+    <ItemGroup>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Wrap\Порядок загрузки параметров.txt" />
   </ItemGroup>
